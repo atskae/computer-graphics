@@ -53,5 +53,4 @@ How to take 3D points and project them onto a 2D canvas.
 2. See where the lines intersect into the canvas
 ![Frustum lines intersect](images/frustum-lines-intersect.png)
 3. Connect the intersection points on the canvas. We see a 2D image!
-<br>
 ![Frustum lines connect](images/frustum-lines-connect-2d.png)
