@@ -17,16 +17,16 @@
 ![A box in 3D space](images/it-is-a-box.png)
 * Describe box with an array of `Point`: `Point(width, height, depth)`
 <img src="images/box-points.png" width="400px"><br>
-```
+```python
 points = [
-    Point(0, 0,  0), 
-    Point(12, 0,  0), 
-    Point(12, 8,  0), 
-    Point(0, 8,  0), 
-    Point(0, 0, 10), 
-    Point(12, 0, 10), 
-    Point(12, 8, 10), 
-    Point(0, 8, 10), 
+    Point(0, 0,  0),    # corner 1
+    Point(12, 0,  0),   # corner 2
+    Point(12, 8,  0),   # corner 3
+    Point(0, 8,  0),    # corner 4
+    Point(0, 0, 10),    # corner 5
+    Point(12, 0, 10),   # corner 6
+    Point(12, 8, 10),   # corner 7 
+    Point(0, 8, 10),    # corner 8
 ]
 ```
 💁‍♀️ "Here you go" -> 💻
@@ -56,3 +56,50 @@ How to take 3D points and project them onto a 2D canvas.
 
 3. Connect the intersection points on the canvas. We see a 2D image!
 ![Frustum lines connect](images/frustum-lines-connect-2d.png)
+
+This coordinate system = **world coordinate system**, with origin at `(0,0,0)`.
+
+Since we moved the box from the origin, its coordinates have changed:
+```python
+points = [
+    Point(1, -1, -5)    # corner 1 
+    Point(1, -1, -3)    # corner 2
+    Point(1, 1, -5)     # corner 3
+    Point(1, 1, -3)     # corner 4
+    Point(-1, -1, -5)   # corner 5
+    Point(-1, -1, -3)   # corner 6
+    Point(-1,  1, -5)   # corner 7
+    Point(-1,  1, -3)   # corner 8
+]
+```
+Width, height, and depth can be negative!
+
+![New coordinates](images/new-coordinates.png)
+
+### How to calculate the projected coordinates on the canvas
+Move canvas 1 unit away from the origin. Looking at the side-view of our box, we can draw a triangle from the box to the origin:
+
+![Side-view of box](images/side-view.png)
+
+We want to find point `P'` because this is where one corner of the box (`corner #8`) intersects the canvas when we draw a line between `corner #8` to the origin `A`. We need `P'.y`:
+```
+P' = Point(x=0, y=P'.y, z=1)
+```
+
+We have two *similar* triangles: `ABC` and `AB'C'`. A property of **similar triangles**: the proportion of the adjacent and opposite sides are the same.
+
+![Similar triangles](images/similar-triangles.png)
+
+**Z divide**, or the **perspective divide**: the projection of the y-coordinate of a box corner `P` onto the 2D canvas is: `P.y` divided by its depth `P.z` (the z-coordinate).
+* This also applies to the x-coordinate
+  * But we need to divide `P.x`/`P.y` with `-P.z` (negative), otherwise it would compute a mirrored coordinate
+
+3D point `P(x, y, z)` -> 2D point `P'(x, y)`
+* `P'.x = P.x / -P.z`
+* `P'.y = P.y / -P.z`
+
+### Size of the canvas
+* The canvas size effects how much of the scene you see.
+* The shape is arbitrary (can rectangle, square)
+* Any points outside the canvas would not be seen in the 2D image
+    * Projected points inside the canvas = in **screen space**
