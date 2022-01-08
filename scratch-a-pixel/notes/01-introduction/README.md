@@ -92,7 +92,7 @@ We have two *similar* triangles: `ABC` and `AB'C'`. A property of **similar tria
 
 **Z divide**, or the **perspective divide**: the projection of the y-coordinate of a box corner `P` onto the 2D canvas is: `P.y` divided by its depth `P.z` (the z-coordinate).
 * This also applies to the x-coordinate
-  * But we need to divide `P.x`/`P.y` with `-P.z` (negative), otherwise it would compute a mirrored coordinate
+  * But we need to divide `P.x` and `P.y` with `-P.z` (negative), otherwise it would compute a mirrored coordinate
 
 3D point `P(x, y, z)` -> 2D point `P'(x, y)`
 * `P'.x = P.x / -P.z`
