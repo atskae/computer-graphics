@@ -49,8 +49,10 @@ How to take 3D points and project them onto a 2D canvas.
   * The **canvas** is a flat plane cutting through the viewing frustum (pyramid), perpendicular to your line of sight
 ![Viewing Frustum](images/viewing-frustum.png)
 1. Place box in front of viewing frustum. Draw lines from each corner of the box to the origin (eye)
+
 ![Frustum lines overview](images/frustum-lines-overview.png)
-2. See where the lines intersect into the canvas
+2. See where the lines intersect the canvas
 ![Frustum lines intersect](images/frustum-lines-intersect.png)
+
 3. Connect the intersection points on the canvas. We see a 2D image!
 ![Frustum lines connect](images/frustum-lines-connect-2d.png)
