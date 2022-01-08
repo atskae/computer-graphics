@@ -83,7 +83,7 @@ Move canvas 1 unit away from the origin. Looking at the side-view of our box, we
 
 We want to find point `P'` because this is where one corner of the box (`corner #8`) intersects the canvas when we draw a line between `corner #8` to the origin `A`. We need `P'.y`:
 ```
-P' = Point(P'.x, y=P'.y, z=1)
+P' = Point(x=P'.x, y=P'.y, z=1)
 ```
 
 We have two *similar* triangles: `ABC` and `AB'C'`. A property of **similar triangles**: the proportion of the adjacent and opposite sides are the same.
