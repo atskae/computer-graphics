@@ -13,6 +13,7 @@
 
 ## Describing Objects Making up the Virtual World
 * Unlike humans, computers need an explicit description of the image to render it
+* **Rendering**: create a image from a 3D scene
   * One way: points or **coordinates** relative to an **origin** in a 3D coordinate system
 ![A box in 3D space](images/it-is-a-box.png)
 * Describe box with an array of `Point`: `Point(width, height, depth)`
@@ -98,8 +99,36 @@ We have two *similar* triangles: `ABC` and `AB'C'`. A property of **similar tria
 * `P'.x = P.x / -P.z`
 * `P'.y = P.y / -P.z`
 
-### Size of the canvas
+### Canvas size, normalization, convert to another image size
 * The canvas size effects how much of the scene you see.
 * The shape is arbitrary (can rectangle, square)
 * Any points outside the canvas would not be seen in the 2D image
     * Projected points inside the canvas = in **screen space**
+* To be able to adjust to any screen size (and not work with negative coordinate values), we **normalize** the project points to the range `[0,1]` so that the coordinates are defined in a common space.
+* Coordinates of range `[-1, 1]` are **Normalized Device Coordinates** (NDC)
+* The projected coordinates should be in the unit of the final image, such as **pixels**.
+  * An image is simply a 2D array of pixels
+* Screen resolution (1080p = 1092x1080, 1080 pixels is the height)
+
+To convert the NDC coordinates to an image of 512x512 pixels, multiply the NDC coordinate by 512 pixels.
+* This creates coordinates in a **raster space**
+  * Raster images are made of pixels (`.png`, `.jpeg`) and are resolution-dependent
+  * Vector images (`.svg`) are not resolution-dependent, so they can be stretched to arbitrary sizes and not "blur"
+  * -insert Oekaki days nostalgia- あああ
+
+
+## What have we learned? 
+* The rules for creating an image is purely mathematics. The computer is simply a tool to speed up the computation
+* **Real-time rendering**: images need to be generates at least 30 frames per second (fps) (60 fps is the standard)
+  * Computed by GPU
+  * Requirement for video games
+* **Offline rendering**: images are pre-computed and stored before being displayed at whatever frames per second
+  * Typically produces better quality images than real-time rendering
+  * CGI for films
+
+## Next Steps
+* [Geometry](https://www.scratchapixel.com/lessons/mathematics-physics-for-computer-graphics/geometry)
+* Rendering (read "Volume 1: Foundations of 3D Rendering" on [Scratchapixel](https://www.scratchapixel.com/index.php?redirect)) in chronological order
+
+## Questions
+* Why is the canvas not the end image? (why do we need to do another computation, ex. multiply by `512` for a `512x512` image)
