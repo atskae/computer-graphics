@@ -119,7 +119,7 @@ To convert the NDC coordinates to an image of 512x512 pixels, multiply the NDC c
 
 ## What have we learned? 
 * The rules for creating an image is purely mathematics. The computer is simply a tool to speed up the computation
-* **Real-time rendering**: images need to be generates at least 30 frames per second (fps) (60 fps is the standard)
+* **Real-time rendering**: images need to be generated at least 30 frames per second (fps) (60 fps is the standard)
   * Computed by GPU
   * Requirement for video games
 * **Offline rendering**: images are pre-computed and stored before being displayed at whatever frames per second
