@@ -39,7 +39,7 @@ points = [
        * Ex. a bunch of flat triangles
      * These polygons form a **polygonal mesh**, **mesh**
        * Ex. The box is a polygonal mesh, made up of rectangles as its flat faces (polygons)
-  3. A system that will project the image onto an imaginary canvas <img src="images/box-step-3.png" width=100px>
+  3. A system that will project the image onto an imaginary canvas <img src="images/box-step-3.png" width=200px>
      * **perspective projection**
 
 ## Creating an Image of this Virtual World
