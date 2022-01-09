@@ -120,5 +120,9 @@ Different CG libraries might define where the y- and z- axes are differently. Th
 * The z-coordinate sign: if in one system it is positive, it can be negative in another system
 * Computing rotations and cross products of two vectors
 * It is possible to go from one coordinate system to another
-  * Scale the points and the *camera-to-world matrix* by `(1,1,-1`  🤷‍♀️
+  * Scale the points and the *camera-to-world matrix* by `(1,1,-1)`  🤷‍♀️
+
+## The World Coordinate System
+* Each different type of coordinate system is defined with respect to a master **world coordinate system**
+  * Defines the origin, x-, y-, and z- axes
 
