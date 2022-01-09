@@ -44,11 +44,13 @@ Another operations within the *same* coordinate system:
 * **Translation**: move a point to a different position
   
   <img src="images/translation.png" width="300px">
+  
   `P(1.5, 1.5) + P(1.5, 0) = P(3, 1.5)`
 
 * **Scale**: Move the point along a line drawn from the origin
 
   <img src="images/scale.png" width="300px">
+  
   `P(1.5, 1.5) * 2 = P(3, 3)`
 
 ## The Third Dimension
