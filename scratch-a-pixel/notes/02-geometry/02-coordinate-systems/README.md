@@ -40,7 +40,7 @@
   * Add `P(3,1)` to convert from coordinate system B (`P(-1,3)`) to A: `P(3,1) + P(-1, 3) = P(2, 4)`
   * **Additive inverse** (`P(3,1)` and `P(-3, -1)`), alter a coordinate's point in the opposite direction
 
-Another operations within the *same* coordinate system:
+Other operations within the *same* coordinate system:
 * **Translation**: move a point to a different position
   
   <img src="images/translation.png" width="300px">
@@ -54,4 +54,41 @@ Another operations within the *same* coordinate system:
   `P(1.5, 1.5) * 2 = P(3, 3)`
 
 ## The Third Dimension
+* Add a third axis, called the z-axis, that is *orthogonal* to the x- and y- axis.
+* z-axis represents *depth*
+* In Scratchpixel notes:
+  * x-axis points to the right
+  * y-axis points up
+  * z-axis points outward, outside the screen
+
+    <img src="images/3d-coordinate-system.png">
+
+  * In general, other conventions can be used though
+* This 3D coordinate system is called the **Euclidean Space**
+
+### Linear Algebra Terms
+* The axes form a **basis** in that coordinate system
+  * 1D coordinate system: x-axis
+  * 2D coordinate system: x-axis and y-axis
+  * 3D coordinate system: x-axis, y-axis, and z-axis
+* A **basis** is a set of *linearly independent* vectors that can represent any vector/point (as a linear combination of these vectors) in a given vector space (the coordinate system)
+* **Linearly independent** vectors are vectors that cannot be written as a linear combination of the vectors in that set
+* **Change of basis** = change of coordinate system
+
+## Left-Handed vs Right-Handed Coordinate Systems
+![Left and right-handed coordinate systems](images/hand-rules.png)
+* **Up vector** = thumb
+* **Forward/down vector** = index finger
+* **"Right vector"** = middle finger
+
+Recall the Scratchpixel convention:
+* x-axis points to the right
+* y-axis points up
+* z-axis points outward, outside the screen
+
+The Scratchpixel convetion is taking the Right-Hand Coordinate System and rotating it so that the "right vector" actually points rightward.
+
+* The handedness of coordinate systems is used in computing normals
+
+## The Right, Up, and Forward Vectors
 
