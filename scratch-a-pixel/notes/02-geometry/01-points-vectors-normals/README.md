@@ -1,4 +1,4 @@
-## Points, Vectors, and Normals
+## [Points, Vectors, and Normals](https://www.scratchapixel.com/lessons/mathematics-physics-for-computer-graphics/geometry/points-vectors-and-normals)
 
 > "Points, vectors, matrices and normals are to computer graphics what the alphabet is to literature"
 
