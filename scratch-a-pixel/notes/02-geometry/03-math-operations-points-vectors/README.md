@@ -103,6 +103,57 @@ For 3D vectors:
       * We can also think of a vector as "the physical embodiment of a linear transformation", "a conceptual shorthand for a certain transformation"
     * Honestly just rewatch the video instead of reading what I wrote here 笑
 
+## Cross Product
+* The dot product takes two vectors `A` and `B` and returns a single number
+* The *cross product* takes two vectors and returns a vector `C`
+  * Notation: `C = A X B`
+  * The returned vector is actually perpendicular to plane defined by the two vectors
+  * `A` and `B` don't have to be orthogonal to each other
+  * If `A` and `B` are orthogonal to each other and have unit length, vectors `A`, `B`, and `C` form the *Cartesian coordinate system*
+
+    <img src="images/perpendicular-to-plane.png">
+
+  * We can use the cross product to form other coordinate systems
+
+## How to compute the cross product
+* Review: [determinant (3B1B)](https://www.youtube.com/watch?v=Ip3X9LOh2dk&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab&index=6) describes how much the area is scaled after a linear transformation and orientation ("flipping space over", "invert the orientation of space")
+  * In 3D, describes how volume scales
+
+[Way better explanation by 3B1B](https://www.youtube.com/watch?v=eu6i7WJeinw&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab&index=10)
+* `C = A X B`
+* The length of `C` is the area of the plane formed by `A` and `B` (the *determinant*!)
+* Use the *right-hand rule* to determine the direction of the cross product (since it can point above the plane or below the plane.
+  * Align `A` and `B` with index finger and middle finger
+  * The thumb indicates the direction of `C`
+* `A X B != B X A` order matters
+  * `A X B = (1,0,0) X (0,1,0) = (0,0,1)`
+  * `B X A = (0,1,0) X (1,0,0) = (0,0,-1)`
+  * The cross product is **anticommunitive**: swapping the position of any two arguments *negates* the result
+    * If `A X B = C`, then `B X A = -C`
+* The direction of the cross-product in a *representation* depends on the *handedness* of the coordinate system
+
+```
+Cx = Ay*Bz - Bz*By
+Cy = Az*Bx - Ax*Bz
+Cz = Ax*By - Ay*Bx
+```
+
+Review on normals from previous chapter:
+* A **normal** describes the orientation of a surface of a geometric object at a point perpendicular to that surface
+* A **surface normal** is a vector that describes the normal
+
+    <img src="images/../../01-points-vectors-normals/images/surface-normal-earth.png">
+
+More terms that will hopefully be explained later...
+* The result of the cross-product is a **pseudovector**
+* The order of the vectors when computing the cross product is important when computing the **surface normals** from the **tangent** and **bitangent**
+  * The resulting normal can either be **inward-pointing normal** (pointing into the surface) or **outward-pointing-normal** (pointing outside the surface)
+
+## Vector/Point Addition and Subtraction
+* Some 3D APIs distinguish points, normals, and vectors (defining them as distinct C++ classes) since there are subtle differences when performing computations depending on what it is
+* OpenEXR defines a standard image storage format in the motion picture industry.
+  * Has one class for all three: points, normals, vectors
+
 ## Questions
 * Why is division more expensive than multiplication?
 
