@@ -140,7 +140,7 @@ The x-coordinate goes from `1` to `0`, and
 
 ![x-coordinate after rotation](images/rotation-x-coordinate.png)
 
-the y-coordinate goes from `0`
+the y-coordinate goes from `0` to `1`
 ![y-coordinate after rotation](images/rotation-y-coordinate.png)
 
 ## Using Trigonometry
