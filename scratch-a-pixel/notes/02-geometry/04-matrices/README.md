@@ -90,3 +90,37 @@ Two matrices `M1` and `M1` can only be multipled if the number of colums in `M1`
 
 # [How Does Matrix Work: Part 1](https://www.scratchapixel.com/lessons/mathematics-physics-for-computer-graphics/geometry/how-does-matrix-work-part-1)
 
+## Point-Matrix Multiplication
+* We can think of a 3D point/vector as a `1x3` matrix, a matrix with `1` row and `3` columns
+  * Point `P = [x, y, z]`
+* We can multiply this 3D point/vector `P = [x, y, z]` with a matrix `M(3xn)`
+
+<img src="images/point-matrix-multiply.png">
+
+* We want to transform a point, so a point multiplied by a matrix (applying the transformation) should also return a point
+  * Given a 3D point `[x y z]` = `1x3` matrix, we can only multiply that point by a `3x3` matrix in order to get a new 3D point after the transformation 
+
+## The Identity Matrix
+The **identitiy matrix** (or **unit matrix**) is a *square* matrix whose coefficients/entries are all 0 except the coefficients along the diagonal, which have the value 1
+
+<img src="images/zero-matrix.png">
+
+* The result of point `P` multiplied by the Identity matrix `I` will give us point `P`:
+  * `P * I = P`
+
+![Identity matrix multiply](images/identity-matrix-multiply.png)
+
+## The Scaling Matrix
+* When we multiplied point `P = [x, y, z]` by the Identity matrix `I`:
+  * `x` was multiplied by `I_00` (the 0th row and 0th column of `I`)
+  * `y` was multiplied by `I_11`
+  * `z` was multiplied by `I_22`
+* Another way to think about it: the Identity matrix scales each dimension (`x`, `y`, and `z`) by a scale of `1`
+* We can create a **scaling matrix** by starting with the identity matrix and changing the values of the diagonal for each respective dimension `x`, `y`, and `z`:
+
+![Scaling matrix multiply](images/scaling-matrix-multiply.png)
+
+* Example, to scale point `P(1,2,3)` by a scaling factor `S_x=1`, `S_y=2`, `S_z=3`
+
+![Scaling matrix multiply example](images/scaling-matrix-multiply.png)
+
