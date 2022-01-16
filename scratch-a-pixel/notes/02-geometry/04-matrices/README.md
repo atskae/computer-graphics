@@ -124,3 +124,42 @@ The **identitiy matrix** (or **unit matrix**) is a *square* matrix whose coeffic
 
 ![Scaling matrix multiply example](images/scaling-matrix-multiply-example.png)
 
+## The Rotation Matrix
+The **rotation matrix** will rotate a point/vector around one axis in the Cartesian coordinate system, using trigonometry!
+* We can technically use *translation* to achieve the same effect, but using rotation is easier
+
+![Rotate P around the z-axis](images/rotate-around-z-90.png)
+* Rotating point `P` **counterclockwise** by `90` degrees
+* We want a matrix `R` such that `P_T = P * R`
+
+The z-coordinate (depth) doesn't change when we rotate around the z-axis (`P.z == P_T.z`)
+
+![The j=2 column of rotation matrix R](images/rotation-matrix-column-2.png)
+
+The x-coordinate goes from `1` to `0`, and 
+
+![x-coordinate after rotation](images/rotation-x-coordinate.png)
+
+the y-coordinate goes from `0`
+![y-coordinate after rotation](images/rotation-y-coordinate.png)
+
+## Using Trigonometry
+We can compute the x- and y- coordinates of `P_T` (the point after rotating by angle `theta`):
+* `x = cos(theta)`
+* `y = sin(theta)`
+
+`theta = pi/2` is equivalent to a rotation of `90` degrees counterclockwise
+* `x = cos(pi/2) = 0`
+* `y = sin(pi/2) = 1`
+
+![Using trig to define relationships in rotation](images/rotate-trig.png)
+
+We can derive the general rotation matrix around the z-axis by any angle `theta`:
+
+![Matrix for rotating around z-axis in general](images/rotation-matrix-z-general.png)
+
+We can derive the matrix that rotates a point `90` degrees around the z-axis from the general rotation matrix:
+
+![Matrix for rotating around the z-axis by 90 degrees](images/rotation-90-z-from-general.png)
+
+### Making clockwise rotations work
