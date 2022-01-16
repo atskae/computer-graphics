@@ -122,5 +122,5 @@ The **identitiy matrix** (or **unit matrix**) is a *square* matrix whose coeffic
 
 * Example, to scale point `P(1,2,3)` by a scaling factor `S_x=1`, `S_y=2`, `S_z=3`
 
-![Scaling matrix multiply example](images/scaling-matrix-multiply.png)
+![Scaling matrix multiply example](images/scaling-matrix-multiply-example.png)
 
