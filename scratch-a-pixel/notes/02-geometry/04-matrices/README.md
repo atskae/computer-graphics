@@ -163,3 +163,24 @@ We can derive the matrix that rotates a point `90` degrees around the z-axis fro
 ![Matrix for rotating around the z-axis by 90 degrees](images/rotation-90-z-from-general.png)
 
 ### Making clockwise rotations work
+Check if clockwise rotations work correctly.
+
+First derive the matrix:
+![Derive 90 degree clockwise rotation](images/try-derive-clockwise-90-matrix.png)
+
+If this matrix is correct, it should take `P(0,1,0)` to `P_T(1,0,0)`:
+
+![Try to compute clockwise 90 degree rotation](images/try-compute-clockwise-90-point.png)
+
+It doesn't apply the clockwise 90 rotation correctly... The x-coordinate ends up being flipped (negative).
+We know the first column of the matrix computes the x-coordinate of the transformed point `P_T`.  We need to make `sin(theta)` negative in the first column:
+
+![Fix clockwise 90 matrix](images/fix-clockwise-90-matrix.png)
+
+TODO: Check that this works...
+
+Let's make sure the new matrix works for the original 90-degree *counterclockwise* rotation:
+![Check counterclockwise rotation](images/check-fixed-clockwise-90-matrix.png)
+
+It works!! 💃
+
