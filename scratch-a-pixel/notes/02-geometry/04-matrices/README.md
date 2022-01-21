@@ -177,10 +177,13 @@ We know the first column of the matrix computes the x-coordinate of the transfor
 
 ![Fix clockwise 90 matrix](images/fix-clockwise-90-matrix.png)
 
-TODO: Check that this works...
+Let's check to make sure clockwise rotation works:
+![Check clockwise rotation](images/check-fixed-clockwise-90-matrix.png)
+
+It works!! 🕺
 
 Let's make sure the new matrix works for the original 90-degree *counterclockwise* rotation:
-![Check counterclockwise rotation](images/check-fixed-clockwise-90-matrix.png)
+![Check counterclockwise rotation](images/check-fixed-counterclockwise-90-matrix.png)
 
 It works!! 💃
 
