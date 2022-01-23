@@ -187,3 +187,46 @@ Let's make sure the new matrix works for the original 90-degree *counterclockwis
 
 It works!! 💃
 
+### Derive rotating around the x-axis
+
+![Rotate around the x-axis](images/rotate-around-x-90.png)
+Let's try to figure out matrix `R_x`,  a matrix that performs a 90 degree rotation around the x-axis.
+
+(I guessed and checked a lot... It seems to help when we first focus on the coordinate that *transforms to* a non-zero value).
+
+The y-coordinate transforms from 0 to 1 after the rotation:
+
+![Figure out the y-column of x-axis rotation](images/rotate-around-x-90-y-column.png)
+So `R_x` row 2, colum 1 is `-sin(theta)`.
+
+The z-coordinate transforms from 0 to -1 after a **clockwise** rotation:
+
+![Figure out the z-column of x-axis rotation](images/rotate-around-x-90-z-column.png)
+
+So `R_x`, row 1, colum 2 is `sin(theta)`.
+
+`R_x` matrix so far:
+
+![x-axis rotation matrix so far](images/rotate-around-x-90-matrix-so-far.png)
+
+#### Use trigonometry!
+
+![Use trig to find matrix values](images/rotate-around-x-matrix-use-trig.png)
+
+Let's to do a `pi/6` rotation from `pi/6 = 30 degrees` to `pi/3 = 60 degrees`. Then we can use the properties of 30-60-90 triangles.
+
+![30-60-90 triangles](images/30-60-90-triangles.png)
+
+Use the values of `cos(pi/6)` and `sin(pi/6)` to calculate the y- and z- coordinates of point `P` and `P_T`:
+
+![Use 30-60-90 trangles to get coordinates](images/use-30-60-90-to-find-coordinates.png)
+
+Now we know that rotating the point `P(0, 1/2, -1 * sqrt(3)/2)` with angle of `pi/6` in the counterclockwise direciton will result in point `P_T(0, sqrt(3)/2, -1/2)`. Note that the z-coordinate is negative.
+
+We can now compute the missing coordinates in the `R_x` matrix in the same way that we did with the previous entries:
+
+![Compute missing entries in matrix that rotates around x-axis](images/derive-rotate-around-x-axis.png)
+
+The final matrix that rotates a point around the x-axis with angle `theta`:
+![Matrix that rotates a point around the x-axis](images/rotate-around-x-axis-final-matrix.png)
+
