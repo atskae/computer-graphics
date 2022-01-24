@@ -250,6 +250,11 @@ Final matrix for rotating around the y-axis:
 
 ![Rotate around the y-axis matrix](images/rotate-around-y-axis-final-matrix.png)
 
-## Summary
-TO-DO: Draw all rotation matrices, using left/right hand rule to know the direction of the positive direction of rotation, apply multiple rotation matrices to create more complex rotations.
+### Handedness and summary
+We can use the handedness to remember the direction of a positive rotation. If we align our thumb to the axis of rotation, the other fingers' direction will indicate the positive direction.
 
+Summary of the rotation matrices and using the right-hand to see the direction of the position rotation:
+
+![All rotation matricies and positive direction](images/rotation-matrices-summary.png)
+
+![Taking selfies](images/taking-selfies.png)
