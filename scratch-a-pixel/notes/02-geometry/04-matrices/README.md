@@ -230,3 +230,23 @@ We can now compute the missing coordinates in the `R_x` matrix in the same way t
 The final matrix that rotates a point around the x-axis with angle `theta`:
 ![Matrix that rotates a point around the x-axis](images/rotate-around-x-axis-final-matrix.png)
 
+### Derive rotating around y-axis
+We can apply the same logic for deriving the matrix that rotates around the y-axis.
+
+![Start deriving matrix for rotations around the y-axis](images/rotate-around-y-start.png)
+
+Use `pi/2` and `-pi/2` rotations to obtain coordinates:
+
+![Use pi/2 rotation first](images/rotate-around-y-part-1.png)
+
+Matrix derived so far:
+![Matrix so far](images/rotate-around-y-matrix-so-far.png)
+
+Use `pi/6` rotation from `P(sqrt(3)/2, 0, -1/2)` to `P_T(1/2, 0, -sqrt(3)/2)` to obtain the remaining matrix entries:
+
+![Use trig to find rest of entries](images/rotate-around-y-matrix-use-trig.png)
+
+Final matrix for rotating around the y-axis:
+
+![Rotate around the y-axis matrix](images/rotate-around-y-axis-final-matrix.png)
+
