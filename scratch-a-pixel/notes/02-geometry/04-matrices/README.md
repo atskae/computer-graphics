@@ -251,5 +251,5 @@ Final matrix for rotating around the y-axis:
 ![Rotate around the y-axis matrix](images/rotate-around-y-axis-final-matrix.png)
 
 ## Summary
-TO-DO: Draw all rotation matrices, using left/right hand rule to know the direction of the positive direction of rotation.
+TO-DO: Draw all rotation matrices, using left/right hand rule to know the direction of the positive direction of rotation, apply multiple rotation matrices to create more complex rotations.
 
