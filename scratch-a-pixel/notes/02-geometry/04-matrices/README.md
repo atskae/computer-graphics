@@ -258,3 +258,16 @@ Summary of the rotation matrices and using the right-hand to see the direction o
 ![All rotation matricies and positive direction](images/rotation-matrices-summary.png)
 
 ![Taking selfies](images/taking-selfies.png)
+
+### Combining rotations
+
+We can create complex rotations by multiplying rotation matrices together.
+For example, to construct a matrix that will rotate around the x-axis, `R_x`, then rotate around the y-axis, `R_y`, we can multiply the matrices `R_x` and `R_y` to get `R_xy`, which will perform both rotations:
+```
+R_xy = R_x * R_y
+```
+
+Order matters! It is not guarenteed to get the same resulting transformation if we switched the order of the matrices when multiplying them together.
+
+### Rotate around an arbitrary axis
+It is also possible to rotate around an arbitrary axis (will find out how, eventually?).
