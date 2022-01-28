@@ -1,13 +1,13 @@
 # [Matrices Part 2](https://www.scratchapixel.com/lessons/mathematics-physics-for-computer-graphics/geometry/how-does-matrix-work-part-2)
 
 ## Relationship Between Matrices and Coordinate Systems
-Each row in a rotation matrix defines the positive direction of the axis. The first row corresponds to the x-axis, the second row corresponds to the y-axis, and the third row corresponds to the z-axis.
+Each row in a rotation matrix defines the *vector* that describes axis itself, with its direction in the positive direction). The vector in the first row corresponds to the x-axis, the second row corresponds to the y-axis, and the third row corresponds to the z-axis.
 
 If we plug in `theta=0` into the matrix that rotates around the z-axis, `R_z`, we can see that each row describe a point in the coordinate system which indicates the positive direction of the axis:
 
 ![Each row describes the axis direction](images/rotate-around-z-0.png)
 
-When we apply a rotation to `R_z`, the axes also rotate around the z-axis, and the matrix entries are redefined as such.
+When we apply a rotation to `R_z`, the axes (which are vectors) also rotate around the z-axis, and the matrix entries are redefined as such.
 
 For example, if we rotated 90 degrees (`pi/2`) counterclockwise, the axes also rotate 90 degrees:
 
@@ -15,8 +15,8 @@ For example, if we rotated 90 degrees (`pi/2`) counterclockwise, the axes also r
 
 Some observations:
 * We are rotating around the z-axis, so the direction of the z-axis is unchanged
-* The positive direction of the x-axis rotated from `P_x(1,0,0)` to `P_x'(0,1,0)` after the 90-degree rotation.
-* The positive direction of the y-axis rotated from `P_y(0,1,0)` to `P_y'(-1,0,0)` after the 90-degree rotation
+* The x-axis vector (which points in the positive direction) rotated from `P_x(1,0,0)` to `P_x'(0,1,0)` after the 90-degree rotation.
+* The y-axis vector (which points in the positive direction) rotated from `P_y(0,1,0)` to `P_y'(-1,0,0)` after the 90-degree rotation
 
 
 This works for any rotation matrix. Let's try doing something similar to the `R_y` matrix (the matrix that rotates points around the y-axis).
@@ -31,13 +31,13 @@ Let's apply a `-pi` rotation (`-180` degrees = `180` *clockwise* rotation).
 
 Some observations:
 * We are rotating around the y-axis, so the direction of the y-axis is unchanged
-* The positive direction of the x-axis rotated from `P_x(1,0,0)` to `P_x'(-1,0,0)` after the 180-degree *clockwise* rotation.
-* The positive direction of the z-axis rotated from `P_z(0,0,1)` to `P_z'(0,0,-1)` after the 180-degree clockwise rotation
+* The x-axis vector rotated from `P_x(1,0,0)` to `P_x'(-1,0,0)` after the 180-degree *clockwise* rotation.
+* The z-axis vector rotated from `P_z(0,0,1)` to `P_z'(0,0,-1)` after the 180-degree clockwise rotation
 
 Key Ideas
-* Each row in the matrix represents an axis (or the bases) of a coordinate system
+* Each row in the matrix contains a *vector* which defines an axis (or the bases) of a coordinate system
   * This is important when we want to convert to different coordinate systems (change of basis)
-    * To do this we replace each row with the axes of the target coordinate system
+    * To do this we replace each row with the axes (vectors) of the target coordinate system
 * Matrices are just a way to store the coordinate system
   * The matrix is sometimes called the **orientation matrix**
 
