@@ -7,7 +7,7 @@ Recall that *translation* is moving a point in the coordinate system. For exampl
 
 ![Translating a point](images/translate-point.png)
 
-Translation with matrix multiplication does not work with the 3x3 matrices we've been using thus far like with rotation and scale matrices.
+Translation with matrix multiplication does not work with the 3x3 matrices we've been using thus far, like with rotation and scale matrices.
 
 Recall: to matrix multiply two matrices, their sizes must be compatible:
 
