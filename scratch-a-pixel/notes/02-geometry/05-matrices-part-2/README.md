@@ -56,3 +56,69 @@ A doodle between frustrations:
 
 ![A doodle in betwween trying to understand the damn thing](images/frustration-doodle.png)
 
+(edit) So they have a relevant figure *at the end* 😑 Would have been nice to see this earlier.
+
+## Orthogonal Matrices
+The matrices that we described so far (scale, rotation) are **orthogonal matrices**, which have the following properties:
+* Is a square matrix
+* Has *real* entries (as opposed to *imaginary* ?)
+* Its columns and rows are **orthogonal unit vectors**
+  * **Orthogonal** means perpendicular (90 degrees)
+  * **Unit** means the vector has length 1 
+
+### How do we know that these matrices are orthogonal matrices?
+
+Recall, each row in the matrix represents an axis in the Cartesian coordinate system.
+* *Unit vector*: we know the length of each row (each row defines a vector) is of length 1 because we use trigonometric functions `sin()` and `cosine()` to compute them, and these vectors are all on the *unit circle* (which has a radius of 1)
+* *Orthogonal*: (welp, they don't explain this) but something to do with *linearly independent* I think... (so each row/axis/vector in the matrix cannot be described using the other rows/axes/vectors)
+
+The rows of the *Identity matrix* defines the axes in the *World coordinate system*. 
+
+![Identity matrix represents the World coordinate system](images/identity-is-world.png)
+
+The rotation matrix is a Cartesian coordinate system, which is initially aligned in the *World coordinate system*, and is rotated around one particular axis.
+
+### An important property
+The **transpose** of an orthogonal matrix is equal to its **inverse**.
+
+If `Q` is an orthogonal matrix, then:
+```
+Q^T = Q^-1
+```
+```
+Q * Q^T = I
+```
+
+where `Q^T` is `Q` transpose, `Q^-1` is the inverse of matrix `Q`, and `I` is the Identity matrix.
+
+The significance of this is (hopefully) explained later...
+
+## Affine Transformation
+The term *affine transformations* may be used in place of matrix transformations.
+
+**Affine transformations** is a transformation that preserves straight lines. The rotation/scaling matrices that we have seen so far are affine transformations.
+
+Some affine transformations:
+* Translation
+* Rotation
+* Shearing ("the shear" was in 3B1B!)
+
+The above and their *combinations* are affine transformations.
+
+The other type of transformation in CG is **projective transformation**.
+* The **perspective transformation** is a type of *projective transformation*
+* *Projective transformations* do not necessarily preserve parallel straight lines
+
+## Summmary
+* Each row in a matrix represent an axis in the Cartesian coordinate system
+* "Orientation (rotation), size (scale), and position (translation) of the coordinate system represents the transformation that will be applied to the points when they are multiplied by the matrix"
+
+Each row in the rotation matrix represents the axes in the new coordinate system `B`. The coordinates in point `P` "changes" because `P` is still defined in terms of the World coordinate system `A` (or any starting world coordinate system). But in the rotation matrix's coordinate system `B`, the point `P` is "still in the same place" relative to `B`'s axes.
+* This is because point `P` is expressed in terms of coordinate system `A`
+* Multiplying `P` (expressed in terms of `A`) with a matrix (whose axes represent coordinate system `B`) gives us a new point expressed in terms of coordinate system `A`
+
+![Rotation matrices rotate the axes](images/rotate-axes-summary.png)
+
+Order matters when multiplying these matrices together!
+
+The matrices that define the axes in the coordinate system are also called **orientation matrices**.
