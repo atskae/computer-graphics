@@ -79,3 +79,66 @@ We created a `4x3` matrix, but how do we get a 4x4 *matrix* that is commonly use
   * We need to know more about homogenous points to understand why, or what happens if the values of the fourth column change
 
 ## The Trick about Homogenous Points
+A *homogenous point* is a point `P(0,0,0,w)`  where `w` is always `1`: `P(0,0,0,1)`.
+
+(rant to textbook, don't say "w is always 1" without having said what w was 😑...)
+
+`w` is usually not explicitly defined in CG libraries (in other words, only x, y, and z coordinates are explicitly defined).
+
+If the fourth column of a matrix is always `(0,0,0,1)`, then the fourth coordinate of the transformed point `P'` is always `1`.
+
+![If the matrix's fourth column is always (0,0,0,1)](images/homogenous-point-0-0-0-1-col.png)
+
+### When the matrix's 4th column is not (0,0,0,1)
+The fourth column of the transformation matrix is not always `(0,0,0,1)`, for example, with *projection matrices* (matrices that project to the screen).
+
+The result `P'.w` (`w` is the fourth coordinate of the transformed point `P'`) may not always be `1` (which is intentional).
+
+In this case, to plot the transformed point `P'` on a Cartesian coordinate system, we need to *normalize* `P'.w` so that `w'` is `1`.
+
+When we normalize `w'`, we must also divide the other coordnates by `w'`.
+
+#### This is usually not the common case
+We can check the value of `w'` to know when to normalize (if the value is not `1`, we have to normalize), but this check can be a waste of time since this isn't required *most* of the time.
+
+CG libraries usually have a separate implementation for the special case where `w'` needs to be normalized.
+
+## Transforming Vectors
+*Translating* vectors.
+
+Recall: *vectors* represent direction, whereas *points* represent a position in space.
+* Therefore, **vectors do not need to be translated**, because their *position* is meaningless
+* For vectors, we only care about their *direction* and their *length*
+
+When translating vectors, we can simply ignore the translation part:
+
+```
+V.x' = V.x*M_00 + V.y*M_10 + V.z*M_20
+V.y' = V.x*M_01 + V.y*M_11 + V.z*M_21
+V.z' = V.x*M_02 + V.y*M_12 + V.z*M_22
+```
+
+## Transforming Normals
+Transforming *normals* is not the same as tranforming vectors... More on this, eventually.
+
+## Other ways to encode transformations
+Matrices are not the only way to encode transformations.
+* You can also represent a rotation with a vector and an angle (a method proposed by Euler)
+* Another technique is proposed by [Benjamin Olinde Rodrigues](https://en.wikipedia.org/wiki/Olinde_Rodrigues), using an axis, angle, and point (provides a fancy formula)
+* Can also use **quaternions** since matrices have their limitations
+  * Rotating > 360 degrees
+  * Gimbal lock problem
+  * Rendering motion blur of objects
+
+(unimportant side note) I happened to have watched 3B1B's SIGGRAPH 2021 talk *just yesterday*, where I first encountered the existence of a *quaternion*, coincidentally before reading this blurb in the textbook.
+
+ ⏳ Time capsule moment: as of Jan 30, 2022, I don't really know what *quaternions* are nor understand how *quaternions* work. I only understood (from the talk) that they don't have the same edge-case weirdness that rotation matrices have. But apparently quaternions are fundamental to CG and most CG people know what they are. So.... hopefully a year from now I will understand 😖
+
+*Quaternion* sounds like some final boss in some game...
+
+*"Have you beaten Quaternion yet?"*
+
+*"Nah, I haven't..."*
+
+or some funky Eeveelution.
+
