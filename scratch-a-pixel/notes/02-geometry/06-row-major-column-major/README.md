@@ -97,6 +97,9 @@ On every cache miss, the data needs to be fetched from memory, which is time con
 ![Cache misses on row-major access](images/row-major-cache-misses.png)
 
 (caches.... これも懐かしいな。。。。こんな人生あったんだっけ。。。。It's weird to realize that 笑)
+* A PhD friend shared some jokes that I still find hilarious 🤣
+  * "The number of people that say Moore's Law is dead doubles every 18 months"
+  * "Computer architecture is the study of splitting the cache this way ↕️ or this way ↔️"
 
 Getting data from the cache is fast, but here we aren't making use of it.
 
