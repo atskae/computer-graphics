@@ -93,5 +93,5 @@ On every cache miss, the data needs to be fetched from memory, which is time con
 
 ![Cache misses on row-major access](images/row-major-cache-misses.png)
 
-(caches.... これも懐かしいな。。。。こんな人生あったんだけ。。。。It's weird to realize that 笑)
+(caches.... これも懐かしいな。。。。こんな人生あったんだっけ。。。。It's weird to realize that 笑)
 
