@@ -70,3 +70,28 @@ CG libraries may use either convention
 
 ## Implications in Coding: Does it impact performance?
 
+In code, a matrix is typically represented as a 2D array. For example, a 4x4 matrix:
+
+```
+  float matrix[4][4]
+```
+
+In memory, the matrix coefficients (the entries in the matrix) will be laid out contiguously in memory: c00, c01, c02, c10, c11, c12, ..., c33.
+
+![Row major memory layout](images/row-major-memory-layout.png)
+
+
+When we perform a matrix multiplication with row-major format, we get non-sequential memory accesses:
+
+![Row major memory access overview](images/row-major-memory-access-overview.png)
+
+Non-sequential accesses aren't good for performance because we get more cache misses.
+
+On every cache miss, the data needs to be fetched from memory, which is time consuming. Neighboring data is also fetched since it is assumed that those will be accessed sometime soon.
+
+(super simplistic example and a tiny cache, and only picks up 3 neighboring bytes 笑)
+
+![Cache misses on row-major access](images/row-major-cache-misses.png)
+
+(caches.... これも懐かしいな。。。。こんな人生あったんだけ。。。。It's weird to realize that 笑)
+
