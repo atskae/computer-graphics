@@ -103,6 +103,9 @@ On every cache miss, the data needs to be fetched from memory, which is time con
 
 Getting data from the cache is fast, but here we aren't making use of it.
 
-The cache size is limited, so every cache miss needs to throw out the previous contents of the cache. If we work the above example out, we get a cache miss for every access (9 cache misses)! Sheiße!
+The cache size is limited, so every cache miss needs to throw out the previous contents of the cache. If we work the above example out until the end, we get a cache miss for every access (9 cache misses)! Sheiße!
 
 ### Column-major Performance
+
+![Column major memory access](images/column-major-memory-access.png)
+
