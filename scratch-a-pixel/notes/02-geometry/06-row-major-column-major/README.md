@@ -70,6 +70,7 @@ CG libraries may use either convention
 
 ## Implications in Coding: Does it impact performance?
 
+
 In code, a matrix is typically represented as a 2D array. For example, a 4x4 matrix:
 
 ```
@@ -80,6 +81,8 @@ In memory, the matrix coefficients (the entries in the matrix) will be laid out 
 
 ![Row major memory layout](images/row-major-memory-layout.png)
 
+
+### Row-major Performance
 
 When we perform a matrix multiplication with row-major format, we get non-sequential memory accesses:
 
@@ -95,3 +98,6 @@ On every cache miss, the data needs to be fetched from memory, which is time con
 
 (caches.... これも懐かしいな。。。。こんな人生あったんだっけ。。。。It's weird to realize that 笑)
 
+Getting data from the cache is fast, but here we aren't making use of it.
+
+### Column-major Performance
