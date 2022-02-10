@@ -103,9 +103,47 @@ On every cache miss, the data needs to be fetched from memory, which is time con
 
 Getting data from the cache is fast, but here we aren't making use of it.
 
-The cache size is limited, so every cache miss needs to throw out the previous contents of the cache. If we work the above example out until the end, we get a cache miss for every access (9 cache misses)! Sheiße!
+The cache size is limited, so every cache miss needs to throw out some previous contents of the cache. If we work the above example out until the end, we get a cache miss for every access (9 cache misses)! Sheiße!
 
 ### Column-major Performance
 
+If we used column-major order, the matrix entries are accessed sequentially, leading to fewer cache misses (3 cache misses instead of 9 misses from row-major order).
+
 ![Column major memory access](images/column-major-memory-access.png)
+
+Though if implemented in row-major, the compiler can optimize the array access for you (using optimization flags). So you can use a row-major implementation and get the same performance as the column-major implementation with thsoe compiler optimizations.
+
+## Row-major and Column-major Order in Computing
+In terms of *computing*, **row-major** and **column-major** describes how elements of multidimensional arrays are laid out in memory.
+
+```
+matrix[2][3] = [
+  [1, 2, 3],
+  [4, 5, 6]
+];
+```
+
+![Row-major vs column-major in computing](images/row-column-major-computing.png)
+
+Programming languages and their multidimensional array layout:
+* C/C++: row-major
+* Fortran, Matlab: column-major
+
+If we are sticking to C/C++, column-major isn't too important for us.
+
+This is just to be aware that the *meaning* of *row-major* and *column-major* can mean two different things depending on the context:
+* In mathematics, row/column major describes how vectors/points are represented either as a row or a column
+* In computing, row/column major describes how the programming language stores and accesses multidimensional arrays (which matrices are)
+
+OpenGL is an interesting case
+* Historically used row-major, then switched to column major. Does some extra stuff for backwards compatibility
+  * I'll deal with this if I get there I guess 🤷‍♀️
+
+## Representing Axes and Translation matrices
+
+Row-major and column-major will represent axes of the coordinate system and translation matrices differently:
+
+![Representing axes and translation matrices](images/axes-translation.png)
+
+(when the *Summary* section mentions new information... 😑)
 
