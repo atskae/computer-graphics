@@ -138,3 +138,17 @@ The orientation matrices shown are in *row-major* format. If using the *column-m
   * Second column of matrix = bi-tangent vector `B` = "y-axis" 
   * Third column of matrix = normal vector `N` = "z-axis"
 
+## What do we do with this matrix?
+
+If we had a vector `V` that is defined in the *world-coordinate system* (or any other system), multiplying `V` by the orientation matrix `M` that we constructed will give us a new vector `V_M` that is defined in terms of the local coordinate system that our matrix `M` describes (using the normal `N`, tangent `T`, and bi-tangent `B` vectors of that local coordinate system).
+* There are no *translation* values in the orientation matrix (which are usually in the fourth column/row)
+* This orientation matrix is only used with vectors, and typically used in *shading*, since expressing vectors in relation to some normal on a surface makes the shading computation easier
+
+### Affine Space
+* [Embree (a renderer from Intel)](https://www.intel.com/content/www/us/en/developer/articles/technical/embree-photo-realistic-ray-tracing-kernels.html) and other renderers may choose to matrices/transformations as *affine space*
+  * An affine space uses a location in space and three axes (Vx, Vy, Vz) to describe its coordinate system
+
+I wish I could have just handed in a programming assigment like this:
+```
+// insert code here
+```
