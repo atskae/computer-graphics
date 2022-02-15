@@ -152,3 +152,27 @@ I wish I could have just handed in a programming assigment like this:
 ```
 // insert code here
 ```
+
+## (back to) Conventions Again: Z is up!
+
+(now this makes sense...-er)
+
+Recall the handedness of a coordinate system:
+
+![World coordinate system handedness](images/world-coordinate-systems-handedness.png)
+
+The coordinate values are the same for each axis, (ex. x-axis is labeled as `(1,0,0)` regardless of handedness).
+
+In previous chapters, we've been using the right-hand coordinate system when we were describing things in the World Coordinate System.
+
+But since the convention in shading uses the *left-hand coordinate system*, when we say we convert from the World Coordinate System (where the up vector is the y-axis) to the Local (target) coordinate system (where the up vector is the z-axis), the World Coordinate System is left-handed!!
+* (the notes totally don't tell you this so I was so confused why the values were flipped in their calculations... 😑 UGH it sucks that you don't know if things are typos or you're just stupid or what)
+* (I also don't know if the above is the correct assumption, but whatever. Can't do anything about it...)
+* ("scratchpixel uses the right-handed coordinate system" they said...)
+
+TODO: Explain the pictures
+
+![Derive matrix that converts to local](images/convert-to-local-matrix.png)
+
+![Applying the coordinate system conversion](images/apply-coordinate-system-conversion.png)
+
