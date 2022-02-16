@@ -166,13 +166,47 @@ The coordinate values are the same for each axis, (ex. x-axis is labeled as `(1,
 In previous chapters, we've been using the right-hand coordinate system when we were describing things in the World Coordinate System.
 
 But since the convention in shading uses the *left-hand coordinate system*, when we say we convert from the World Coordinate System (where the up vector is the y-axis) to the Local (target) coordinate system (where the up vector is the z-axis), the World Coordinate System is left-handed!!
-* (the notes totally don't tell you this so I was so confused why the values were flipped in their calculations... 😑 UGH it sucks that you don't know if things are typos or you're just stupid or what)
+* (the notes totally don't tell you this so I was so confused why the values were flipped in their calculations... 😑 UGH it sucks that you don't know if things are typos, because there are typos that show up often, or you're just stupid or what)
 * (I also don't know if the above is the correct assumption, but whatever. Can't do anything about it...)
 * ("scratchpixel uses the right-handed coordinate system" they said...)
 
-TODO: Explain the pictures
+The *local coordinate system* in the following sections will mean the *left-handed* coordinate system where:
+* The right vector is the x-axis
+* The forward/down vector is the y-axis
+* The up vector is the z-axis
+
+which is the convention used in shading.
+
+### Orientation matrix of local coordinate system
+
+To derive the orientation matrix that describes a local coordinate system where the up vector is the z-axis:
+* Place the tangent vector `T` in the first row of the matrix (the x-axis)
+* Place the bi-tangent vector `B` in the second row (the y-axis)
+* Place the normal vector `N` in the third row (the z-axis)
 
 ![Derive matrix that converts to local](images/convert-to-local-matrix.png)
 
+### Matrix that transforms from world space to local coordinate system
+
+*World space* labels the up vector as the y-axis and the local coordinate system labels the up vector as the z-axis. To derive the matrix that converts vectors from world space to the local coordinate system:
+* The x-axis is the same in both world space and local, so the first row is still `(1,0,0)`
+* The local coordinate system has the y-axis where the world coordinate system has the z-axis, which is at `(0,0,1)`, so this becomes the second row of the matrix, which becomes the y-axis in the local coordinate system.
+* The local coordinate system has the z-axis where the world coordinate sytem has the y-axis, whcih is at `(0,1,0)`. so this becomes the third row of the matrix, which becomes the z-axis in the local coordinate system.
+
+![Deriving conversion matrix](images/deriving-conversion-matrix.png)
+
+Let's apply a conversion of a vector in world space: `v = (0,1,0)`, which is aligned to the y-axis (the up vector) in world space:
+```
+v' = v * M
+```
+
+The matrix multiply (which applies the coordinate system conversion) results in `v' = (0,0,1)`, which is now parallel to the z-axis (the up vector in the local coordinate system).
+
 ![Applying the coordinate system conversion](images/apply-coordinate-system-conversion.png)
+
+(Their explanation is confusing because `(0,0,1)` is clearly *not* aligned with the up vector in either coordinate system was zum Teufel)
+
+(The way I see it, which makes sense, is the y-axis in world space is `v=(0,1,0)`, and `v'=(0,0,1)` is the y-axis in the local coordinate system. Makes sense! Why is this not stated anywhere? Is this not the way to see this conversion??? -sigh- -cry-
+
+Basically the conversion switches the y and z coordinates. <--- is what they say
 
