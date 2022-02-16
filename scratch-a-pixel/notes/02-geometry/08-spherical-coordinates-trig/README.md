@@ -210,3 +210,17 @@ The matrix multiply (which applies the coordinate system conversion) results in 
 
 Basically the conversion switches the y and z coordinates. <--- is what they say
 
+## Converting Cartesian to Spherical Coordinates
+
+We will now be working in the coordinate system where the z-axis is the up vector. Let's say we have a vector `V` in this coordinate system with length 1 and angle `theta` from the z-axis. A side-view of this vector:
+
+![A vector in local coordinate system](images/vector-in-local-coordinate-system.png)
+
+To make computation visually easier to understand, let's rotate the figure above by 90 degrees clockwise:
+
+![Rotate vector 90 degrees clockwise](images/rotate-vector-90-clockwise.png)
+
+Now this looks a lot like the unit circle that we've seen before, and the trigonometric relationships are more clear.
+
+We can see that `V_z = cos(theta)`, which also tells us that that the angle `theta = arccos(V_z)`.
+
