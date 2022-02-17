@@ -53,6 +53,13 @@ In a cartesian coordinate system, we represented a vector with three values `P(x
 (sigh)
 (just skip this part and go to the next one since the explanation is trashed later anyway)
 
+(so there is zero explanation why a vector with a phi value that is orignally >`pi` now has a `phi` value less than `pi/2` in their illustration .......)
+* (I can see how this makes the trig relationships with `theta` easier to see later but why don't they say that???)
+
+(they also changed handedness from Figure 3 to Figure 4 & 5 without telling you ???)
+
+[Spherical coordinate grapher](https://www.geogebra.org/m/FzkZPN3K) amazing resource to understand this!
+
 ## Conventions Again: Z is Up!
 
 We were using the *right-hand coordinate system* until now, but spherical coordinates conventionally use the **left-hand coordinate system**.
@@ -212,9 +219,19 @@ Basically the conversion switches the y and z coordinates. <--- is what they say
 
 ## Converting Cartesian to Spherical Coordinates
 
-We will now be working in the coordinate system where the z-axis is the up vector. Let's say we have a vector `V` in this coordinate system with length 1 and angle `theta` from the z-axis. A side-view of this vector:
+We will now be working in the coordinate system where the z-axis is the up vector.
+
+![Local coordinate system](images/local-coordinate-system-z-is-up.png)
+
+(it would be nice if they told you where the original angle was...)
+
+### Finding angle theta
+
+Let's say we have a vector `V` in this coordinate system with length 1 and angle `theta` from the z-axis. One of many side-views of this vector:
 
 ![A vector in local coordinate system](images/vector-in-local-coordinate-system.png)
+
+(I'm assuming that the horizontal axis is the x-axis in this view but they don't tell you so, maybe that's not important... it would have been very helpful though)
 
 To make computation visually easier to understand, let's rotate the figure above by 90 degrees clockwise:
 
@@ -223,4 +240,22 @@ To make computation visually easier to understand, let's rotate the figure above
 Now this looks a lot like the unit circle that we've seen before, and the trigonometric relationships are more clear.
 
 We can see that `V_z = cos(theta)`, which also tells us that that the angle `theta = arccos(V_z)`.
+
+### Finding angle phi
+
+![Top view](images/top-view-phi.png)
+
+(they don't even tell you if it is a projection of `V`, and not `V` itself...)
+
+Recall that the `tangent` is the ratio of `V_y` to `V_x`. We can use this to find angle `phi` using the *inverse* of tangent: arctangent (`arctan`).
+
+```
+tan(phi) = V_y/V_x
+```
+
+```
+phi = arctan(V_y/V_x)
+```
+
+In programming, you need to make sure to use an `arctan` function that takes into account negative `V_x` and `V_y` values.
 
