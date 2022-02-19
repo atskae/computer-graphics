@@ -259,3 +259,118 @@ phi = arctan(V_y/V_x)
 
 In programming, you need to make sure to use an `arctan` function that takes into account negative `V_x` and `V_y` values.
 
+## And Vice Versa: Spherical Coordinates to Cartesian Coordinates
+Using angles `theta` and `phi`, we can get back the x, y, and z coordinates:
+```
+x = cos(phi) * sin(theta)
+y = sin(phi) * sin(theta)
+z = cos(theta)
+```
+
+The z-coordinate can be deduced from the [previous section](README.md#finding-angle-theta), where we derived a way to see how `V_z = cos(theta)`.
+
+For the x and y coordinate, it is easier to see this relation with an example vector `V(1,0,0)`:
+
+![Spherical to Cartesian relationship](images/spherical-cartesian-relation.png)
+
+TODO maybe get a more intuitive understanding of why this works
+
+## More Tricks with Trigonometric Functions
+These functions are common in renderers:
+(note we are using the left-handed coordinate system, where the z-axis is the up vector)
+
+(upcoming Python-y pseudo-code)
+
+### Getting angle `theta` from 3D vector `V`
+```
+def getSphericalTheta(V):
+    return arccos(V.z)
+```
+* Should ensure that `V_z` is normalized (has length of 1)
+
+### Getting angle `phi`
+```
+def getSphericalPhi(V):
+    return arctan(V.y, V.x)
+```
+* Ensure that phi's range is between 0 and `2*pi`
+
+### Getting cos(theta), sin(theta)
+Sometimes we just want the value directly: `cos(theta)`, `sin(theta)`, `cos(phi)`, `sin(phi)`, instead of the angle values themselves.
+
+Recall that we previously got `cos(theta)` from this relationship:
+
+![cos theta](images/cos-theta.png)
+
+```
+def getCosTheta(V):
+    return V.z
+```
+
+For `sin(theta)`, we can use the *Pythagorean theorem*, also knowing that the vector is unit length (length = 1):
+
+![sin theta](images/sin-theta.png)
+
+```
+sin(theta)^2 = 1 - cos(theta)^2
+```
+
+Then we can simply take the square root of `sin(theta)^2`:
+
+```
+def getSinTheta(V):
+  return sqrt(1 - getCosTheta(V))
+```
+
+### Getting cos(phi) and sin(phi)
+Recall where angle `phi` is:
+
+![Recall angle phi](images/recall-angle-phi.png)
+
+The values of `cos(phi)` and `sin(phi)` (as seen from the top):
+
+![cos phi and sin phi](images/top-view-angle-phi.png)
+
+The vector `V` creates a shadow on the xy-plane:
+
+![Projection](images/projection-vp.png)
+
+This shadow is called the **projection** of `V`, which we will call `V_p`.
+
+A few things to notice about the projection `V_p`:
+* It's length is related to the angle `theta`
+  * The closer `theta` is to `pi/2` (90 degrees), the longer the projection becomes
+  * The closer `theta` is close to 0 or `pi` (180 degrees), the shorter the projection becomes
+* `V_p` does not always have unit length (length of 1)
+  * So we can't directly use `arctan()`
+
+#### Normalizing the vector `V_p`
+
+Recall the relationship of `sin(theta)` when we rotated the z-axis 90 degrees. If we rotate the view back, we can see that `sin(theta)` is the *length* of the projection of vector `V`:
+
+![Sin theta is the projection](images/sin-theta-is-projection.png)
+
+To normalize the projection vector `V_p`, we can divide each coordinate of `V_p` with it's length, which is equal to `sin(theta)`.
+
+After we normalize `V_p`, the x and y coordinates of the normalized `V_p` can be used to find `sin(phi)` and `cos(phi)`:
+
+![Vpx and Vpy](images/vpx-vpy.png)
+
+```
+def getCosPhi(V_p):
+    length = getSinTheta(V_p) # length of projection
+    return V_p.x / length
+```
+
+```
+def getSinPhi(V_p):
+    length = getSinTheta(V_p) # length of projection
+    return V_p.y / length
+```
+
+(Ok soooo they don't tell you how you get the coordinates of the *projection* itself I guess....)
+(I guess I better view [*dot products*](../03-math-operations-points-vectors/README.md#how-to-compute-the-dot-product))
+* 3B1B explained how the dot product is related to projection, not this textbook...
+* Or actually maybe projecting a vector onto a *plane*
+* TODO: figure that out.
+
