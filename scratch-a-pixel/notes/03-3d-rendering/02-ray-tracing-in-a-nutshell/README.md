@@ -47,6 +47,8 @@ In forward ray tracing, we assumed that all reflected photons hit our eye
     * Zillions of photons need to be emitted for at least one photon to hit our eye
     * This is how nature works but not practical to simulate on a computer
       * (Can QC do this? Well, I guess the classical side does it pretty amazingly anyway)
+        * Ooooh [someone brought this question up in Blender](https://blenderartists.org/t/quantum-computing-for-raytracing-in-the-future/1269910/2)
+        * [Quantum Supersampling (2016 SIGGRAPH)](https://vimeo.com/180284417)
 
 Do we have to shoot photons in *all* random directions? Why not just in the direction of the "eye"?
 * This only works for certain types of material where directionality is not impotant
@@ -62,10 +64,51 @@ Even with diffuse surfaces, some areas may not get hit with a photon, and wouldn
   * In the programming perspective, we would have to check if all points have been hit to know when to stop the process, which is not realistic in a production setting
   * Finding ray-geometry intersections is also computationally expensive
 
-![Forward tracing](images/forward-tracing.gif)
+<img src="images/forward-tracing.gif" style="width:300px;height:300px">
+
+Not all photons may hit the object, leaving points in the dark
+
+(made with [ezgif](https://ezgif.com/))
+* (takes me back to the deviantArt days,making those icons/avatars......., man I was such a copy-cat 😺)
 
 **Forward ray-tracing**/**light tracing** (since we shoot rays from light) simulates the way light travels on a computer, but is not practical
 * The seminal paper from 1980 ["An Improved Illumination Model for Shaded Display"](https://www.cs.drexel.edu/~david/Classes/Papers/p343-whitted.pdf) by Turner Whitted (an early CG pioneer) designed an approach that is better than forward tracing
 
+
 ## Backward Tracing
+
+Instead of sending photons from light source to receptor (ex. eye), trace rays *backwards* from receptor to object.
+* This is the *reverse* of what happens in nature
+* This process is called **backward ray-tracing**, or **eye tracing** (since we shoot rays from our eyes)
+* Need this process since trying to actually simulate nature on a computer isn't as fast/practical
+  * This statement *screams* "QC to the rescue!"
+
+![Backward ray tracing](images/backward-ray-tracing.png)
+
+Backward tracing process
+* If ray hits an object, compute the amount of light the object receives at that point by throwing another ray (which can either be a **light ray** or a **shadow day**) from the hit point to the scene's light source
+* If the "other ray" is obstructed by another object in the scene, the original hit point was in a *shadow*
+  * No illumination (from light source) is received at the point
+    * The "other ray" is then a **shadow ray** as opposed to a **light ray**
+
+    ![Shadow ray](images/shadow-ray.png)
+
+* The first ray that we shoot from our eye is called a **primary ray**/**visibility ray**/**camera ray**
+
+![Lazer eye](images/lazer.png)
+
+### Terminology
+Some authors may switch the name *forward tracing* to actually mean shooting rays from the eye, since it is the most common technique 😖 gr8.
+
+* Better to explicitly call the technique "light and eye tracing" to avoid confusion
+  * Often used in *bi-directional path tracing
+    * See Light Transport chapter
+
+## Conclusion
+**path tracing**: shooting rays either from the light or from the eye
+
+More fun phenomena
+* *caustics*: when light rays are reflected and refracted from a surface
+  * Glass of water
+* *indirect illumination* reflection of light by other surfaces in the scene
 
