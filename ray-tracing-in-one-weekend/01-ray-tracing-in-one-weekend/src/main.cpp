@@ -24,6 +24,7 @@ void print_ppm_file() {
     std::cout << max_color_value << std::endl;
 
     for (int row=0; row<image_height; row++) {
+        std::cerr << "\rRendering line " << row << "/" << (image_height-1) << ' ' << std::endl << std::flush;
         for (int col=0; col<image_width; col++) {
             // Generate a value between 0.0 and 1.0 for each color intensity (R, G, B)
             // This is so we get a proportion of the maximum color value afterwards
@@ -40,6 +41,7 @@ void print_ppm_file() {
             std::cout << ir << ' ' << ig << ' ' << ib << std::endl;
         }
     }
+    std::cerr << "Image generated." << std::endl;
 }
 
 
