@@ -1,6 +1,7 @@
 # Ray-tracer
 Following [Ray-tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html) 🚀
 
+Also learning CMake...
 
 ## How to run
 
@@ -35,4 +36,5 @@ Build the project (`cmake --build build`) then run the program while redirectiug
 
 ## Resources
 * PPM image format(https://www.cs.swarthmore.edu/~soni/cs35/f13/Labs/extras/01/ppm_info.html)
+* [CMake examples](https://github.com/ttroy50/cmake-examples/tree/master/01-basic)
 
