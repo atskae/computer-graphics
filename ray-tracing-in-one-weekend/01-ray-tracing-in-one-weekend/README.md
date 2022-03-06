@@ -27,7 +27,7 @@ I changed it up a bit so that the red -> row and green -> column (which makes mo
 
 The function `print_ppm_file()` in `main.cpp` will generate an image.
 
-Build the project (`cmake --build build`) then run the program while redirecting the output to a file: `./RayTracer > image.ppm`. Then view the `image.ppm` in an image viewer.
+Build the project (`cmake --build build`) then run the program while redirectiug the output to a file: `./build/RayTracer > image.ppm`. Then view the `image.ppm` in an image viewer.
 
 ![Hello World!](images/hello-world.png)
 
