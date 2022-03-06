@@ -4,6 +4,8 @@
 #include <string>
 #include <iostream>
 
+#include "vec3.h"
+
 /*
     Prints a PPM file to standard out
 */
