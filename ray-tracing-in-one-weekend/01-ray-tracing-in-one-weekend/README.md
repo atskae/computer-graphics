@@ -20,6 +20,15 @@ cmake --build build
 ./build/RayTracer
 ```
 
+## Pre-commit
+Apply formatting checks before each commit.
+
+Install pre-commit by running on the command line:
+```
+pip install pre-commit
+pre-commit install
+```
+
 
 ## Notes
 
