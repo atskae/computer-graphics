@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "vec3.h"
+#include "color.h"
 
 /*
     Prints a PPM file to standard out
@@ -30,17 +31,13 @@ void print_ppm_file() {
         for (int col=0; col<image_width; col++) {
             // Generate a value between 0.0 and 1.0 for each color intensity (R, G, B)
             // This is so we get a proportion of the maximum color value afterwards
-            // (-1) since the maximum value is 255
-            double r = double(row) / (image_height-1);
-            double g = double(col) / (image_width-1);
-            double b = 0.25;
-
-            // Squish the value (from "sigmoid squishification" - 3B1B) to range 0-255
-            int ir = static_cast<int>(255 * r);
-            int ig = static_cast<int>(255 * g);
-            int ib = static_cast<int>(255 * b);
-
-            std::cout << ir << ' ' << ig << ' ' << ib << std::endl;
+            // Subtract 1 from image dimensions since the maximum value is 255
+            color pixel = color(
+                double(row) / (image_height-1),
+                double(col) / (image_width-1),
+                0.25
+            );
+            write_color(std::cout, pixel);
         }
     }
     std::cerr << "Image generated." << std::endl;

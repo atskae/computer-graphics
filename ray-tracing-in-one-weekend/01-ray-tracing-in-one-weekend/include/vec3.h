@@ -20,7 +20,11 @@ class vec3 {
         double x() const { return e[0]; }
         double y() const { return e[1]; }
         double z() const { return e[2]; }
-        
+
+        double r() const { return this->x(); }
+        double g() const { return this->y(); }
+        double b() const { return this->z(); }
+
         // Operator overloading
 
         // Negative vec3 (note that this is not subtraction)
@@ -141,10 +145,27 @@ inline vec3 operator/(vec3 v, double scalar) {
 }
 
 // Compute the dot product
+inline double dot_product(vec3 vl, vec3 vr) {
+    double dot_product = 0.0;
+    for (int i=0; i<3; i++) {
+        dot_product += (vl.e[i] * vr.e[i]);
+    }
+    return dot_product;
+}
 
 // Compute the cross product
+inline vec3 cross(vec3 vl, vec3 vr) {
+    return vec3(
+        vl.e[1] * vr.e[2] - vl.e[2] * vr.e[1],
+        vl.e[2] * vr.e[0] - vl.e[0] * vr.e[2],
+        vl.e[0] * vr.e[1] - vl.e[1] * vr.e[0]
+    );
+}
 
-// Compute the normalized vector
+// Compute the unit vector (length=1)
+inline vec3 unit_vector(vec3 v) {
+    return v / v.length();
+}
 
 // Header guard
 #endif
