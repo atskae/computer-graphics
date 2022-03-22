@@ -10,7 +10,7 @@
 
 
 // Print the PPM header
-void print_ppm_header(std::string& image_format, int image_width, int image_height, int max_color_value) {
+void print_ppm_header(const std::string& image_format, const int image_width, const int image_height, const int max_color_value) {
     std::cout << image_format << std::endl;
     std::cout << image_width << ' ' << image_height << std::endl;
     std::cout << max_color_value << std::endl;
@@ -50,12 +50,28 @@ void print_ppm_file() {
     std::cerr << "Image generated." << std::endl;
 }
 
-// Return the color of the pixel where the ray points to.
+// Return the background color of the pixel where the ray points to.
 // The overall effect is to generate a gradient of blue and white
 //  with the color value dependent on the height (y-value) of the coordinate
 color ray_color(const ray& r) {
     // Get the height (y-value) to range between -1.0 and 1.0
     vec3 unit_direction = unit_vector(r.direction());
+    auto t = 0.5 * (unit_direction.y() + 1.0);
+    
+    // Scale t to range between 0.0 and 1.0
+    // t=0.0 -> white; t=1.0 -> blue; in-between -> blend of white and blue
+    // This trick is called a "linear blend", "linear interpolation", or "lerp" for short:
+    //      blendedValue = (1-t)*startValue + t*endValue
+    // where t goes from 0.0 to 1.0
+    
+    // Start color (we start at the bottom of the viewport)
+    color white = color(1.0, 1.0, 1.0); // All channels (R, G, B) at 100%
+    // End color (we end at the top of the viewport)
+    color blue = color(0.5, 0.7, 1.0); // Blue channel at 100%, with other colors < 100%
+
+    // Blue to white gradient, from top to bottom
+    // blendedValue = (1-t)*startValue + t*endValue
+    return (1.0-t)*white + t*blue;
 }
 
 void run_ray_tracer() {
@@ -87,11 +103,14 @@ void run_ray_tracer() {
         std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
         for (int i=0; i<image_width; ++i) {
             // "Squish" u and v to be in the range 0.0 to 1.0
+            // Pixel = (u, v), where u is horizontal and v is vertical
             double u = double(i) / (image_width-1); // Ha, double u
             double v = double(j) / (image_height-1);
             // Create a ray that shoots out from the origin to the position on the viewport (?)
             vec3 direction = lower_left_corner + u*horizontal + v*vertical - origin;
             ray r = ray(origin, direction);
+            color pixel_color = ray_color(r);
+            write_color(std::cout, pixel_color);
         }
     }
 }
