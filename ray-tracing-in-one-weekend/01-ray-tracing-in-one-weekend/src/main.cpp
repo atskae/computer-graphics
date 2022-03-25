@@ -8,6 +8,9 @@
 #include "ray.h"
 #include "color.h"
 
+const point3 SPHERE_CENTER = point3(0, 0, -1);
+const double SPHERE_RADIUS = 0.5;
+
 
 // Print the PPM header
 void print_ppm_header(const std::string& image_format, const int image_width, const int image_height, const int max_color_value) {
@@ -50,12 +53,31 @@ void print_ppm_file() {
     std::cerr << "Image generated." << std::endl;
 }
 
+// If the ray `r` intersects the sphere with center `center` (a point in the x-y-z coordinate system)
+//  and radius `radius`, then return True. Otherwise, return False.
+bool hit_sphere(const point3& center, const double radius, const ray& r) {
+    // Solve quadratic equation: ax^2 + bx + c = 0
+    double a = dot_product(r.direction(), r.direction()); // b^2 in ray function: P(t) = A + t*b
+    double b = 2 * dot_product(r.direction(), r.origin() - center);
+    double c = dot_product(r.origin() - center, r.origin() - center) - (radius * radius);
+    
+    // The value under the squared root in the quadtratic formula: b^2 - 4ac
+    double discriminant = (b*b)- (4*a*c);
+    // Discriminant describes where the ray intersects the sphere (solution to quadtratic equation)
+    return (discriminant >= 0.0); // two real solutions (discriminant=positive) or one solution (discriminant=zero)
+}
+
 // Return the background color of the pixel where the ray points to.
 // The overall effect is to generate a gradient of blue and white
 //  with the color value dependent on the height (y-value) of the coordinate
 color ray_color(const ray& r) {
+    // If the ray hits the sphere, color the pixel red
+    if (hit_sphere(SPHERE_CENTER, SPHERE_RADIUS, r)) {
+        return color(1.0, 0, 0);
+    }
     // Get the height (y-value) to range between -1.0 and 1.0
     vec3 unit_direction = unit_vector(r.direction());
+    // Get t to range 0.0 to 1.0
     auto t = 0.5 * (unit_direction.y() + 1.0);
     
     // Scale t to range between 0.0 and 1.0
