@@ -45,6 +45,23 @@ This math makes sense... I'm crying 😭 schön...
   * Ok, the dot product part is kind of magic still...
   * I understand that you need the dot product to get a real number (as opposed to a 3D vector) but other than that... why does this work... Amazing...
 
+Made this by mistake... Time to debug 🔍
+
+![Smash Ball!](images/smash_ball.png)
+
+The bug was this line:
+```c++
+color ray_color(const ray& r) {
+        // ...
+        return 0.5 * color(normal.x(), normal.y(), normal.z());
+```
+
+I forgot the `+1` for each color channel... Without it, the color channels go out of range.
+
+Fixed! 🛠
+
+![Sphere shading map](images/sphere_shading_map.png)
+
 
 ## Resources
 * [PPM image format](https://www.cs.swarthmore.edu/~soni/cs35/f13/Labs/extras/01/ppm_info.html)
