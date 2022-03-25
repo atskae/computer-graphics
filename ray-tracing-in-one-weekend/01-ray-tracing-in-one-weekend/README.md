@@ -21,7 +21,7 @@ cmake --build build
 ```
 
 
-## Notes
+## Progress Log
 
 ### [2.2 Creating an Image File](https://raytracing.github.io/books/RayTracingInOneWeekend.html#outputanimage/creatinganimagefile)
 I changed it up a bit so that the red -> row and green -> column (which makes more sense to me):
