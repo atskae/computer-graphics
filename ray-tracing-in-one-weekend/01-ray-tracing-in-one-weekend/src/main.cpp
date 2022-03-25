@@ -53,7 +53,7 @@ void print_ppm_file() {
     std::cerr << "Image generated." << std::endl;
 }
 
-// If the ray `r` intersects the sphere with center `center` (a point in the x-y-z coordinate system)
+// If the ray `r` intersects the sphere twice, with center `center` (a point in the x-y-z coordinate system)
 //  and radius `radius`, then return True. Otherwise, return False.
 bool hit_sphere(const point3& center, const double radius, const ray& r) {
     // Solve quadratic equation: ax^2 + bx + c = 0
@@ -64,7 +64,7 @@ bool hit_sphere(const point3& center, const double radius, const ray& r) {
     // The value under the squared root in the quadtratic formula: b^2 - 4ac
     double discriminant = (b*b)- (4*a*c);
     // Discriminant describes where the ray intersects the sphere (solution to quadtratic equation)
-    return (discriminant >= 0.0); // two real solutions (discriminant=positive) or one solution (discriminant=zero)
+    return (discriminant > 0.0); // two real solutions (discriminant=positive)
 }
 
 // Return the background color of the pixel where the ray points to.
