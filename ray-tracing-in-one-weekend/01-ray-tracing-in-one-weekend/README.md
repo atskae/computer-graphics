@@ -45,6 +45,9 @@ This math makes sense... I'm crying 😭 schön...
   * Ok, the dot product part is kind of magic still...
   * I understand that you need the dot product to get a real number (as opposed to a 3D vector) but other than that... why does this work... Amazing...
 
+
+### [6. Surface Normals and Multiple Objects](https://raytracing.github.io/books/RayTracingInOneWeekend.html#surfacenormalsandmultipleobjects)
+
 Made this by mistake... Time to debug 🔍
 
 ![Smash Ball!](images/smash_ball.png)
