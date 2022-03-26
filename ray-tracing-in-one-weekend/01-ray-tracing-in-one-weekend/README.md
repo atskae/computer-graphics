@@ -38,12 +38,13 @@ Build the project (`cmake --build build`) then run the program while redirectiug
 
 ![Funky Japanese flag](images/red_sphere.png)
 
-This math makes sense... I'm crying 😭 schön...
+This math makes sense... I'm crying 😭 schön... (I'm getting a サンダサンさん moment).
 * [Math is fun - quadratic equation](https://www.mathsisfun.com/algebra/quadratic-equation.html)
   * Discriminant review
 * [Line-sphere intersection](https://en.wikipedia.org/wiki/Line%E2%80%93sphere_intersection)
   * Ok, the dot product part is kind of magic still...
   * I understand that you need the dot product to get a real number (as opposed to a 3D vector) but other than that... why does this work... Amazing...
+* [Determining a vector given two points](http://mathonline.wikidot.com/determining-a-vector-given-two-points)
 
 
 ### [6. Surface Normals and Multiple Objects](https://raytracing.github.io/books/RayTracingInOneWeekend.html#surfacenormalsandmultipleobjects)
