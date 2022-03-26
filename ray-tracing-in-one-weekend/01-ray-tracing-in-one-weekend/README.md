@@ -65,6 +65,38 @@ Fixed! 🛠
 
 ![Sphere shading map](images/sphere_shading_map.png)
 
+#### Negative pixel values
+The bug above was causing negative pixel values to be written to the PPM file. But I still couldn't explain why *those particular* image colors in the buggy image were rendered.
+
+I generated an image where I had negative values in the blue channel at the top, and had the blue channel incrementally become more positive going down the image (keeping red and green at `0`). I drew white lines at certain points of interest (manually had to figure out. I drew an orange line at center height.
+
+Running this:
+```bash
+python negative_pixel_values.py
+```
+
+Generates the following image:
+
+![Negative pixel values](images/negative_pixel_values.png)
+
+Totally weird. I'd think that negative pixel values would just do the reverse of the positive values, but there are random (?) places where the colors suddenly change (I drew white lines there). Also the most negative value `-255` isn't the full blue color as expected.
+
+
+This is the red and blue channel values going in reverse (`red=-255` and `blue=255` at the top):
+
+![Two channels](images/negative_pixel_values_two_channels.png)
+
+
+🤷‍♀ 変なの。 
+
+#### Sphere normal
+
+If the sphere center = `C` and the closest point of intersection of the ray and the sphere is `P`, then the normal vector is:
+```
+P - C
+```
+This is the vector whose direction is from the center `C` to the surface `P`
+
 
 ## Resources
 * [PPM image format](https://www.cs.swarthmore.edu/~soni/cs35/f13/Labs/extras/01/ppm_info.html)

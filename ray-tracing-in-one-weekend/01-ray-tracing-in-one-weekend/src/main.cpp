@@ -83,12 +83,21 @@ color ray_color(const ray& r) {
     if (t > 0.0) { // Ray hits the sphere
         // Get the normal vector at the point where the ray intersects the sphere
         point3 hit_point = r.at(t); // point of intersection
-        vec3 sphere_center_direction = vec3(SPHERE_CENTER.x(), SPHERE_CENTER.y(), SPHERE_CENTER.z());
+        
         // Get each component (x, y, z) to be in range -1 to 1 (unit vector)
-        vec3 normal = unit_vector(hit_point - sphere_center_direction);
+        // The hit_point - sphere_center gives us the direction from the center to the surface
+        //  where the ray intersects the sphere
+        vec3 normal = unit_vector(hit_point - SPHERE_CENTER);
+        
         // Map each component (x, y, z) to each color channel (R, G, B)
         //  with color channel range 0 to 1
-        return 0.5 * color(normal.x()+1, normal.y()+1, normal.z()+1);
+        color sphere_color = 0.5 * color(normal.x()+1, normal.y()+1, normal.z()+1);
+        std::cerr << "Hit point: " << hit_point << std::endl;
+        std::cerr << "Sphere center: " << SPHERE_CENTER << std::endl;
+        std::cerr << "Normal: " << normal << std::endl;
+        std::cerr << "Sphere color: " << sphere_color << std::endl;
+        std::cerr << "---" << std::endl;
+        return sphere_color;
     }
 
     // No intersection of the sphere
