@@ -57,18 +57,28 @@ void print_ppm_file() {
 //  and radius `radius`, then return the closest point of intersection. Otherwise, return -1.
 double hit_sphere(const point3& center, const double radius, const ray& r) {
     // Solve quadratic equation: ax^2 + bx + c = 0
-    double a = dot_product(r.direction(), r.direction()); // b^2 in ray function: P(t) = A + t*b
-    double b = 2 * dot_product(r.direction(), r.origin() - center);
-    double c = dot_product(r.origin() - center, r.origin() - center) - (radius * radius);
+    
+    // A - C, where A is from the ray equation: P(t) = A + t*b
+    // and C is the center
+    vec3 oc = r.origin() - center;
+    
+    // Equivalent to: a = dot_product(r.direction(), r.direction()); // b^2 in ray function: P(t) = A + t*b
+    double a = r.direction().length_squared();
+    
+    // b = 2h; h = b/2 "half_b"
+    double half_b = dot_product(r.direction(), oc);
+    
+    // oc.length_squared = (A-C) dot (A-C)
+    double c = oc.length_squared() - (radius * radius);
     
     // The value under the squared root in the quadtratic formula: b^2 - 4ac
-    double discriminant = (b*b) - (4*a*c);
+    double discriminant = (half_b*half_b) - (a*c);
     if (discriminant < 0.0) {
         return -1;
     } else {
         // Solve the quadratic equation
         // Return the closest hit point (so only return the negative root)
-        return (-b - sqrt(discriminant)) / (2.0*a);
+        return (-half_b - sqrt(discriminant)) / a;
     }
 }
 
