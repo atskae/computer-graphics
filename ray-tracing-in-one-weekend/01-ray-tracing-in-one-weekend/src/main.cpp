@@ -92,11 +92,11 @@ color ray_color(const ray& r) {
         // Map each component (x, y, z) to each color channel (R, G, B)
         //  with color channel range 0 to 1
         color sphere_color = 0.5 * color(normal.x()+1, normal.y()+1, normal.z()+1);
-        std::cerr << "Hit point: " << hit_point << std::endl;
-        std::cerr << "Sphere center: " << SPHERE_CENTER << std::endl;
-        std::cerr << "Normal: " << normal << std::endl;
-        std::cerr << "Sphere color: " << sphere_color << std::endl;
-        std::cerr << "---" << std::endl;
+        //std::cerr << "Hit point: " << hit_point << std::endl;
+        //std::cerr << "Sphere center: " << SPHERE_CENTER << std::endl;
+        //std::cerr << "Normal: " << normal << std::endl;
+        //std::cerr << "Sphere color: " << sphere_color << std::endl;
+        //std::cerr << "---" << std::endl;
         return sphere_color;
     }
 

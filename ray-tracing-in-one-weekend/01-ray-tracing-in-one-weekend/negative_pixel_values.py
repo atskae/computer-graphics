@@ -10,17 +10,21 @@ MAX_COLOR_VALUE = 255
 
 def one_channel():
     """Go from negative to positive in one color channel"""
+    min_channel_value = -MAX_COLOR_VALUE
+    max_channel_value = MAX_COLOR_VALUE
+    print(f"Min channel value: {min_channel_value}")
+    print(f"max channel value: {max_channel_value}")
     
     image_file_name = "negative_pixel_values.ppm"
     with open(image_file_name, "w") as image_file:
         image_file.write("P3\n")
         image_file.write(f"{IMAGE_WIDTH} {IMAGE_HEIGHT}\n")
         image_file.write(f"{MAX_COLOR_VALUE}\n")
-        for row in range(-1*MAX_COLOR_VALUE, MAX_COLOR_VALUE):
+        for row in range(min_channel_value, max_channel_value):
             if row == 0:
                 # Draw a unique line in the center
                 color = f"255 150 0\n"
-            elif row == -100 or row == -10:
+            elif row == -100 or row == -10 or (row % MAX_COLOR_VALUE == 0):
                 # Draw a white line at sudden color changes
                 color = f"255 255 255\n"
             else:

@@ -90,6 +90,25 @@ This is the red and blue channel values going in reverse (`red=-255` and `blue=2
 
 🤷‍♀ 変なの。 
 
+If I removed `0.5`:
+```c++
+color ray_color(const ray& r) {
+        // ...
+        return color(normal.x(), normal.y(), normal.z());
+```
+I get this image:
+
+![Weird cross thing](images/no_zero_point_five.png)
+
+Without `0.5`, now the pixel values go over 255.
+
+If the pixel values go over `255`, the channel color seems to be `value % 255`:
+
+![Positive pixel values](images/positive_pixel_values.png)
+
+This image is with a white line drawn if  `row % 255 == 0`. The orange line is still at `row = 0`.
+
+
 #### Sphere normal
 
 If the sphere center = `C` and the closest point of intersection of the ray and the sphere is `P`, then the normal vector is:
