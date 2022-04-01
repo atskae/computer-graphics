@@ -55,6 +55,14 @@ void print_ppm_file() {
 
 // If the ray `r` intersects the sphere twice, with center `center` (a point in the x-y-z coordinate system)
 //  and radius `radius`, then return the closest point of intersection. Otherwise, return -1.
+// The quadtratic equation (ax^2 + bx + c = 0) we are trying to solve:
+//  a = B^2 (where B is b in the ray equation: P(t) = A + t*b)
+//  b = (2*B)(A-C) (where C is the sphere center)
+//  c = (A-C)(A-C)
+// The quadtratic equation in this function was simplified, knowing that b = 2h (b from the quadtratic formula),
+//  and where h = B dot (A - C) (from the quadtratic equation we want to solve)
+//  b = 2 * (B(A-C))
+//  b = 2h -> h = B(A-C)
 double hit_sphere(const point3& center, const double radius, const ray& r) {
     // Solve quadratic equation: ax^2 + bx + c = 0
     
