@@ -18,6 +18,7 @@ class hittable_list : public hittable {
         
         // The shared_ptr is a smart pointer; it will automatically free the memory
         //  of the object (the hittable) when no one points to the object anymore
+        // Keeps track of the object with reference counting.
         std::vector<shared_ptr<hittable>> objects;
 
         // Constructors

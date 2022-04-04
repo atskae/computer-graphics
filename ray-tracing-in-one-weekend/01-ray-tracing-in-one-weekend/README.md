@@ -117,6 +117,12 @@ P - C
 ```
 This is the vector whose direction is from the center `C` to the surface `P`
 
+## [6.6 Some New C++ Features](https://raytracing.github.io/books/RayTracingInOneWeekend.html#surfacenormalsandmultipleobjects/somenewc++features)
+
+Using `smart_ptr` because:
+* Allows multiple geometries to share a common instance of an object (ex. spheres that use the same texture map)
+* Makes memory management more automatic
+
 
 ## Resources
 * [PPM image format](https://www.cs.swarthmore.edu/~soni/cs35/f13/Labs/extras/01/ppm_info.html)
