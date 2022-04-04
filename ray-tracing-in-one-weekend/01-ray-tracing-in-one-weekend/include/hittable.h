@@ -8,6 +8,18 @@ struct hit_record {
     point3 p;
     vec3 normal;
     double t;
+    // True if the ray came from outside the sphere
+    // False if the ray came from inside the sphere
+    bool front_face;
+
+    inline void set_face_normal(const ray& r, const vec3& outward_normal) {
+        // If the dot product is negative, the ray and the normal are facing different directions
+        //  which means the ray came from outside the sphere
+        this->front_face = dot_product(r.direction(), outward_normal) < 0;
+        // We always want the ray and the normal to face the opposite direction.
+        //  front_face will retaining the information of where the ray came from (outside or inside the sphere)
+        this->normal = this->front_face ? outward_normal : -1 * outward_normal;
+    }
 };
 
 

@@ -7,9 +7,11 @@
 #include "vec3.h"
 #include "ray.h"
 #include "color.h"
+#include "sphere.h"
 
 const point3 SPHERE_CENTER = point3(0, 0, -1);
 const double SPHERE_RADIUS = 0.5;
+const sphere SPHERE = sphere(SPHERE_CENTER, SPHERE_RADIUS);
 
 
 // Print the PPM header
@@ -53,42 +55,6 @@ void print_ppm_file() {
     std::cerr << "Image generated." << std::endl;
 }
 
-// If the ray `r` intersects the sphere twice, with center `center` (a point in the x-y-z coordinate system)
-//  and radius `radius`, then return the closest point of intersection. Otherwise, return -1.
-// The quadtratic equation (ax^2 + bx + c = 0) we are trying to solve:
-//  a = B^2 (where B is b in the ray equation: P(t) = A + t*b)
-//  b = (2*B)(A-C) (where C is the sphere center)
-//  c = (A-C)(A-C)
-// The quadtratic equation in this function was simplified, knowing that b = 2h (b from the quadtratic formula),
-//  and where h = B dot (A - C) (from the quadtratic equation we want to solve)
-//  b = 2 * (B(A-C))
-//  b = 2h -> h = B(A-C)
-double hit_sphere(const point3& center, const double radius, const ray& r) {
-    // Solve quadratic equation: ax^2 + bx + c = 0
-    
-    // A - C, where A is from the ray equation: P(t) = A + t*b
-    // and C is the center
-    vec3 oc = r.origin() - center;
-    
-    // Equivalent to: a = dot_product(r.direction(), r.direction()); // b^2 in ray function: P(t) = A + t*b
-    double a = r.direction().length_squared();
-    
-    // b = 2h; h = b/2 "half_b"
-    double half_b = dot_product(r.direction(), oc);
-    
-    // oc.length_squared = (A-C) dot (A-C)
-    double c = oc.length_squared() - (radius * radius);
-    
-    // The value under the squared root in the quadtratic formula: b^2 - 4ac
-    double discriminant = (half_b*half_b) - (a*c);
-    if (discriminant < 0.0) {
-        return -1;
-    } else {
-        // Solve the quadratic equation
-        // Return the closest hit point (so only return the negative root)
-        return (-half_b - sqrt(discriminant)) / a;
-    }
-}
 
 // Return the color of the pixel where the ray points to.
 // If the ray does not hit the sphere, return the background color.
@@ -96,19 +62,15 @@ double hit_sphere(const point3& center, const double radius, const ray& r) {
 //    with the color value dependent on the height (y-value) of the coordinate
 color ray_color(const ray& r) {
     
-    // Obtain where the ray intersects the sphere. t=-1 if no intersection
-    double t = hit_sphere(SPHERE_CENTER, SPHERE_RADIUS, r);
-    if (t > 0.0) { // Ray hits the sphere
-        // Get the normal vector at the point where the ray intersects the sphere
-        point3 hit_point = r.at(t); // point of intersection
-        
-        // Get each component (x, y, z) to be in range -1 to 1 (unit vector)
-        // The hit_point - sphere_center gives us the direction from the center to the surface
-        //  where the ray intersects the sphere
-        vec3 normal = unit_vector(hit_point - SPHERE_CENTER);
+    // Obtain where the ray intersects the sphere
+    hit_record hit_rec = {};
+    bool has_hit = SPHERE.hit(r, 0, 1, hit_rec);
+    if (has_hit) { // Ray hits the sphere
+        // Use the populated hit_record to compute the color
         
         // Map each component (x, y, z) to each color channel (R, G, B)
         //  with color channel range 0 to 1
+        vec3 normal = hit_rec.normal;
         color sphere_color = 0.5 * color(normal.x()+1, normal.y()+1, normal.z()+1);
         //std::cerr << "Hit point: " << hit_point << std::endl;
         //std::cerr << "Sphere center: " << SPHERE_CENTER << std::endl;
