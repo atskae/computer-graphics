@@ -131,6 +131,7 @@ Without anti-aliasing:
 ![Sphere without anti-aliasing](images/image_without_anti_aliasing.png)
 
 With anti-aliasing ✨:
+
 ![Sphere with anti-aliasing](images/image_with_anti_aliasing.png)
 
 
