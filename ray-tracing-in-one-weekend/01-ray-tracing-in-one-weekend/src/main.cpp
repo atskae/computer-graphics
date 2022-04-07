@@ -4,14 +4,13 @@
 #include <string>
 #include <iostream>
 
-#include "vec3.h"
-#include "ray.h"
+#include "rtweekend.h" // vec3, ray
+
 #include "color.h"
+#include "hittable_list.h"
 #include "sphere.h"
 
-const point3 SPHERE_CENTER = point3(0, 0, -1);
-const double SPHERE_RADIUS = 0.5;
-const sphere SPHERE = sphere(SPHERE_CENTER, SPHERE_RADIUS);
+
 
 
 // Print the PPM header
@@ -60,12 +59,12 @@ void print_ppm_file() {
 // If the ray does not hit the sphere, return the background color.
 //  The background is a gradient of blue and white
 //    with the color value dependent on the height (y-value) of the coordinate
-color ray_color(const ray& r) {
+color ray_color(const ray& r, const hittable_list& world) {
     
     // Obtain where the ray intersects the sphere
     hit_record hit_rec = {};
-    bool has_hit = SPHERE.hit(r, 0, 1, hit_rec);
-    if (has_hit) { // Ray hits the sphere
+    bool has_hit = world.hit(r, 0, infinity, hit_rec);
+    if (has_hit) { // Ray hits any object in the world
         // Use the populated hit_record to compute the color
         
         // Map each component (x, y, z) to each color channel (R, G, B)
@@ -86,7 +85,7 @@ color ray_color(const ray& r) {
     // Get the height (y-value) to range between -1.0 and 1.0
     vec3 unit_direction = unit_vector(r.direction());
     // Get t to range 0.0 to 1.0
-    t = 0.5 * (unit_direction.y() + 1.0);
+    double t = 0.5 * (unit_direction.y() + 1.0);
     
     // Scale t to range between 0.0 and 1.0
     // t=0.0 -> white; t=1.0 -> blue; in-between -> blend of white and blue
@@ -109,6 +108,11 @@ void run_ray_tracer() {
     const double aspect_ratio = 16.0 / 9.0; // width to height
     const int image_width = 400; // pixels
     const int image_height = static_cast<int>(image_width / aspect_ratio);
+
+    // World, a list of objects that are hittable in this world
+    hittable_list world;
+    world.add(make_shared<sphere>(point3(0,0,-1), 0.5)); // original sphere
+    world.add(make_shared<sphere>(point3(0,-100.5,-1), 100));
 
     // Camera
     double viewport_height = 2.0;
@@ -139,7 +143,7 @@ void run_ray_tracer() {
             // Create a ray that shoots out from the origin to the position on the viewport (?)
             vec3 direction = lower_left_corner + u*horizontal + v*vertical - origin;
             ray r = ray(origin, direction);
-            color pixel_color = ray_color(r);
+            color pixel_color = ray_color(r, world);
             write_color(std::cout, pixel_color);
         }
     }

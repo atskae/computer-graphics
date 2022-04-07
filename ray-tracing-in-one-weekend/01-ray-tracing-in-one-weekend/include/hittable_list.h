@@ -6,7 +6,7 @@
 
 #include "hittable.h"
 
-using std::shard_ptr;
+using std::shared_ptr;
 using std::make_shared;
 
 
@@ -24,7 +24,7 @@ class hittable_list : public hittable {
         // Constructors
         
         hittable_list() {}
-        hittable_list(shared_ptr<hittable> object): { this->add(object); }
+        hittable_list(shared_ptr<hittable> object) { this->add(object); }
 
         // Class methods
         
@@ -50,9 +50,9 @@ bool hittable_list::hit(const ray& r, double t_min, double t_max, hit_record& re
         bool is_hit = object->hit(r, t_min, t_max, rec);
         if (is_hit) {
             hit_any_object = true;
-            if (rec->t < t_closest) {
+            if (rec.t < t_closest) {
                 // Save the hit_record of this closer object
-                t_closest = rec->t;
+                t_closest = rec.t;
                 rec_for_closest = rec;
             }
         }
