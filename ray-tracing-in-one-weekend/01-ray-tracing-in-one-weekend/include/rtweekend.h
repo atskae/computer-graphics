@@ -33,6 +33,13 @@ inline double random_double(double min, double max) {
     return min + (max+min)*random_double();
 }
 
+// Clamp a value within a range if the value goes out of range
+inline double clamp(double x, double min, double max) {
+    if (x < min) return min;
+    if (x > max) return max;
+    return x;
+}
+
 // Common Headers
 #include "ray.h"
 #include "vec3.h"
