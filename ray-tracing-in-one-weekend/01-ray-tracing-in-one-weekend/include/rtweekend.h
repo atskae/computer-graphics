@@ -25,7 +25,7 @@ inline double degrees_to_radians(double degrees) {
 
 // Return a random real number in [0, 1)
 inline double random_double() {
-    rand() / (RAND_MAX + 1.0); // add +1 since excluding 1
+    return rand() / (RAND_MAX + 1.0); // add +1 since excluding 1
 }
 
 // Return a random real number in [min, max)

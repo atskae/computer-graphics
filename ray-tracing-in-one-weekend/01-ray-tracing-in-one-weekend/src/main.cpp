@@ -47,7 +47,7 @@ void print_ppm_file() {
                 double(col) / (image_width-1),
                 0.25
             );
-            write_color(std::cout, pixel);
+            write_color(std::cout, pixel, 1);
         }
     }
     std::cerr << "Image generated." << std::endl;
@@ -108,26 +108,14 @@ void run_ray_tracer() {
     world.add(make_shared<sphere>(point3(0,0,-1), 0.5)); // original sphere
     world.add(make_shared<sphere>(point3(0,-100.5,-1), 100));
 
-    // Image dimensions
+    // Image attributes 
     const double aspect_ratio = 16.0 / 9.0; // width to height
     const int image_width = 400; // pixels
     const int image_height = static_cast<int>(image_width / aspect_ratio);
-    
-    // Camera
-    double viewport_height = 2.0;
-    double viewport_width = viewport_height * aspect_ratio;
-    // Distance from the eye to the viewport (depth)
-    double focal_length = 1.0;
+    const int samples_per_pixel = 100;
 
-    point3 origin = point3(0, 0, 0);
-    vec3 horizontal = vec3(viewport_width, 0, 0);
-    vec3 vertical = vec3(0, viewport_height, 0);
-    // Negative z-axis goes through the center of the viewport. 
-    // To get the lower left corner of the viewport,
-    //  we need to go "leftward" (negative) by viewport_width/2
-    //  and go "downward" (negative) by viewport_height/2.
-    //  The focal length defines how far the origin is from the viewport.
-    point3 lower_left_corner = origin - horizontal/2 - vertical/2 - vec3(0, 0, focal_length);
+    // Camera
+    const camera cam;
 
     // Render
     print_ppm_header("P3", image_width, image_height, 255);
@@ -135,15 +123,24 @@ void run_ray_tracer() {
     for (int j=image_height-1; j >= 0; --j) {
         std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
         for (int i=0; i<image_width; ++i) {
-            // "Squish" u and v to be in the range 0.0 to 1.0
-            // Pixel = (u, v), where u is horizontal and v is vertical
-            double u = double(i) / (image_width-1); // Ha, double u
-            double v = double(j) / (image_height-1);
-            // create a ray that shoots out from the origin to the position on the viewport (?)
-            vec3 direction = lower_left_corner + u*horizontal + v*vertical - origin;
-            ray r = ray(origin, direction);
-            color pixel_color = ray_color(r, world);
-            write_color(std::cout, pixel_color);
+            // Sample pixels around position pixel at position (i, j)
+            // Taking the average of these samples creates an anti-aliasing effect
+            color pixel_color(0, 0, 0);
+            for (int s=0; s<samples_per_pixel; s++) {
+                // "Squish" u and v to be in the range 0.0 to 1.0
+                // Pixel = (u, v), where u is horizontal and v is vertical
+                // Get a random neighboring pixel by adding a random_double() (which has range 0 to 1.0)
+                double u = (double(i) + random_double()) / (image_width-1); // Ha, double u
+                double v = (double(j) + random_double()) / (image_height-1);
+                
+                // Get the ray that points from camera origin to (u, v) in the viewport
+                ray r = cam.get_ray(u, v);
+                // Add this sample's color channel values
+                // The average of all samples will be calculated by write_color()
+                pixel_color += ray_color(r, world);
+            }
+
+            write_color(std::cout, pixel_color, samples_per_pixel);
         }
     }
 }

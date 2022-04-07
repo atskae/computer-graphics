@@ -40,7 +40,7 @@ class vec3 {
         // vec3 v0 = vec3();
         // vec3 v1 = vec3();
         // v0 += v1; // v0 = v0 + v1
-        vec3& operator+=(vec3& v) {
+        vec3& operator+=(const vec3& v) {
             e[0] += v.e[0];
             e[1] += v.e[1];
             e[2] += v.e[2];
