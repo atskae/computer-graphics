@@ -135,7 +135,7 @@ With anti-aliasing ✨:
 ![Sphere with anti-aliasing](images/image_with_anti_aliasing.png)
 
 
-I first encountered the word "anti-aliasing" in *middle school*, in like Shi-painter Pro. I finally know how it works a decade+ later... ああああああ... 感動........
+I first encountered the word "anti-aliasing" in *middle school*, in like ~~Shi-painter Pro~~ (damn it wasn't, [I looked](https://github.com/atskae/oekaki-potato/blob/master/doc/shi-painter/run_shi_painter_locally.md) just now) Photoshop? I finally know how it works a decade+ later... ああああああ... 感動........
 
 
 ### Time differences (just for curiosity):
