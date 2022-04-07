@@ -124,6 +124,34 @@ Using `smart_ptr` because:
 * Makes memory management more automatic
 
 
+## [7. Antialiasing](https://raytracing.github.io/books/RayTracingInOneWeekend.html#antialiasing)
+
+Without anti-aliasing:
+
+![Sphere without anti-aliasing](images/image_without_anti_aliasing.png)
+
+With anti-aliasing ✨:
+![Sphere with anti-aliasing](images/image_with_anti_aliasing.png)
+
+
+I first encountered the word "anti-aliasing" in *middle school*, in like Shi-painter Pro. I finally know how it works a decade+ later... ああああああ... 感動........
+
+
+### Time differences (just for curiosity):
+
+Without anti-aliasing, (commit `08b95e4569f99c3993c37dbc3f571f4864550c8f`)
+
+```bash
+time ./build/RayTracer > image_without_anti_aliasing.ppm 
+Scanlines remaining: 0 ./build/RayTracer > image_without_anti_aliasing.ppm  0.20s user 0.23s system 84% cpu 0.511 total
+```
+
+With anti-aliasing (commit `3a8831f0c35e9e7b77ac0ac2f7c6f0d731bf2cbf`)
+```bash
+time ./build/RayTracer > image_with_anti_aliasing.ppm 
+Scanlines remaining: 0 ./build/RayTracer > image_with_anti_aliasing.ppm  5.76s user 0.34s system 91% cpu 6.707 total
+```
+
 ## Resources
 * [PPM image format](https://www.cs.swarthmore.edu/~soni/cs35/f13/Labs/extras/01/ppm_info.html)
 * [CMake examples](https://github.com/ttroy50/cmake-examples/tree/master/01-basic)
