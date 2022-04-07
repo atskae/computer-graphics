@@ -6,11 +6,10 @@
 
 #include "rtweekend.h" // vec3, ray
 
+#include "camera.h"
 #include "color.h"
 #include "hittable_list.h"
 #include "sphere.h"
-
-
 
 
 // Print the PPM header
@@ -104,16 +103,16 @@ color ray_color(const ray& r, const hittable_list& world) {
 }
 
 void run_ray_tracer() {
-    // Image dimensions
-    const double aspect_ratio = 16.0 / 9.0; // width to height
-    const int image_width = 400; // pixels
-    const int image_height = static_cast<int>(image_width / aspect_ratio);
-
-    // World, a list of objects that are hittable in this world
+    // Create a world, a list of objects that are hittable by a ray
     hittable_list world;
     world.add(make_shared<sphere>(point3(0,0,-1), 0.5)); // original sphere
     world.add(make_shared<sphere>(point3(0,-100.5,-1), 100));
 
+    // Image dimensions
+    const double aspect_ratio = 16.0 / 9.0; // width to height
+    const int image_width = 400; // pixels
+    const int image_height = static_cast<int>(image_width / aspect_ratio);
+    
     // Camera
     double viewport_height = 2.0;
     double viewport_width = viewport_height * aspect_ratio;
@@ -140,7 +139,7 @@ void run_ray_tracer() {
             // Pixel = (u, v), where u is horizontal and v is vertical
             double u = double(i) / (image_width-1); // Ha, double u
             double v = double(j) / (image_height-1);
-            // Create a ray that shoots out from the origin to the position on the viewport (?)
+            // create a ray that shoots out from the origin to the position on the viewport (?)
             vec3 direction = lower_left_corner + u*horizontal + v*vertical - origin;
             ray r = ray(origin, direction);
             color pixel_color = ray_color(r, world);
