@@ -126,6 +126,22 @@ Using `smart_ptr` because:
 
 ## [7. Antialiasing](https://raytracing.github.io/books/RayTracingInOneWeekend.html#antialiasing)
 
+For each pixel at position `(i,j)` (`i` is the row, `j` is the column), we are adding some random value between `0.0` and `1.0`, which gives us a new position `(u,v)` in the image *within* that pixel. We then get the color at that position. This gives us *one* sample. We do this until we have `samples_per_pixel` color values, then take the average at the end.
+
+This average color becomes the final color of the pixel.
+
+In `main.cpp`:
+```c++
+    // ...
+    for (int j=image_height-1; j >= 0; --j) {
+        for (int i=0; i<image_width; ++i) {
+            color pixel_color(0, 0, 0);
+            for (int s=0; s<samples_per_pixel; s++) {
+                double u = (double(i) + random_double()) / (image_width-1);
+                double v = (double(j) + random_double()) / (image_height-1);
+                // ...
+```
+
 Without anti-aliasing:
 
 ![Sphere without anti-aliasing](images/image_without_anti_aliasing.png)
