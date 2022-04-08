@@ -16,6 +16,16 @@ class vec3 {
         vec3(): e{0, 0, 0} {}
         vec3(double e0, double e1, double e2): e{e0, e1, e2} {}
 
+        // Generate a random vector, with each axis in range, (0,1]
+        inline static vec3 random() {
+            return vec3(random_double(), random_double(), random_double());
+        }
+
+        // Generate a random vector, with each axis in range (min,max]
+        inline static vec3 random(double min, double max) {
+            return vec3(random_double(min, max), random_double(min, max), random_double(min, max));
+        }
+
         // Getter methods 
         double x() const { return e[0]; }
         double y() const { return e[1]; }
@@ -165,6 +175,19 @@ inline vec3 cross(vec3 vl, vec3 vr) {
 // Compute the unit vector (length=1)
 inline vec3 unit_vector(vec3 v) {
     return v / v.length();
+}
+
+// Generate a random vector within a unit sphere
+// This first generates a random vector in a unit cube,
+//  then rejects the vector if its length > 1 (the vector is outside the sphere).
+//  Repeat until we get a vector within the sphere.
+vec3 random_in_unit_sphere() {
+    while(true) {
+        vec3 v = vec3::random(-1, 1);
+        //if (v.length() >= 1) continue;
+        if (v.length_squared() >= 1) continue;
+        return v;
+    }
 }
 
 // Header guard
