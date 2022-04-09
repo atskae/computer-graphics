@@ -102,11 +102,9 @@ color ray_color(const ray& r, const hittable_list& world, int depth) {
     // Ray has hit an object in the world
     // Recursively keep reflecting new rays until
     //  we don't hit an object surface or we reach the recursion depth
-    
+
     // Use the populated hit_record to compute the color
     
-    // Map each component (x, y, z) to each color channel (R, G, B)
-    //  with color channel range 0 to 1
     vec3 normal = hit_rec.normal;
     
     // The reflected ray will be a random ray within a unit sphere

@@ -185,7 +185,56 @@ inline double random_double(double min, double max) {
 ```
 I had `max+min` when it should have been `max-min`. I was always getting `-1`, so the random vector inside the unit cube was always `vec3(-1,-1,-1)` which never had a length less than 1.
 
+Bug... 😢 ???
+
+![All black](images/schwarz.png)
+
+I suspected that all the rays were getting to `depth=0` but that doesn't seem to be the case.
+
+With diffusion (?) takes a lot longer:
+```
+time build/RayTracer > image.ppm 
+Scanlines remaining: 0 Max depth reached: 3469200/177213793
+build/RayTracer > image.ppm  186.28s user 1.53s system 97% cpu 3:12.42 total
+```
+
+If I look the generated image file though, they are not all `0 0 0`... If I zoom in *a lot* I guess I can sorta see a sphere... Why isn't there the same amount of constrast...?
+
+(edit) I just had to move on... "If you can't see the shadow, don't worry...". 
+
+
+### [8.3 Gamma Correction](https://raytracing.github.io/books/RayTracingInOneWeekend.html#diffusematerials/usinggammacorrectionforaccuratecolorintensity)
+
+* [**gamma correction**](https://www.teamten.com/lawrence/graphics/gamma/): "...doing graphics color math accounting for the distortion that the color will eventually go through when displayed on a monitor."
+  * "Notice that 0 stays black and 1 stays white, but the in-betweens get darkened." That explains it...
+  * "gamma 2" means raise each color channel by the power `1/gamma` with `gamma=2`
+    * This is the same as taking the squared root
+
+```
+time build/RayTracer > image_with_gamma_2_correction.ppm
+Scanlines remaining: 0 Max depth reached: 3469200/177213793
+build/RayTracer > image_with_gamma_2_correction.ppm  187.91s user 2.15s system 96% cpu 3:17.10 total
+```
+
+Was...!
+
+![Mit gamma correct zwei](images/image_with_gamma_2_correction.png)
+
+Line 70,000 in ppm image:
+* Before: `16 21 29`
+* After: `64 73 86` 
+
+I was having super math "how does math work again??" confusion... how does a squared-rooted value *increase* ??? !
+First of all, I forgot the RGB pixel values within the program has approximately range 0 to 1, not 0 to 255.
+```
+r = 0.63
+sqrt(r) = ~0.79
+```
+Any number below 1 will increase if you take the squared root... Totally forgot...
+[Someone else wondered the same thing](https://math.stackexchange.com/questions/2618094/why-the-square-root-of-any-decimal-number-between-0-and-1-always-come-out-to-be), it's nice knowing I'm not the only one who wondered -happy tear-.
+
 
 ## Resources
 * [PPM image format](https://www.cs.swarthmore.edu/~soni/cs35/f13/Labs/extras/01/ppm_info.html)
 * [CMake examples](https://github.com/ttroy50/cmake-examples/tree/master/01-basic)
+* [GDB for Mac OS: LLDB)[https://lldb.llvm.org/use/map.html]
