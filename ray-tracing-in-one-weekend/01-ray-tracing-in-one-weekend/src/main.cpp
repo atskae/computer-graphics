@@ -70,7 +70,8 @@ color ray_color(const ray& r, const hittable_list& world, int depth) {
     // Obtain where the ray intersects the sphere
     
     hit_record hit_rec = {};
-    bool has_hit = world.hit(r, 0, infinity, hit_rec);
+    // Ignore rays that are near zero (ex. t=-0.000001 or t=0.0000001) to reduce "shadow acne"
+    bool has_hit = world.hit(r, 0.001, infinity, hit_rec);
     
     // Base case 
     if (!has_hit) {

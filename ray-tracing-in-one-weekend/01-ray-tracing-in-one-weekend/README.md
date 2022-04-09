@@ -234,6 +234,19 @@ Any number below 1 will increase if you take the squared root... Totally forgot.
 [Someone else wondered the same thing](https://math.stackexchange.com/questions/2618094/why-the-square-root-of-any-decimal-number-between-0-and-1-always-come-out-to-be), it's nice knowing I'm not the only one who wondered -happy tear-.
 
 
+### [8.4 Reducing Shadow Acne](https://raytracing.github.io/books/RayTracingInOneWeekend.html#antialiasing/generatingpixelswithmultiplesamples)
+
+Wow, made the program significantly faster too!
+```
+time ./build/RayTracer > image.ppm
+Scanlines remaining: 0 ./build/RayTracer > image.ppm  12.87s user 0.48s system 93% cpu 14.293 total
+```
+
+Also brighter ???:
+
+![Apply makeup routine](images/image_reduce_shadow_acne.png)
+
+
 ## Resources
 * [PPM image format](https://www.cs.swarthmore.edu/~soni/cs35/f13/Labs/extras/01/ppm_info.html)
 * [CMake examples](https://github.com/ttroy50/cmake-examples/tree/master/01-basic)
