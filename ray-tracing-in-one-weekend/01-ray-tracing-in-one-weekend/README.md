@@ -230,7 +230,7 @@ First of all, I forgot the RGB pixel values within the program has approximately
 r = 0.63
 sqrt(r) = ~0.79
 ```
-Any number below 1 will increase if you take the squared root... Totally forgot...
+Any number between 0 and 1 will increase if you take the squared root... Totally forgot...
 [Someone else wondered the same thing](https://math.stackexchange.com/questions/2618094/why-the-square-root-of-any-decimal-number-between-0-and-1-always-come-out-to-be), it's nice knowing I'm not the only one who wondered -happy tear-.
 
 
