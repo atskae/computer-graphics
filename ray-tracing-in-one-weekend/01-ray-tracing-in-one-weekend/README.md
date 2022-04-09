@@ -216,7 +216,7 @@ Scanlines remaining: 0 Max depth reached: 3469200/177213793
 build/RayTracer > image_with_gamma_2_correction.ppm  187.91s user 2.15s system 96% cpu 3:17.10 total
 ```
 
-Was...!
+Was...! <--- Deutsch
 
 ![Mit gamma correct zwei](images/image_with_gamma_2_correction.png)
 
