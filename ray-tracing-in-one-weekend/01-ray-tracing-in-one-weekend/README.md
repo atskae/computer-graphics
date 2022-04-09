@@ -250,4 +250,4 @@ Also brighter ???:
 ## Resources
 * [PPM image format](https://www.cs.swarthmore.edu/~soni/cs35/f13/Labs/extras/01/ppm_info.html)
 * [CMake examples](https://github.com/ttroy50/cmake-examples/tree/master/01-basic)
-* [GDB for Mac OS: LLDB)[https://lldb.llvm.org/use/map.html]
+* [GDB for Mac OS: LLDB](https://lldb.llvm.org/use/map.html)
