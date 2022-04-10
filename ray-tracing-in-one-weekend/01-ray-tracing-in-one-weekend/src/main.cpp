@@ -113,9 +113,10 @@ color ray_color(const ray& r, const hittable_list& world, int depth) {
     // rec.p + normal is the center of the unit sphere *outside the surface*
     //  When we add a random vector to the center, we get a point on the surface
     //  of this unit sphere (=target)
-    point3 target = (hit_rec.p + normal) + random_in_unit_sphere();
+    point3 target = (hit_rec.p + normal) + random_unit_vector();
     // target - rec.p (hit point) gives us the direction from the hit point
     //  to the target
+    // target - hit_rec.p is the vector from hit_rec.p to the target point
     ray reflected_ray = ray(hit_rec.p, target - hit_rec.p);
 
     // Return the sphere color

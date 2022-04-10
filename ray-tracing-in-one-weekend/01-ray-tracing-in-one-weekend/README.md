@@ -246,6 +246,39 @@ Also brighter ???:
 
 ![Apply makeup routine](images/image_reduce_shadow_acne.png)
 
+### [8.5 True Lambertian Reflection](https://raytracing.github.io/books/RayTracingInOneWeekend.html#diffusematerials/truelambertianreflection)
+
+
+* [Stackexchange post](https://computergraphics.stackexchange.com/questions/12222/question-about-true-lambertian-reflection-in-ray-tracing-in-one-weekend)
+  * [The first method](https://raytracing.github.io/books/RayTracingInOneWeekend.html#diffusematerials/asimplediffusematerial) generates a random point *inside* the unit sphere of random length
+  * [The second method](https://raytracing.github.io/books/RayTracingInOneWeekend.html#diffusematerials/truelambertianreflection), also called the *Lambertian Reflection*, generates a random point *on the surface* of a unit sphere of unit length (length=1)
+  * The two methods have different probability distributions of what random vector is generated
+
+#### First Method
+
+First method has a probability distribution of `cos^3(phi)`, where `phi` is the angle between the random vector and the surface normal:
+
+![Cosine cubed](https://calculus.subwiki.org/w/images/0/0b/Cosinecubedcloseup.png)
+
+There is a skew toward getting a random vector with `phi` closer to zero, which means the random vector is closer to the surface normal.
+
+### Second Method
+
+The second method as a probability distribution of `cos(phi)`, which is the [same distribution of the Lambertian Reflection](https://en.wikipedia.org/wiki/Lambert%27s_cosine_law).
+
+[Graph comparison of `cos^3(phi)` and `cos(phi)`](https://www.desmos.com/calculator/atddqeyelo)
+
+* `cos^3(phi)` looks more "bell-curve ish"
+  * I googled "bell curve ish" and it seems like a common phrase
+* `cos(phi)` looks more "even"
+
+The second method will generate random vectors in a more uniform distribution; light will be scattered more uniformly.
+
+
+### Misc 
+
+Reminds me of a past school assignment where, you have to do some adjustments for the program to generate truly random points inside a circle... Like [this post](https://jyopari.github.io/randomCirc.html).
+
 
 ## Resources
 * [PPM image format](https://www.cs.swarthmore.edu/~soni/cs35/f13/Labs/extras/01/ppm_info.html)

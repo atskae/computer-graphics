@@ -190,5 +190,10 @@ vec3 random_in_unit_sphere() {
     }
 }
 
+// Return a random vector of length 1
+vec3 random_unit_vector() {
+    return unit_vector(random_in_unit_sphere());
+}
+
 // Header guard
 #endif
