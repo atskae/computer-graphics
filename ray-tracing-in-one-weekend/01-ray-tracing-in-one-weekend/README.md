@@ -280,6 +280,13 @@ The second method will generate random vectors in a more uniform distribution; l
 Reminds me of a past school assignment where, you have to do some adjustments for the program to generate truly random points inside a circle... Like [this post](https://jyopari.github.io/randomCirc.html).
 
 
+### [8.6 An Alternative Diffuse Formulation](https://raytracing.github.io/books/RayTracingInOneWeekend.html#diffusematerials/analternativediffuseformulation)
+
+Here we make sure that the reflected ray is always facing in the same hemisphere as the normal. This gives us a more uniform scatter direction. This produces:
+
+![Hemispherical scattering](images/hemispherical_scattering.png)
+
+
 ## Resources
 * [PPM image format](https://www.cs.swarthmore.edu/~soni/cs35/f13/Labs/extras/01/ppm_info.html)
 * [CMake examples](https://github.com/ttroy50/cmake-examples/tree/master/01-basic)

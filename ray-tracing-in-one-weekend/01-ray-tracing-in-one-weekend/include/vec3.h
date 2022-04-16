@@ -195,5 +195,23 @@ vec3 random_unit_vector() {
     return unit_vector(random_in_unit_sphere());
 }
 
+// Generate a random vector that is pointing in the same
+// "hemisphere" (top half of sphere, or bottom half of sphere)
+// as the normal vector
+vec3 random_in_hemisphere(const vec3& normal) {
+    vec3 in_unit_sphere = random_in_unit_sphere();
+    // Check if the random vector is pointing in the same hemisphere
+    // as the normal
+    if (dot_product(normal, in_unit_sphere) > 0.0) {
+        // Positive dot product = in the same hemisphere
+        return in_unit_sphere;
+    } else {
+        // Negative dot product = in opposite hemisphere; flip signs
+        // to make the vector in the same hemisphere as the normal
+        return -1 * in_unit_sphere;
+    }
+}
+
+
 // Header guard
 #endif

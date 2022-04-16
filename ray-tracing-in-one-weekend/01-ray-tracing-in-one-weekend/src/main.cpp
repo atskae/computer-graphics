@@ -106,14 +106,10 @@ color ray_color(const ray& r, const hittable_list& world, int depth) {
 
     // Use the populated hit_record to compute the color
     
-    vec3 normal = hit_rec.normal;
+    // Generate a random vector that is pointing in the same hemisphere
+    // as the normal vector
+    point3 target = hit_rec.p + random_in_hemisphere(hit_rec.normal);
     
-    // The reflected ray will be a random ray within a unit sphere
-    // from the hit point (rec.p)
-    // rec.p + normal is the center of the unit sphere *outside the surface*
-    //  When we add a random vector to the center, we get a point on the surface
-    //  of this unit sphere (=target)
-    point3 target = (hit_rec.p + normal) + random_unit_vector();
     // target - rec.p (hit point) gives us the direction from the hit point
     //  to the target
     // target - hit_rec.p is the vector from hit_rec.p to the target point
