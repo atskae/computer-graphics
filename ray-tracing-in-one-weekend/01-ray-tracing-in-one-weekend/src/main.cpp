@@ -10,6 +10,7 @@
 #include "color.h"
 #include "hittable_list.h"
 #include "sphere.h"
+#include "material.h"
 
 
 // Print the PPM header
@@ -106,33 +107,36 @@ color ray_color(const ray& r, const hittable_list& world, int depth) {
 
     // Use the populated hit_record to compute the color
     
-    // Generate a random vector that is pointing in the same hemisphere
-    // as the normal vector
-    point3 target = hit_rec.p + random_in_hemisphere(hit_rec.normal);
-    
-    // target - rec.p (hit point) gives us the direction from the hit point
-    //  to the target
-    // target - hit_rec.p is the vector from hit_rec.p to the target point
-    ray reflected_ray = ray(hit_rec.p, target - hit_rec.p);
+    // Reflected ray
+    ray scattered;
+    // How much the incoming ray/light impacts the resulting color 
+    color attenuation;
 
-    // Return the sphere color
-    // Keep recursively calling ray_color() until we don't hit any object 
-    //  or we reach the maximum depth
-    return 0.5 * ray_color(reflected_ray, world, depth-1);
-    //std::cerr << "Hit point: " << hit_point << std::endl;
-    //std::cerr << "Sphere center: " << SPHERE_CENTER << std::endl;
-    //std::cerr << "Normal: " << normal << std::endl;
-    //std::cerr << "Sphere color: " << sphere_color << std::endl;
-    //std::cerr << "---" << std::endl;
-    
+    // If the ray reflects outward from the surface
+    if (hit_rec.mat_ptr->scatter(r, hit_rec, attenuation, scattered)) {
+        return attenuation * ray_color(scattered, world, depth-1);
+    } else {
+        // The reflected ray inward (inside the surface), which means
+        //  the ray is absorbed (???)
+        return color(0,0,0);
+    }
 }
 
 void run_ray_tracer() {
     // Create a world, a list of objects that are hittable by a ray
     hittable_list world;
-    world.add(make_shared<sphere>(point3(0,0,-1), 0.5)); // original sphere
-    world.add(make_shared<sphere>(point3(0,-100.5,-1), 100));
+    
+    shared_ptr<material> material_ground = make_shared<lambertian>(color(0.8, 0.8, 0.0));
+    // Smaller spheres
+    shared_ptr<material> material_center = make_shared<lambertian>(color(0.7, 0.3, 0.3));
+    shared_ptr<material> material_left = make_shared<metal>(color(0.8, 0.8, 0.8));
+    shared_ptr<material> material_right = make_shared<metal>(color(0.8, 0.6, 0.2));
 
+    world.add(make_shared<sphere>(point3(0,-100.5,-1), 100, material_ground));
+    world.add(make_shared<sphere>(point3(0,0,-1), 0.5, material_center)); // original sphere
+    world.add(make_shared<sphere>(point3(-1,0,-1), 0.5, material_left));
+    world.add(make_shared<sphere>(point3(1,0,-1), 0.5, material_right));
+    
     // Image attributes 
     const double aspect_ratio = 16.0 / 9.0; // width to height
     const int image_width = 400; // pixels

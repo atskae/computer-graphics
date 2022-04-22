@@ -1,12 +1,18 @@
 #ifndef HITTABLE_H
 #define HITTABLE_H
 
+#include "rtweekend.h"
 #include "ray.h"
+
+// Forward declaration of the the material class in material.h
+class material;
 
 // Result if the ray hits the hittable object at `t`
 struct hit_record {
     point3 p;
     vec3 normal;
+    // The type of material that was hit
+    shared_ptr<material> mat_ptr;
     double t;
     // True if the ray came from outside the sphere
     // False if the ray came from inside the sphere

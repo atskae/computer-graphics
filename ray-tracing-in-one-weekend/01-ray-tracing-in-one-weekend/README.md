@@ -287,6 +287,21 @@ Here we make sure that the reflected ray is always facing in the same hemisphere
 ![Hemispherical scattering](images/hemispherical_scattering.png)
 
 
+## [9.4 Mirrored Light Reflection](https://www.scratchapixel.com/lessons/3d-basic-rendering/introduction-to-shading/reflection-refraction-fresnel)
+
+[Scratchapixel](https://www.scratchapixel.com/lessons/3d-basic-rendering/introduction-to-shading/reflection-refraction-fresnel) explains how the `reflect()` equation is derived
+```c++
+vec3 reflect(const vec3& v, const vec3& n) {
+    return v - 2*dot(v,n)*n;
+}
+```
+We subtract here (`-2dot()`) since the incoming vector `v` and the normal are facing opposite directions, so the dot product will return a negative value (giving us a direction that is *opposite* of the normal) 
+
+Wowwwwwww, this looks sooo strange:
+
+![Added material to sphere](images/weird-golf-course.png)
+
+
 ## Resources
 * [PPM image format](https://www.cs.swarthmore.edu/~soni/cs35/f13/Labs/extras/01/ppm_info.html)
 * [CMake examples](https://github.com/ttroy50/cmake-examples/tree/master/01-basic)

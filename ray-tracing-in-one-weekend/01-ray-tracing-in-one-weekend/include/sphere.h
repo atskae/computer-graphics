@@ -11,10 +11,14 @@ class sphere : public hittable {
         // Class fields
         point3 center;
         double radius;
+        // The material type of this sphere, which tells us how incident rays
+        // that hit the sphere surface will be reflected/absored
+        shared_ptr<material> mat_ptr;
 
         // Constructors
         sphere() {}
-        sphere(point3 center, double radius): center(center), radius(radius) {};
+        sphere(point3 center, double radius, shared_ptr<material> m):
+            center(center), radius(radius), mat_ptr(m) {};
 
         // Indicate that the virtual method will be implemented by replacing `= 0` with `override`
         virtual bool hit(const ray& r, double t_min, double t_max, hit_record& rec) const override;
@@ -83,6 +87,9 @@ bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) cons
         //  Retain the information of where the ray came from (inside or outside the sphere)
         //   and set the normal to be in the opposite direction of the ray.
         rec.set_face_normal(r, outward_normal);
+
+        // Set the material type of this sphere to the hit record
+        rec.mat_ptr = this->mat_ptr;
 
         return true;
     }

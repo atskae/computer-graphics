@@ -90,6 +90,16 @@ class vec3 {
         double length() {
             return sqrt(length_squared());
         }
+
+        // Return true if values in all dimensions are close to zero
+        // Used to check if some vector computation may result in undefined behavior (NaN, infinity, etc).
+        bool near_zero() const {
+            // If the value is less than this, than it is considered "close to zero"
+            double threshold = 1e-8;
+            // fabs() returns the absolute value of a double
+            return (fabs(this->e[0]) < threshold) && (fabs(this->e[1]) < threshold) && (fabs(this->e[1]) < threshold);
+        }
+
 };
 
 // Type aliases for vec3
@@ -212,6 +222,20 @@ vec3 random_in_hemisphere(const vec3& normal) {
     }
 }
 
+// Return the reflected vector, which has the same angle to the normal
+// but its direction is reflected
+vec3 reflect(const vec3& v, const vec3 normal) {
+    // dot(v, normal) is the projection of vector v onto the normal
+    //  Since v and the normal are facing in opposite directions, the result
+    //  of the dot product will be negative.
+    //  We multiply this result by -1 so the intermediate vector b is facing
+    //  the same direction as the normal
+    vec3 b = -1 * dot_product(v, normal) * normal; // dot() is the projection length, normal gives direction
+    
+    // v+b would give the direction along the surface
+    // v+2b will give the direction of the relfected vector
+    return v + 2*b;
+}
 
 // Header guard
 #endif
