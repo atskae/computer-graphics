@@ -295,12 +295,19 @@ vec3 reflect(const vec3& v, const vec3& n) {
     return v - 2*dot(v,n)*n;
 }
 ```
-We subtract here (`-2dot()`) since the incoming vector `v` and the normal are facing opposite directions, so the dot product will return a negative value (giving us a direction that is *opposite* of the normal) 
+We subtract here (`-2dot()`) since the incoming vector `v` and the normal are facing opposite directions, so the dot product will return a negative value (giving us a direction that is *opposite* of the normal, but we want to face the same direction as the normal) 
 
 Wowwwwwww, this looks sooo strange:
 
 ![Added material to sphere](images/weird-golf-course.png)
 
+
+Playing around with the color of the materials, which sets the `albedo` of the material.
+I made the center sphere a light purple color, and made the ground more green:
+
+![Purple](images/try-purple.png)
+
+Albedo is just... the color of the material then?
 
 ## Resources
 * [PPM image format](https://www.cs.swarthmore.edu/~soni/cs35/f13/Labs/extras/01/ppm_info.html)

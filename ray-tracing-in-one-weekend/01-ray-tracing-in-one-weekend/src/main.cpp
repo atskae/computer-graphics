@@ -127,9 +127,18 @@ void run_ray_tracer() {
     hittable_list world;
     
     shared_ptr<material> material_ground = make_shared<lambertian>(color(0.8, 0.8, 0.0));
+    // Grass
+    //shared_ptr<material> material_ground = make_shared<lambertian>(color(0.2, 0.8, 0.09));
+    
     // Smaller spheres
+    //color light_purple = color(0.89, 0.52, 1.0);
+    
+    // Rust color
     shared_ptr<material> material_center = make_shared<lambertian>(color(0.7, 0.3, 0.3));
+    //shared_ptr<material> material_center = make_shared<lambertian>(light_purple);
+    // Light gray
     shared_ptr<material> material_left = make_shared<metal>(color(0.8, 0.8, 0.8));
+    // Dark-ish orange
     shared_ptr<material> material_right = make_shared<metal>(color(0.8, 0.6, 0.2));
 
     world.add(make_shared<sphere>(point3(0,-100.5,-1), 100, material_ground));
