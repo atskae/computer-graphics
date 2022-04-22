@@ -287,7 +287,7 @@ Here we make sure that the reflected ray is always facing in the same hemisphere
 ![Hemispherical scattering](images/hemispherical_scattering.png)
 
 
-## [9.4 Mirrored Light Reflection](https://www.scratchapixel.com/lessons/3d-basic-rendering/introduction-to-shading/reflection-refraction-fresnel)
+## [9.4 Mirrored Light Reflection](https://raytracing.github.io/books/RayTracingInOneWeekend.html#metal/mirroredlightreflection)
 
 [Scratchapixel](https://www.scratchapixel.com/lessons/3d-basic-rendering/introduction-to-shading/reflection-refraction-fresnel) explains how the `reflect()` equation is derived
 ```c++
