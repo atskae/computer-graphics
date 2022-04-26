@@ -317,7 +317,7 @@ We don't modify the angle directly however. We choose a random vector within a s
 
 ![With fuzz](images/mit_fuzz.png)
 
-## [Dielectrics]
+## [Dielectrics](https://raytracing.github.io/books/RayTracingInOneWeekend.html#dielectrics)
 
 **Dielectrics** are clear materials, such as water, glass, diamonds
 * When a light ray hits this type of material it splits into a relfected and *refracted* (also called *transmitted*) ray
