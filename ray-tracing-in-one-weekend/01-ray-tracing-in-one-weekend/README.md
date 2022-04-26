@@ -317,6 +317,13 @@ We don't modify the angle directly however. We choose a random vector within a s
 
 ![With fuzz](images/mit_fuzz.png)
 
+## [Dielectrics]
+
+**Dielectrics** are clear materials, such as water, glass, diamonds
+* When a light ray hits this type of material it splits into a relfected and *refracted* (also called *transmitted*) ray
+* [Reflection vs refraction](https://keydifferences.com/difference-between-reflection-and-refraction.html)
+* [Derivation](https://graphics.stanford.edu/courses/cs148-10-summer/docs/2006--degreve--reflection_refraction.pdf)
+
 ## Resources
 * [PPM image format](https://www.cs.swarthmore.edu/~soni/cs35/f13/Labs/extras/01/ppm_info.html)
 * [CMake examples](https://github.com/ttroy50/cmake-examples/tree/master/01-basic)
