@@ -59,9 +59,17 @@ class metal : public material {
     public:
         // Class fields
         color albedo;
+        // How perturbed the relfected ray is
+        // Value is between 0.0 and 1.0
+        // fuzz = radius of a smaller sphere that represents possible ray endpointst
+        // Larger the fuzz (larger sphere radius), more "fuzzier" the reflection is
+        //  since there is a larger area / possible points the ray can land
+        double fuzz;
 
         // Constructors
-        metal(const color& a): albedo(a) {}
+        // If the fuzz value is outside the range (0.0, 1.0), then set it to 1.0
+        //  to keep the fuzz in range
+        metal(const color& a, const double fuzz): albedo(a), fuzz(fuzz < 1 ? fuzz : 1) {}
 
         // Methods
 
@@ -72,6 +80,10 @@ class metal : public material {
             // The direction of the reflected ray
             // r_in might not be a unit vector
             vec3 direction = reflect(unit_vector(r_in.direction()), rec.normal);
+            
+            // Add a "fuzz" effect by changing the direction of the original ray
+            // The angle out is now slightly unequal to the angle in
+            direction = direction + this->fuzz * random_in_unit_sphere();
             
             // The reflected ray, starting at hit point `rec.p`
             scattered = ray(rec.p, direction);

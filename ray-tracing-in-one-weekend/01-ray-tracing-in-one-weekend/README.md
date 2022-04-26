@@ -309,6 +309,14 @@ I made the center sphere a light purple color, and made the ground more green:
 
 Albedo is just... the color of the material then?
 
+### [9.6 Fuzzy Reflection](https://raytracing.github.io/books/RayTracingInOneWeekend.html#metal/fuzzyreflection)
+
+To add a fuzz effect to the metal, we make the reflected ray's angle with the normal to be slightly different from the angle of the incoming ray.
+
+We don't modify the angle directly however. We choose a random vector within a smaller sphere at the reflected ray endpoint and add it to that ray to obtain a new direction. The radius of the smaller sphere determines how "fuzzy" the metal looks (larger radius = more variation in angle = more fuzzy)
+
+![With fuzz](images/mit_fuzz.png)
+
 ## Resources
 * [PPM image format](https://www.cs.swarthmore.edu/~soni/cs35/f13/Labs/extras/01/ppm_info.html)
 * [CMake examples](https://github.com/ttroy50/cmake-examples/tree/master/01-basic)

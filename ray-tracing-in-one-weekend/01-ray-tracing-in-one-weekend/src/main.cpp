@@ -137,9 +137,9 @@ void run_ray_tracer() {
     shared_ptr<material> material_center = make_shared<lambertian>(color(0.7, 0.3, 0.3));
     //shared_ptr<material> material_center = make_shared<lambertian>(light_purple);
     // Light gray
-    shared_ptr<material> material_left = make_shared<metal>(color(0.8, 0.8, 0.8));
+    shared_ptr<material> material_left = make_shared<metal>(color(0.8, 0.8, 0.8), 0.3);
     // Dark-ish orange
-    shared_ptr<material> material_right = make_shared<metal>(color(0.8, 0.6, 0.2));
+    shared_ptr<material> material_right = make_shared<metal>(color(0.8, 0.6, 0.2), 1.0);
 
     world.add(make_shared<sphere>(point3(0,-100.5,-1), 100, material_ground));
     world.add(make_shared<sphere>(point3(0,0,-1), 0.5, material_center)); // original sphere
