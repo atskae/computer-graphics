@@ -322,7 +322,8 @@ We don't modify the angle directly however. We choose a random vector within a s
 **Dielectrics** are clear materials, such as water, glass, diamonds
 * When a light ray hits this type of material it splits into a relfected and *refracted* (also called *transmitted*) ray
 * [Reflection vs refraction](https://keydifferences.com/difference-between-reflection-and-refraction.html)
-* [Derivation](https://graphics.stanford.edu/courses/cs148-10-summer/docs/2006--degreve--reflection_refraction.pdf)
+* [Snell's Law Derivation](https://graphics.stanford.edu/courses/cs148-10-summer/docs/2006--degreve--reflection_refraction.pdf)
+* [My own notes on the derivation](refraction_transmitted_ray_derivation.md)
 
 ## Resources
 * [PPM image format](https://www.cs.swarthmore.edu/~soni/cs35/f13/Labs/extras/01/ppm_info.html)
