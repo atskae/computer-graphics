@@ -62,4 +62,90 @@ which can be used to compute `A`:
 ```
 A = sin(θ_2) * M
 A = sin(θ_2) * ((I + C)/sin(θ_1))
+// Use C = cos(θ_1)
+A = sin(θ_2) * ((I + cos(θ_1))/sin(θ_1))
 ```
+
+![Recall what A was](images/notes/recall-what-a-was.png)
+
+Recalled that the transmitted ray `T` is `A + B`, so now we need `B`. The length of `B` is just `cos(θ_2)` (because, trig) and the direction of `B` is `-N` (the opposite direction of the surface normal `N`):
+```
+B = cos(θ_2) * N
+```
+
+Now we have both `A` and `B`:
+```
+A = sin(θ_2) * ((I + cos(θ_1))/sin(θ_1))
+B = cos(θ_2) * N
+```
+
+Now we can compute `T`, which is `A + B`:
+```
+T = A + B
+T = sin(θ_2) * ((I + cos(θ_1))/sin(θ_1)) + cos(θ_2) * N
+```
+
+If we get rid of `θ_2`, then we can compute `T` using the values that we already know (`N`, `θ_1`, and `I`).
+
+To do this with `A`, we can use Snell's Law. We can replace `sin(θ_2)/sin(θ_1)` with `η_1/η_2`:
+
+![Express A](images/notes/express-a.png)
+
+To get rid of `θ_2` from `B`, we can use the famous trig identity and Snell's Law again:
+
+![Express B](images/notes/express-b-trig-iden-snell.png)
+
+![Express B final](images/notes/express-b-trig-iden-snell-final.png)
+
+We can now express the transmitted ray `T` with everything we know! 💃
+
+![Express T](images/notes/express-t-a-b.png)
+
+`T` relative to everything else:
+
+![T in relation to everything else](images/notes/t-final-picture.png)
+
+### Comparison to Ray Tracing in One Weekend
+
+ Scratch a Pixel (eft side of `=`) vs [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html#dielectrics/snell'slaw) notation mapping:
+
+![Scratchapixel vs Ray Tracing in One Weekend](images/notes/rt1w-vs-sp.png)
+
+If we look at the final formula from Scratchapixel (sp), `A` is the perpendicular (to the surface normal) component of `I=R'`, and `B` is the parallel component of `R'`:
+
+![T again](images/notes/t-final-again.png)
+
+The mapping of `A` is straightforward:
+
+![A mapping](images/notes/a-mapping.png)
+
+`B`, the parallel component of `I=R'` is slightly different:
+
+![B mapping](images/notes/b-mapping.png)
+
+We know that `A` is the same as the perpendicular component of `R'`. So we get this relationship from the two equations:
+```
+// (The length of A)^2
+|A|^2 = (η_1/η_2)^2 * sin^2(θ_1)
+```
+
+Then we can get just the length of A
+```
+|A| = (η_1/η_2) * sin(θ_1)
+```
+
+Using Snell's Law, we can express the length of `A` differently, where we eventually get:
+```
+|A| = sin(θ_2)
+```
+
+Which is totally correct 🤯  Ray Tracing in One Weekend and Scratchapixel expresses the same idea in a different way.
+
+![B mapping explained](images/notes/b-mapping-explained.png)
+
+### Scratchapixel simplify
+
+![Simplify expression T](images/notes/t-simplify.png)
+
+![Simplify expression T final](images/notes/t-simplify-final.png)
+
