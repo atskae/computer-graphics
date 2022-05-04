@@ -338,7 +338,20 @@ I forgot to normalize the vector `r_in` (dielectric material):
 
 Which gives it a warpy look:
 
-![Warped look](images/notes/forgot-to-normalize.png)
+![Warped look](images/forgot-to-normalize.png)
+
+I forgot to set the transmitted ray to the returned ray (which is a reference...)
+```c++
+            // Created this and just, forgot about it
+            ray transmitted = ray(rec.p, transmitted_ray_direction);
+
+            return true;
+```
+
+Which resulted in dark spheres:
+
+![Forgot to set scattered](images/forgot-set-scatter-ray.png)
+
 
 ## Resources
 * [PPM image format](https://www.cs.swarthmore.edu/~soni/cs35/f13/Labs/extras/01/ppm_info.html)
