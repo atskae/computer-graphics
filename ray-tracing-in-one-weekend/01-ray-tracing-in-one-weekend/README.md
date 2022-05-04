@@ -325,6 +325,21 @@ We don't modify the angle directly however. We choose a random vector within a s
 * [Snell's Law Derivation](https://graphics.stanford.edu/courses/cs148-10-summer/docs/2006--degreve--reflection_refraction.pdf)
 * [My own notes on the derivation](refraction_transmitted_ray_derivation.md)
 
+### Bugs
+
+I forgot to normalize the vector `r_in` (dielectric material):
+```c++
+        virtual bool scatter(
+            const ray& r_in, const hit_record& rec, color& attenuation, ray& scattered
+        ) const override {
+            // ...
+            vec3 transmitted_ray_direction = refract(r_in.direction(), rec.normal, refraction_ratio);
+```
+
+Which gives it a warpy look:
+
+![Warped look](images/notes/forgot-to-normalize.png)
+
 ## Resources
 * [PPM image format](https://www.cs.swarthmore.edu/~soni/cs35/f13/Labs/extras/01/ppm_info.html)
 * [CMake examples](https://github.com/ttroy50/cmake-examples/tree/master/01-basic)
