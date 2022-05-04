@@ -237,5 +237,21 @@ vec3 reflect(const vec3& v, const vec3 normal) {
     return v + 2*b;
 }
 
+// Refracts the incident ray (incoming ray) and returns the transmitted (refracted) ray
+// eta_i_over_eta_t is the refraction of indices of the medium of the incidient over
+//  the index of the medium of the transmitted ray
+vec3 refract(const vec3& incident_ray, const vec3& normal, double eta_i_over_eta_t) {
+    // fmin() returns the smallest of its arguments
+    // The -1 in (-1 * incident_ray) is required because the dot product between
+    //  the incident ray and the normal would be negattive (we want cos_theta to be positive)
+    double cos_theta = fmin(dot_product(-1 * incident_ray, normal), 1.0);
+
+    // Compute the transmitted ray vector with its two components: parallel and perpendicular
+    vec3 transmitted_ray_perpendicular = eta_i_over_eta_t * (incident_ray + cos_theta*normal);
+    vec3 transmitted_ray_parallel = -1 * normal * (sqrt( fabs(1 - transmitted_ray_perpendicular.length_squared()) ));
+
+    return transmitted_ray_perpendicular + transmitted_ray_parallel;
+}
+
 // Header guard
 #endif

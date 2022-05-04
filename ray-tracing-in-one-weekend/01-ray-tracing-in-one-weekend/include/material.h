@@ -94,4 +94,36 @@ class metal : public material {
         }
 };
 
+// Dielectric (water, glass); materials that refract light
+class dielectric : public material {
+    public:
+        // Class fields
+        double ir;
+        
+        // Constructor
+        dielectric(double index_of_refraction): ir(index_of_refraction) {}
+
+        // Implemented virtual functions
+        virtual bool scatter(
+            const ray& r_in, const hit_record& rec, color& attenuation, ray& scattered
+        ) const override {
+            // White
+            attenuation = color(1.0, 1.0, 1.0);
+            
+            // If the ray is coming from outside the sphere (ref.front_face=True)
+            //  the medium of the incident (incoming) ray is the air,
+            //  so its index of refraction is approximated to 1.0
+            // Otherwise, the ray is coming from inside the sphere to outside (air)
+            //  and the refraction ratio would be this->ir/1.0 (I think)
+            double refraction_ratio = rec.front_face ? (1.0/this->ir) : this->ir;
+            vec3 unit_direction = unit_vector(r_in.direction());
+            vec3 transmitted_ray_direction = refract(unit_direction, rec.normal, refraction_ratio);
+            
+            // Return the transmitted ray
+            scattered = ray(rec.p, transmitted_ray_direction);
+        
+            return true;
+        }
+};
+
 #endif // header guard

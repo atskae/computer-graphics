@@ -41,26 +41,20 @@ class hittable_list : public hittable {
 // If any of the objects in the list was hit by the ray, return True,
 //  and set the hit_record of the closest object (the lowest t value that hits an object)
 bool hittable_list::hit(const ray& r, double t_min, double t_max, hit_record& rec) const {
-    hit_record rec_for_closest;
     // Want to find the smallest t value (which is the closest object that was hit)
     double t_closest = t_max;
     bool hit_any_object = false;
 
+    hit_record temp_rec;
     for (const shared_ptr<hittable>& object: this->objects) {
-        bool is_hit = object->hit(r, t_min, t_max, rec);
+        // Check if there is a hit object that is closer than what we've already seen
+        bool is_hit = object->hit(r, t_min, t_closest, temp_rec);
         if (is_hit) {
             hit_any_object = true;
-            if (rec.t < t_closest) {
-                // Save the hit_record of this closer object
-                t_closest = rec.t;
-                rec_for_closest = rec;
-            }
+            // Save the hit_record of this closer object
+            t_closest = temp_rec.t;
+            rec = temp_rec;
         }
-    }
-
-    // Set rec to the closest object that was hit
-    if (hit_any_object) {
-        rec = rec_for_closest;
     }
 
     return hit_any_object;
