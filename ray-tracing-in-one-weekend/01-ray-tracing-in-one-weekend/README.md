@@ -352,6 +352,42 @@ Which resulted in dark spheres:
 
 ![Forgot to set scattered](images/forgot-set-scatter-ray.png)
 
+And the segmentation fault (my first major one!) was due to my buggy implementation of `hittable_list.hit()` (surprised this didn't crash with the other materials) and the combination of the bugs above.
+* I was updating the returned hit_record `rec` versus using a temporary one to find the closest hit object
+* `rec.t` was `NaN` in the next recursive call of `ray_color()` since the transmitted ray was never returned (so the returned way was always `(0,0,0)` both position and direction)
+
+```c++
+bool hittable_list::hit(const ray& r, double t_min, double t_max, hit_record& rec) const {
+    hit_record rec_for_closest;
+    // Want to find the smallest t value (which is the closest object that was hit)
+    double t_closest = t_max;
+    bool hit_any_object = false;
+
+    for (const shared_ptr<hittable>& object: this->objects) {
+        bool is_hit = object->hit(r, t_min, t_max, rec);
+        if (is_hit) {
+            hit_any_object = true;
+            if (rec.t < t_closest) {
+                // Save the hit_record of this closer object
+                t_closest = rec.t;
+                rec_for_closest = rec;
+            }
+        }
+    }
+
+    // Set rec to the closest object that was hit
+    if (hit_any_object) {
+        rec = rec_for_closest;
+    }
+
+    return hit_any_object;
+}
+```
+
+I also forgot `fabs()` under the squared root in `vec3.refract()` but was surprised that it didn't actually change anything:
+```c++
+    vec3 transmitted_ray_parallel = -1 * normal * (sqrt( 1 - transmitted_ray_perpendicular.length_squared() ));
+```
 
 ## Resources
 * [PPM image format](https://www.cs.swarthmore.edu/~soni/cs35/f13/Labs/extras/01/ppm_info.html)
