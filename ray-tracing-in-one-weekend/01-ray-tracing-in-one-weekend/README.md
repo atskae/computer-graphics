@@ -325,7 +325,9 @@ We don't modify the angle directly however. We choose a random vector within a s
 * [Snell's Law Derivation](https://graphics.stanford.edu/courses/cs148-10-summer/docs/2006--degreve--reflection_refraction.pdf)
 * [My own notes on the derivation](refraction_transmitted_ray_derivation.md)
 
-### Bugs
+### My bugs in implementing dielectrics
+
+![Hide problems](images/if-only-we-could.png)
 
 I forgot to normalize the vector `r_in` (dielectric material):
 ```c++
@@ -352,9 +354,10 @@ Which resulted in dark spheres:
 
 ![Forgot to set scattered](images/forgot-set-scatter-ray.png)
 
-And the segmentation fault (my first major one!) was due to my buggy implementation of `hittable_list.hit()` (surprised this didn't crash with the other materials) and the combination of the bugs above.
+And the segmentation fault (my first major one in this project!) was due to my buggy implementation of `hittable_list.hit()` (I'm surprised this didn't crash with the other materials, also how did I mess this up so bad, given the correct code OTL) and the combination of the bugs above.
 * I was updating the returned hit_record `rec` versus using a temporary one to find the closest hit object
 * `rec.t` was `NaN` in the next recursive call of `ray_color()` since the transmitted ray was never returned (so the returned way was always `(0,0,0)` both position and direction)
+  * `hit()` was returning true but the hit_record was empty (so the pointer to the material object was `nullptr`... 💥).
 
 ```c++
 bool hittable_list::hit(const ray& r, double t_min, double t_max, hit_record& rec) const {
@@ -384,10 +387,14 @@ bool hittable_list::hit(const ray& r, double t_min, double t_max, hit_record& re
 }
 ```
 
+![Seg fault day](images/my-day.png)
+
 I also forgot `fabs()` under the squared root in `vec3.refract()` but was surprised that it didn't actually change anything:
 ```c++
     vec3 transmitted_ray_parallel = -1 * normal * (sqrt( 1 - transmitted_ray_perpendicular.length_squared() ));
 ```
+I coulda sworn this is where `NaN` was coming from....
+
 
 ## Resources
 * [PPM image format](https://www.cs.swarthmore.edu/~soni/cs35/f13/Labs/extras/01/ppm_info.html)
