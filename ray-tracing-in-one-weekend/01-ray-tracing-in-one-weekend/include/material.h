@@ -107,7 +107,7 @@ class dielectric : public material {
         virtual bool scatter(
             const ray& r_in, const hit_record& rec, color& attenuation, ray& scattered
         ) const override {
-            // White
+            // Always white, since the glass surface absorbs nothing
             attenuation = color(1.0, 1.0, 1.0);
             
             // If the ray is coming from outside the sphere (ref.front_face=True)
@@ -117,12 +117,37 @@ class dielectric : public material {
             //  and the refraction ratio would be this->ir/1.0 (I think)
             double refraction_ratio = rec.front_face ? (1.0/this->ir) : this->ir;
             vec3 unit_direction = unit_vector(r_in.direction());
-            vec3 transmitted_ray_direction = refract(unit_direction, rec.normal, refraction_ratio);
             
-            // Return the transmitted ray
-            scattered = ray(rec.p, transmitted_ray_direction);
+            // Check if this ray can indeed refract (obeys Snell's Law)
+            double cos_theta = fmin(dot_product(-1 * unit_direction, rec.normal), 1.0);
+            // Using trig identity sin^2(x) + cos^2(x) = 1
+            double sin_theta = sqrt(1.0 - cos_theta*cos_theta);
+
+            bool cannot_refract = refraction_ratio * sin_theta > 1.0;
+            vec3 ray_direction;
+            // Why a random double...?
+            if (cannot_refract || this->reflectance(cos_theta, refraction_ratio) > random_double()) {
+                ray_direction = reflect(unit_direction, rec.normal);
+            } else {
+                ray_direction = refract(unit_direction, rec.normal, refraction_ratio);
+            }
+            
+            scattered = ray(rec.p, ray_direction);
         
             return true;
+        }
+
+    private:
+        // Glass has reflectivity that depends on the angle of view(?)
+        // Schlick Approximation
+        // cosine = cosine of the incident ray's direction (from the normal)
+        static double reflectance(double cosine, double refraction_idx) {
+            double refraction_idx_air = 1.0;
+            double r0 = (refraction_idx_air-refraction_idx) / (refraction_idx_air+refraction_idx);
+            r0 = r0*r0;
+
+            // Compute the specular reflection coefficient with Schlick's approximation
+            return r0 + (1-r0) * pow(1-cosine, 5);
         }
 };
 

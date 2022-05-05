@@ -133,12 +133,12 @@ void run_ray_tracer() {
     // Smaller spheres
     //color light_purple = color(0.89, 0.52, 1.0);
     
+    shared_ptr<material> material_center = make_shared<lambertian>(color(0.1, 0.2, 0.5));
     // Glass materials with an index of refraction of 1.5
-    shared_ptr<material> material_center = make_shared<dielectric>(1.5);
     shared_ptr<material> material_left = make_shared<dielectric>(1.5);
     
     // Dark-ish orange
-    shared_ptr<material> material_right = make_shared<metal>(color(0.8, 0.6, 0.2), 1.0);
+    shared_ptr<material> material_right = make_shared<metal>(color(0.8, 0.6, 0.2), 0.0);
 
     world.add(make_shared<sphere>(point3(0,-100.5,-1), 100, material_ground));
     world.add(make_shared<sphere>(point3(0,0,-1), 0.5, material_center)); // original sphere
