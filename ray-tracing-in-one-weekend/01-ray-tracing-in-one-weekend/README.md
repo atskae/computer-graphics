@@ -393,7 +393,14 @@ I also forgot `fabs()` under the squared root in `vec3.refract()` but was surpri
 ```c++
     vec3 transmitted_ray_parallel = -1 * normal * (sqrt( 1 - transmitted_ray_perpendicular.length_squared() ));
 ```
-I coulda sworn this is where `NaN` was coming from....
+I initially thought this was where `NaN` was coming from....
+
+
+### Inidices of Refraction
+
+Indicies of refraction (η=2.5 on the left, η=1.5 in the center):
+
+![Indices of refraction](images/indices-refraction.png)
 
 
 ## Resources
