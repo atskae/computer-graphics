@@ -396,11 +396,35 @@ I also forgot `fabs()` under the squared root in `vec3.refract()` but was surpri
 I initially thought this was where `NaN` was coming from....
 
 
-### Inidices of Refraction
+### Indices of Refraction
 
 Indicies of refraction (η=2.5 on the left, η=1.5 in the center):
 
 ![Indices of refraction](images/indices-refraction.png)
+
+### [10.5 Modeling a Hollow Sphere](https://raytracing.github.io/books/RayTracingInOneWeekend.html#dielectrics/modelingahollowglasssphere)
+
+I had another bug where the negative radius didn't effect how the sphere was rendered (so I never got the hollow sphere), the same point in [this comment](https://www.reddit.com/r/rust/comments/g9p7vh/ray_tracing_in_a_weekend_refraction_help/).
+
+This was where the bug was:
+```c++
+bool sphere::hit(...) {
+    // ...
+    vec3 outward_normal = unit_vector(rec.p - this->center);
+}
+```
+
+`unit_vector()` divides the vector by the vector's length, which is always positive (even if the radius is negative). To correctly normalize the normal vector, the radius (which holds the sign of the number) needs to be used as the vector length directly:
+```c++
+bool sphere::hit(...) {
+    // ...
+    vec3 outward_normal = (rec.p - this->center) / radius;
+}
+```
+
+It fixed it!!! 💃
+
+![Hollow glass sphere](images/hollow-sphere.png)
 
 
 ## Resources

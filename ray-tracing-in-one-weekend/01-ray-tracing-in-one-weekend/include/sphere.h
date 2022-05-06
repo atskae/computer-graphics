@@ -82,7 +82,7 @@ bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) cons
         // Get each component (x, y, z) to be in range -1 to 1 (unit vector)
         // The hit_point - sphere_center gives us the direction from the center to the surface
         //  where the ray intersects the sphere
-        vec3 outward_normal = unit_vector(rec.p - this->center);
+        vec3 outward_normal = (rec.p - this->center) / radius;
         // Surface-side determination.
         //  Retain the information of where the ray came from (inside or outside the sphere)
         //   and set the normal to be in the opposite direction of the ray.

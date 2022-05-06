@@ -127,22 +127,16 @@ void run_ray_tracer() {
     hittable_list world;
     
     shared_ptr<material> material_ground = make_shared<lambertian>(color(0.8, 0.8, 0.0));
-    // Grass
-    //shared_ptr<material> material_ground = make_shared<lambertian>(color(0.2, 0.8, 0.09));
-    
-    // Smaller spheres
-    //color light_purple = color(0.89, 0.52, 1.0);
-    
     shared_ptr<material> material_center = make_shared<lambertian>(color(0.1, 0.2, 0.5));
     // Glass materials with an index of refraction of 1.5
     shared_ptr<material> material_left = make_shared<dielectric>(1.5);
-    
     // Dark-ish orange
     shared_ptr<material> material_right = make_shared<metal>(color(0.8, 0.6, 0.2), 0.0);
 
     world.add(make_shared<sphere>(point3(0,-100.5,-1), 100, material_ground));
     world.add(make_shared<sphere>(point3(0,0,-1), 0.5, material_center)); // original sphere
     world.add(make_shared<sphere>(point3(-1,0,-1), 0.5, material_left));
+    world.add(make_shared<sphere>(point3(-1,0,-1), -0.4, material_left));
     world.add(make_shared<sphere>(point3(1,0,-1), 0.5, material_right));
     
     // Image attributes 
