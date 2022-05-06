@@ -123,22 +123,25 @@ color ray_color(const ray& r, const hittable_list& world, int depth) {
 }
 
 void run_ray_tracer() {
+    double radius = cos(pi/4); // 45 degrees
     // Create a world, a list of objects that are hittable by a ray
     hittable_list world;
     
     shared_ptr<material> material_ground = make_shared<lambertian>(color(0.8, 0.8, 0.0));
     shared_ptr<material> material_center = make_shared<lambertian>(color(0.1, 0.2, 0.5));
-    // Glass materials with an index of refraction of 1.5
-    shared_ptr<material> material_left = make_shared<dielectric>(1.5);
-    // Dark-ish orange
-    shared_ptr<material> material_right = make_shared<metal>(color(0.8, 0.6, 0.2), 0.0);
-
-    world.add(make_shared<sphere>(point3(0,-100.5,-1), 100, material_ground));
-    world.add(make_shared<sphere>(point3(0,0,-1), 0.5, material_center)); // original sphere
-    world.add(make_shared<sphere>(point3(-1,0,-1), 0.5, material_left));
-    world.add(make_shared<sphere>(point3(-1,0,-1), -0.4, material_left));
-    world.add(make_shared<sphere>(point3(1,0,-1), 0.5, material_right));
+    // Blue sphere
+    shared_ptr<material> material_left = make_shared<lambertian>(color(0,0,1));
+    // Red sphere
+    shared_ptr<material> material_right = make_shared<lambertian>(color(1,0,0));
     
+    world.add(
+        make_shared<sphere>(point3(-radius, 0, -1), radius, material_left)
+    );
+
+    world.add(
+        make_shared<sphere>(point3(radius, 0, -1), radius, material_right)
+    );
+
     // Image attributes 
     const double aspect_ratio = 16.0 / 9.0; // width to height
     const int image_width = 400; // pixels
@@ -149,7 +152,8 @@ void run_ray_tracer() {
     const int max_depth = 50;
 
     // Camera
-    const camera cam;
+    double vfov = 145; // vertical field of view, in degrees
+    const camera cam(vfov, aspect_ratio);
 
     // Render
     print_ppm_header("P3", image_width, image_height, 255);

@@ -427,6 +427,44 @@ It fixed it!!! 💃
 ![Hollow glass sphere](images/hollow-sphere.png)
 
 
+## [11. Positionable Camera](https://raytracing.github.io/books/RayTracingInOneWeekend.html#positionablecamera)
+
+The axes in this ray-tracer:
+
+![Camera field of view computer](images/x-y-z-axes-computer.png)
+
+The negative z-axis is where the "world" is. And we view this world from the image generated on the computer screen (x-y plane).
+
+**Field of view** (FOV) - the angle you see through the portal
+* FOV is different horizontally and vertically
+
+Angle `theta` is the vertical fov:
+
+![Camera field of view, side](images/x-y-z-axes-side-view.png)
+
+From trig, the height `h` is `tan(theta/2)`.
+
+### Different vertical FOVs
+
+Fiddling around by changing the vertical FOV angle:
+
+![Various vertical FOVs](images/various-camera-vfov.png)
+
+The smaller the angle, the "closer" the objects appear:
+
+FOV=45 degrees:
+
+![FOV 45](images/vfov-45.png)
+
+FOV=90 degrees
+
+![FOV 90](images/vfov-90.png)
+
+FOV=125 degrees:
+
+![FOV 125](images/vfov-125.png)
+
+
 ## Resources
 * [PPM image format](https://www.cs.swarthmore.edu/~soni/cs35/f13/Labs/extras/01/ppm_info.html)
 * [CMake examples](https://github.com/ttroy50/cmake-examples/tree/master/01-basic)

@@ -6,6 +6,9 @@
 
 class camera {
     private:
+        // Width to height of the image
+        double aspect_ratio;
+        
         point3 origin;
         point3 lower_left_corner;
         // Axes
@@ -14,12 +17,18 @@ class camera {
     
     public:
         // Constructor
-        camera() {
-            // Width to height of the image
-            const double aspect_ratio = 16.0 / 9.0;
-            
+        camera(
+            double vfov, // vertical field of view, in degrees
+            double aspect_ratio
+        ): aspect_ratio(aspect_ratio) {
+
+            double theta = degrees_to_radians(vfov);
+            // The height from the triangle starting from the x-z plane with angle theta/2
+            // h is a ratio of the distance that the ray is shot from the origin toward the chosen z-plane
+            double h = tan(theta/2);
+
             // Camera
-            double viewport_height = 2.0;
+            double viewport_height = 2.0 * h;
             double viewport_width = viewport_height * aspect_ratio;
             // Distance from the eye to the viewport (depth)
             double focal_length = 1.0;
