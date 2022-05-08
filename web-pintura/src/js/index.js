@@ -21,8 +21,10 @@ console.log("Canvas width: " + canvas.width)
 console.log("Canvas height: " + canvas.height)
 
 const canvasDivStyle = window.getComputedStyle(canvasDiv);
-console.log("Canvas left margin: " + canvasDivStyle.marginLeft);
-console.log("Canvas top margin: " + canvasDivStyle.marginTop);
+const canvasDivMarginLeft = parseInt(canvasDivStyle.marginLeft.replace("px", ""));
+const canvasDivMarginTop = parseInt(canvasDivStyle.marginTop.replace("px", ""));
+console.log("Canvas left margin: " + canvasDivMarginLeft);
+console.log("Canvas top margin: " + canvasDivMarginTop);
 
 /*
     Global variables
@@ -80,7 +82,7 @@ canvas.addEventListener("mousemove", e => {
     ctx.lineCap = "round";
     // lineTo(x, y)
     //  We subtract the toolbar's width
-    ctx.lineTo(e.clientX - canvasOffsetX, e.clientY);
+    ctx.lineTo(e.clientX - canvasOffsetX, e.clientY - canvasDivMarginTop);
     ctx.stroke();
 });
 
