@@ -404,7 +404,7 @@ Indicies of refraction (η=2.5 on the left, η=1.5 in the center):
 
 ### [10.5 Modeling a Hollow Sphere](https://raytracing.github.io/books/RayTracingInOneWeekend.html#dielectrics/modelingahollowglasssphere)
 
-I had another bug where the negative radius didn't effect how the sphere was rendered (so I never got the hollow sphere), the same point in [this comment](https://www.reddit.com/r/rust/comments/g9p7vh/ray_tracing_in_a_weekend_refraction_help/).
+I had another bug where the negative radius didn't affect how the sphere was rendered (so I never got the hollow sphere), the same point in [this comment](https://www.reddit.com/r/rust/comments/g9p7vh/ray_tracing_in_a_weekend_refraction_help/).
 
 This was where the bug was:
 ```c++
