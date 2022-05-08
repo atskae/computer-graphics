@@ -49,7 +49,10 @@ toolbar.addEventListener("click", e => {
         
         // clearRect(x, y, width, height)
         //  where (x, y) is the top-left corner of the canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let clearCanvas = confirm("Are you sure you want to clear the canvas?");
+        if (clearCanvas) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
     }
 });
 
