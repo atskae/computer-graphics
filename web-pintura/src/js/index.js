@@ -33,6 +33,58 @@ console.log("lineWidth: " + lineWidth);
 /*
     Event listeners
 */
-toolbar.addEventListener(click, e => {
-    
+
+// Javascript "arrow function" ~= lambda
+toolbar.addEventListener("click", e => {
+    if (e.target.id == "clear") {
+        //console.log("Clear button was clicked!");
+        // Set all pixels in the canvs to "transparent black", which appears white
+        
+        // clearRect(x, y, width, height)
+        //  where (x, y) is the top-left corner of the canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+});
+
+toolbar.addEventListener("change", e => {
+    if (e.target.id == "color") {
+        ctx.strokeStyle = e.target.value;
+        console.log("Color was changed to: " + ctx.strokeStyle);
+    }
+    else if (e.target.id == "lineWidth") {
+        // Equivalent to: lineWidth = document.getElementById("lineWidth").value;
+        lineWidth = e.target.value;
+        // console.log("Line width changed to: " + lineWidth);
+    }
+});
+
+canvas.addEventListener("mousedown", e => {
+    startX = e.offsetX;
+    startY = e.offsetY;
+    isPainting = true;
+});
+
+canvas.addEventListener("mousemove", e => {
+    //console.log("Mouse position: (" + e.offsetX + ", " + e.offsetY + ")");
+    //console.log("isPainting: " + isPainting);
+    if (!isPainting) {
+        return;
+    }
+
+    ctx.lineWidth = lineWidth;
+    ctx.lineCap = "round";
+    // lineTo(x, y)
+    //  We subtract the toolbar's width
+    ctx.lineTo(e.clientX - canvasOffsetX, e.clientY);
+    ctx.stroke();
+});
+
+
+canvas.addEventListener("mouseup", e => {
+    startX = e.offsetX;
+    startY = e.offsetY;
+    isPainting = false;
+    // Draw the line
+    ctx.stroke();
+    ctx.beginPath();
 });
