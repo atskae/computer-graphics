@@ -1,0 +1,52 @@
+html {
+    font-family: 'Open Sans', sans-serif;
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+.container {
+    height: 100%;
+    display: flex;
+    border: 1px solid black;
+}
+
+#toolbar {
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+    width: 125px;
+    background-color: #143a4d;
+    color: white;
+}
+
+/* Apply a margin to all elements inside #toolbar */
+#toolbar * {
+    margin-bottom: 5%;
+}
+
+#toolbar label {
+    font-size: 12px;
+}
+
+#toolbar input {
+    width: 90%;
+}
+
+#toolbar button {
+    background-color: #08b5ff;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    padding: 2px;
+}
+
+#drawing-board {
+    border: 1px solid #e6e6e6;
+    height: 100%;
+}
