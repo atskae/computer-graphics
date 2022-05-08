@@ -2,6 +2,7 @@
     References to the objects in the HTML page
 */
 const canvas = document.getElementById("drawing-board");
+const canvasDiv = canvas.parentElement;
 const toolbar = document.getElementById("toolbar");
 const ctx = canvas.getContext("2d");
 
@@ -13,11 +14,15 @@ console.log("Upper-left corner of canvas: (" + canvasOffsetX + ", " + canvasOffs
 // Set the canvas dimensions to overrid default sizes
 // The default size is applied at the beginning, regardless of
 //  how large the canvas appears in the window
-canvas.width = window.innerWidth - canvasOffsetX;
-canvas.height = window.innerHeight - canvasOffsetY;
+//canvas.width = window.innerWidth - canvasOffsetX;
+//canvas.height = window.innerHeight - canvasOffsetY;
 
 console.log("Canvas width: " + canvas.width)
 console.log("Canvas height: " + canvas.height)
+
+const canvasDivStyle = window.getComputedStyle(canvasDiv);
+console.log("Canvas left margin: " + canvasDivStyle.marginLeft);
+console.log("Canvas top margin: " + canvasDivStyle.marginTop);
 
 /*
     Global variables
