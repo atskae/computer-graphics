@@ -442,7 +442,15 @@ Angle `theta` is the vertical fov:
 
 ![Camera field of view, side](images/x-y-z-axes-side-view.png)
 
-From trig, the height `h` is `tan(theta/2)`.
+From trig, the height `h` is `tan(theta/2)` if we are shooting rays from the origin to the `z=-1` plane.
+
+```
+tan(angle) = opposite / adjacent
+// theta/2 is the angle of the right triangle
+tan(theta/2) = h / z
+tan(theta/2) = abs(h / -1) // we only want the length so take the absolute value (???)
+tan(theta/2) = h
+```
 
 ### Different vertical FOVs
 
@@ -456,7 +464,7 @@ FOV=45 degrees:
 
 ![FOV 45](images/vfov-45.png)
 
-FOV=90 degrees
+FOV=90 degrees:
 
 ![FOV 90](images/vfov-90.png)
 
@@ -464,6 +472,19 @@ FOV=125 degrees:
 
 ![FOV 125](images/vfov-125.png)
 
+So these are technically spheres but because of the aspect ratio, they appear to look oval??
+
+### [11.2 Positioning and Orienting the Camera](https://raytracing.github.io/books/RayTracingInOneWeekend.html#positionablecamera/positioningandorientingthecamera)
+
+Important points (of view):
+* **lookfrom**: where the camera is placed
+* **lookat**: the point we look at
+* the **roll**: sideways tilt of the camera = the rotation around the *lookat-lookfrom* axis
+    * If we keep *lookfrom* and *lookat* constant, we can still rotate our heads to get a different view
+    * The **up vector** for the camera would be used to give us different *roll* values of the camera
+      * This *up vector* lies in the plane orthogonal to the view direction
+
+![Look from, look at](images/lookfrom-lookat.png)
 
 ## Resources
 * [PPM image format](https://www.cs.swarthmore.edu/~soni/cs35/f13/Labs/extras/01/ppm_info.html)
