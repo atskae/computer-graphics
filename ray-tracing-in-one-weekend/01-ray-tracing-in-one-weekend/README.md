@@ -487,6 +487,10 @@ Important points (of view): <--- pun not intended, actually is it ??
 
 ![Look from, look at](images/lookfrom-lookat.png)
 
+TODO: explain this magic ommgggg I have to run.... . . . 😭
+
+![Distant view](images/camera-top-view.png)
+
 ## Resources
 * [PPM image format](https://www.cs.swarthmore.edu/~soni/cs35/f13/Labs/extras/01/ppm_info.html)
 * [CMake examples](https://github.com/ttroy50/cmake-examples/tree/master/01-basic)
