@@ -476,7 +476,8 @@ So these are technically spheres but because of the aspect ratio, they appear to
 
 ### [11.2 Positioning and Orienting the Camera](https://raytracing.github.io/books/RayTracingInOneWeekend.html#positionablecamera/positioningandorientingthecamera)
 
-Important points (of view):
+Important points (of view): <--- pun not intended, actually is it ??
+
 * **lookfrom**: where the camera is placed
 * **lookat**: the point we look at
 * the **roll**: sideways tilt of the camera = the rotation around the *lookat-lookfrom* axis

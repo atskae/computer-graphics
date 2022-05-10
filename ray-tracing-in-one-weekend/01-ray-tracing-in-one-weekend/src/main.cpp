@@ -123,23 +123,35 @@ color ray_color(const ray& r, const hittable_list& world, int depth) {
 }
 
 void run_ray_tracer() {
-    double radius = cos(pi/4); // 45 degrees
     // Create a world, a list of objects that are hittable by a ray
     hittable_list world;
     
     shared_ptr<material> material_ground = make_shared<lambertian>(color(0.8, 0.8, 0.0));
     shared_ptr<material> material_center = make_shared<lambertian>(color(0.1, 0.2, 0.5));
     // Blue sphere
-    shared_ptr<material> material_left = make_shared<lambertian>(color(0,0,1));
+    shared_ptr<material> material_left = make_shared<dielectric>(1.5);
     // Red sphere
-    shared_ptr<material> material_right = make_shared<lambertian>(color(1,0,0));
-    
+    shared_ptr<material> material_right = make_shared<metal>(color(0.8,0.6,0.2), 0.0);
+
     world.add(
-        make_shared<sphere>(point3(-radius, 0, -1), radius, material_left)
+        make_shared<sphere>(point3(0, -100.5, -1), 100, material_ground)
     );
 
     world.add(
-        make_shared<sphere>(point3(radius, 0, -1), radius, material_right)
+        make_shared<sphere>(point3(0, 0, -1), 0.5, material_center)
+    );
+
+    // Hollow sphere
+    world.add(
+        make_shared<sphere>(point3(-1, 0, -1), 0.5, material_left)
+    );
+
+    world.add(
+        make_shared<sphere>(point3(-1, 0, -1), -0.45, material_left)
+    );
+
+    world.add(
+        make_shared<sphere>(point3(1, 0, -1), 0.5, material_right)
     );
 
     // Image attributes 
@@ -152,8 +164,11 @@ void run_ray_tracer() {
     const int max_depth = 50;
 
     // Camera
-    double vfov = 145; // vertical field of view, in degrees
-    const camera cam(vfov, aspect_ratio);
+    double vfov = 90; // vertical field of view, in degrees
+    point3 lookfrom = point3(-2, 2, 1);
+    point3 lookat = point3(0,0,-1);
+    vec3 view_up_vector = vec3(0,1,0);
+    const camera cam(lookfrom, lookat, view_up_vector, vfov, aspect_ratio);
 
     // Render
     print_ppm_header("P3", image_width, image_height, 255);
