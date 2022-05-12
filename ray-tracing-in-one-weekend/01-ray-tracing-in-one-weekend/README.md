@@ -489,7 +489,24 @@ Important points (of view): <--- pun not intended, actually is it ??
 
 TODO: explain this magic ommgggg I have to run.... . . . 😭
 
-![Distant view](images/camera-top-view.png)
+At vertical field of view (vfov) at 90 degrees:
+
+![Distant view](images/camera-top-view-vfov-90.png)
+
+At vfov=20:
+
+![Closer view](images/camera-vfov-20.png)
+
+To get a view from the right side, we adjust `lookfrom` to a positive x value (here I moved `lookfrom` from `(-2,2,1)` to  `(4,2,1)`):
+
+![View from the right side](images/view-from-right-side.png)
+
+Ommgggg so,,,,, cool.
+
+Negative view up vector `(0,-1,0)`:
+
+![Negative vup](images/negative-vup.png)
+
 
 ## Resources
 * [PPM image format](https://www.cs.swarthmore.edu/~soni/cs35/f13/Labs/extras/01/ppm_info.html)
