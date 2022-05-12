@@ -14,7 +14,14 @@ class camera {
         // Axes
         vec3 horizontal;
         vec3 vertical;
-    
+
+        // Orthonormal bases that define the camera orientation
+        vec3 u; // points horizontal ("x-axis")
+        vec3 v; // points up ("y-axis")
+        vec3 w; // `lookat` to `lookfrom` ("z-axis")
+        
+        double lens_radius;
+
     public:
         // Constructor
         camera(
@@ -27,7 +34,9 @@ class camera {
             //  to the view direction (`lookfrom` to `lookat`)
             vec3 vup,
             double vfov, // vertical field of view, in degrees
-            double aspect_ratio
+            double aspect_ratio,
+            double aperature, // size of the camera hole, controls defocus blur
+            double focus_dist // the distance between the projection point and the focus plane
         ): aspect_ratio(aspect_ratio) {
 
             double theta = degrees_to_radians(vfov);
@@ -43,15 +52,15 @@ class camera {
             //  that describe the camera's orientation
             
             // A unit vector that points in the direction `lookat` to `lookfrom`
-            vec3 w = unit_vector(lookfrom - lookat);
+            this->w = unit_vector(lookfrom - lookat);
             // The cross product gives us a vector that is orthogonal to both
             //  vup and w
-            vec3 u = unit_vector(cross(vup, w)); 
-            vec3 v = cross(w, u); // already a unit vector
+            this->u = unit_vector(cross(vup, w)); 
+            this->v = cross(w, u); // already a unit vector
 
             this->origin = lookfrom;
-            this->horizontal = viewport_width * u;
-            this->vertical = viewport_height * v;
+            this->horizontal = focus_dist * viewport_width * u;
+            this->vertical = focus_dist * viewport_height * v;
 
             // Negative z-axis goes through the center of the viewport. 
             // To get the lower left corner of the viewport,
@@ -60,15 +69,26 @@ class camera {
             //  The focal length defines how far the origin is from the viewport. 
             // Vector w is on the same line (span?) as `lookfrom` and `lookat`
             //  so from w we can get the focal length
-            this->lower_left_corner = this->origin - this->horizontal/2 - this->vertical/2 - w;
+            this->lower_left_corner = this->origin - this->horizontal/2 - this->vertical/2 - focus_dist*w;
+        
+            this->lens_radius = aperature / 2;
         }
 
         // Create a ray that shoots out from the origin to the position on the viewport (?)
         // (s,t) = position of the pixel in the viewport
         //  where `s` is horizontal, `t` is vertical
+        // To create the focus blur effect, we randomize where the ray origin is,
+        //  by choosing a point within the area of the lens.
+        // To have no focus blur effect (the original camera), the lens radius can simply be set to zero.
         ray get_ray(double s, double t) const {
-            vec3 direction = this->lower_left_corner + (s * this->horizontal) + (t * this->vertical) - this->origin;
-            return ray(this->origin, direction);
+            // Create a random vector with length of the len's radius
+            vec3 rd = this->lens_radius * random_in_unit_disk();
+            // `u` is the "x-axis" of the camera
+            // `v` is the "y-axis" of the camera
+            vec3 offset = u * rd.x() + v * rd.y();
+
+            vec3 direction = this->lower_left_corner + (s * this->horizontal) + (t * this->vertical) - this->origin - offset;
+            return ray(this->origin + offset, direction);
         }
 };
 

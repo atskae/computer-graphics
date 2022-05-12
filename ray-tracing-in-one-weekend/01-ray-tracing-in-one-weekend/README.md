@@ -507,6 +507,22 @@ Negative view up vector `(0,-1,0)`:
 
 ![Negative vup](images/negative-vup.png)
 
+## [12. Defocus Blur](https://raytracing.github.io/books/RayTracingInOneWeekend.html#defocusblur)
+
+"Defocus blur" = *depth of field* in the photography world.
+
+* **focus distance** The distance between the projection point and the plane where everything is in focus
+    * *focus distance* != *focal length* (focal length is the distance between the projection point and the image plane)
+
+* **aperture** is the hole in your camera that controls how much light enters the camera sensor
+  * Like a pupil in your eye that expands/shrinks based on how dark/light the environment is
+  * Larger aperature = more light = more defocus blur
+
+With aperature=2.0:
+
+![Fuzzy](images/with-depth-of-field.png)
+
+I actually don't understand this so I'll come back to this...
 
 ## Resources
 * [PPM image format](https://www.cs.swarthmore.edu/~soni/cs35/f13/Labs/extras/01/ppm_info.html)

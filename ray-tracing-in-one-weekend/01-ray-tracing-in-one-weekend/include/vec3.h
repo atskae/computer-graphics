@@ -222,6 +222,17 @@ vec3 random_in_hemisphere(const vec3& normal) {
     }
 }
 
+// Pick a random point in the unit disk (same as a unit circle with the center at the origin)
+// The disk is a circle with the `lookfrom` point of the camera as its center
+// Called the "defocus disk", everything outside the disk is blurred 
+vec3 random_in_unit_disk() {
+    while(true) {
+        vec3 p = vec3(random_double(-1, 1), random_double(-1,1), 0);
+        if (p.length_squared() >=1) continue;
+        return p;
+    }
+}
+
 // Return the reflected vector, which has the same angle to the normal
 // but its direction is reflected
 vec3 reflect(const vec3& v, const vec3 normal) {

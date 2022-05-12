@@ -164,11 +164,13 @@ void run_ray_tracer() {
     const int max_depth = 50;
 
     // Camera
-    double vfov = 90; // vertical field of view, in degrees
-    point3 lookfrom = point3(-2, 2, 1);
+    double vfov = 20; // vertical field of view, in degrees
+    point3 lookfrom = point3(3, 3, 2);
     point3 lookat = point3(0,0,-1);
     vec3 view_up_vector = vec3(0,1,0);
-    const camera cam(lookfrom, lookat, view_up_vector, vfov, aspect_ratio);
+    double aperature = 2.0;
+    double dist_to_focus = (lookfrom - lookat).length();
+    const camera cam(lookfrom, lookat, view_up_vector, vfov, aspect_ratio, aperature, dist_to_focus);
 
     // Render
     print_ppm_header("P3", image_width, image_height, 255);
