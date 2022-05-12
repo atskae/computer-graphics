@@ -522,7 +522,11 @@ With aperature=2.0:
 
 ![Fuzzy](images/with-depth-of-field.png)
 
-I actually don't understand this so I'll come back to this...
+With aperature=0.5:
+
+![Aperature 0.5](images/aperature-0.5.png)
+
+I actually don't understand this 100% so I'll come back to this...
 
 ## Resources
 * [PPM image format](https://www.cs.swarthmore.edu/~soni/cs35/f13/Labs/extras/01/ppm_info.html)
