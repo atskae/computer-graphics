@@ -579,7 +579,7 @@ Recall this rendered image from before:
 
 ![Focused blue sphere](images/aperature-0.5.png)
 
-The reason the middle blue sphere is focused is because it is placed at a at the focus distance from the camera:
+The reason the middle blue sphere is focused is because its distance from the camera is the same as the focus distance:
 ```c++
     // The blue sphere is placed at (0,0,-1)
     world.add(
