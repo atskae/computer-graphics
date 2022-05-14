@@ -166,9 +166,9 @@ void run_ray_tracer() {
     // Camera
     double vfov = 20; // vertical field of view, in degrees
     point3 lookfrom = point3(3, 3, 2);
-    point3 lookat = point3(0,0,-1);
+    point3 lookat = point3(1,0,-1);
     vec3 view_up_vector = vec3(0,1,0);
-    double aperature = 2.0;
+    double aperature = 0.5;
     double dist_to_focus = (lookfrom - lookat).length();
     const camera cam(lookfrom, lookat, view_up_vector, vfov, aspect_ratio, aperature, dist_to_focus);
 

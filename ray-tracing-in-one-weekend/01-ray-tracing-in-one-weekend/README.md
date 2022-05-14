@@ -510,13 +510,16 @@ Negative view up vector `(0,-1,0)`:
 ## [12. Defocus Blur](https://raytracing.github.io/books/RayTracingInOneWeekend.html#defocusblur)
 
 "Defocus blur" = *depth of field* in the photography world.
+* [**depth of field**](https://en.wikipedia.org/wiki/Depth_of_field): "the distance between the nearest and farthest objects that are in acceptably sharp focus"
+    * The larger the depth of field, the larger the area where the image is focused (with the remaining parts blurred)
 
 * **focus distance** The distance between the projection point and the plane where everything is in focus
     * *focus distance* != *focal length* (focal length is the distance between the projection point and the image plane)
 
 * **aperture** is the hole in your camera that controls how much light enters the camera sensor
   * Like a pupil in your eye that expands/shrinks based on how dark/light the environment is
-  * Larger aperature = more light = more defocus blur
+  * Larger aperature produce more shallow depth of field (more blurriness). Smaller aperatures product images with large depth of field 
+    * The blurriness is due to the sensor getting light from multiple directions
 
 With aperature=2.0:
 
@@ -527,6 +530,100 @@ With aperature=0.5:
 ![Aperature 0.5](images/aperature-0.5.png)
 
 I actually don't understand this 100% so I'll come back to this...
+
+#### Trying to explain this 
+
+Making many assumptions because I don't have a professor to ask at some office hours 😢
+
+I think the focus plane and the viewport are in the same exact spot and size, which is why I think we multiply by `focus_dist` here?
+```c++
+camera(...) {
+            ...
+            this->horizontal = focus_dist * viewport_width * u;
+            this->vertical = focus_dist * viewport_height * v;
+```
+
+If that's the case, this is the understanding I have of `camera.get_ray()`:
+
+![Defocus blur setup](images/defocus-blur.png)
+
+For each sample (per pixel), we first get a random start point within the lens (the bounds given to us by the aperature):
+```c++
+            vec3 rd = this->lens_radius * random_in_unit_disk();
+            vec3 offset = this->u * rd.x() + this->v * rd.y();
+```
+We use the camera's axes `u` (horizontal) and `v` (vertical).
+
+The `offset` is a random point within the lens that is relative to the camera origin (`lookfrom`).
+
+The next line is [creating a vector from two points](http://mathonline.wikidot.com/determining-a-vector-given-two-points). This is the vector from the random point from the origin `(this->origin + offset)`, and the point on the focus plane `(this->lower_left_corner + s*this->horizontal + t*this->vertical)`: 
+```c++
+            vec3 direction = (this->lower_left_corner + s*this->horizontal + t*this->vertical) - (this->origin + offset);
+```
+
+Here we use the viewport's axes, `horizontal` and `vertical`, to find the pixel `(s,t)`'s coordinate in the viewport.
+
+For each pixel `(s,t)`, the focus point is fixed. What varies is the random starting point. So for each pixel, we have a bunch of rays starting at different points but going through the same point on the focus plane.
+
+The ray that is returned:
+
+```c++
+            return ray(this->origin + offset, direction);
+```
+
+Objects that are closer to the focus plane will appear sharper. This is because the samples are closer together near the focus point. The farther the object is from the focus plane, the samples are spread out more, so the average pixel value will include samples from a wider range.
+
+![Defocus blur sampling differences](images/defocus-blur-sample-spread.png)
+
+Recall this rendered image from before:
+
+![Focused blue sphere](images/aperature-0.5.png)
+
+The reason the middle blue sphere is because it is placed at a distance `focus_dist` from the camera:
+```c++
+    // The blue sphere is placed at (0,0,-1)
+    world.add(
+        make_shared<sphere>(point3(0, 0, -1), 0.5, material_center)
+    );
+```
+Here is our camera setup:
+```c++
+    // Camera
+    ...
+    point3 lookfrom = point3(3, 3, 2);
+    point3 lookat = point3(0,0,-1);
+    ...
+    double dist_to_focus = (lookfrom - lookat).length();
+```
+We are looking at an object at `(0,0,-1)`, which is the same as where our blue sphere is. The distance from the camera to the blue sphere is `(lookat - lookfrom).length`, which is what we use for the focus distance.
+
+If we want to make the metal sphere on the right in focus instead, we just have to change the focus distance to where the metal sphere is. The metal sphere is placed at point `(1,0,-1)`:
+
+```c++
+    world.add(
+        make_shared<sphere>(point3(1, 0, -1), 0.5, material_right)
+    );
+```
+
+If we change the focus distance to the distance between the camera and the metal sphere at `(1,0,-1)`:
+```c++
+double dist_to_focus = (lookfrom - point3(1,0,-1)).length();
+```
+
+We get this image:
+
+![Metal sphere focused](images/metal-sphere-focused.png)
+
+Aaaaaaあああ my intuition was correct wowoooooooow 🤯
+
+We can also look at the metal sphere and keep the focus distance `(lookfrom - lookat).length()`:
+
+![Look at the metal sphere](images/lookat-metal-sphere.png)
+
+#### Explanations
+* [References to depth of field implementation in a ray tracer](https://stackoverflow.com/questions/13532947/references-for-depth-of-field-implementation-in-a-raytracer)
+* [Depth of Field in Path Tracing](https://medium.com/@elope139/depth-of-field-in-path-tracing-e61180417027#:~:text=Implementing%20depth%20of%20field%20in,out%20of%20focus%20will%20appear.)
+* [Ray tracer depth of field](https://steveharveynz.wordpress.com/2012/12/21/ray-tracer-part-5-depth-of-field/)
 
 ## Resources
 * [PPM image format](https://www.cs.swarthmore.edu/~soni/cs35/f13/Labs/extras/01/ppm_info.html)

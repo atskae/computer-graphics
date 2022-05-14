@@ -11,7 +11,8 @@ class camera {
         
         point3 origin;
         point3 lower_left_corner;
-        // Axes
+        
+        // Vectors representing the viewport
         vec3 horizontal;
         vec3 vertical;
 
@@ -59,6 +60,8 @@ class camera {
             this->v = cross(w, u); // already a unit vector
 
             this->origin = lookfrom;
+            // TODO: We still want to keep the viewport proportional to the focus_dist (?)
+            // The focus plane also acts as the viewport/image plane (?)
             this->horizontal = focus_dist * viewport_width * u;
             this->vertical = focus_dist * viewport_height * v;
 
@@ -69,8 +72,10 @@ class camera {
             //  The focal length defines how far the origin is from the viewport. 
             // Vector w is on the same line (span?) as `lookfrom` and `lookat`
             //  so from w we can get the focal length
+            // +w is behind the camera, -w is in front of the camera
             this->lower_left_corner = this->origin - this->horizontal/2 - this->vertical/2 - focus_dist*w;
-        
+
+            // Divide by 2 since aperature = diameter
             this->lens_radius = aperature / 2;
         }
 
@@ -85,9 +90,11 @@ class camera {
             vec3 rd = this->lens_radius * random_in_unit_disk();
             // `u` is the "x-axis" of the camera
             // `v` is the "y-axis" of the camera
-            vec3 offset = u * rd.x() + v * rd.y();
+            vec3 offset = this->u * rd.x() + this->v * rd.y();
 
-            vec3 direction = this->lower_left_corner + (s * this->horizontal) + (t * this->vertical) - this->origin - offset;
+            // Create a vector from (origin+offset) to the viewport/focus plane
+            // Here we are creating a vector using two points
+            vec3 direction = (this->lower_left_corner + s*this->horizontal + t*this->vertical) - (this->origin + offset);
             return ray(this->origin + offset, direction);
         }
 };
