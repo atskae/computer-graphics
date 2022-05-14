@@ -579,7 +579,7 @@ Recall this rendered image from before:
 
 ![Focused blue sphere](images/aperature-0.5.png)
 
-The reason the middle blue sphere is because it is placed at a distance `focus_dist` from the camera:
+The reason the middle blue sphere is focused is because it is placed at a at the focus distance from the camera:
 ```c++
     // The blue sphere is placed at (0,0,-1)
     world.add(
@@ -595,7 +595,7 @@ Here is our camera setup:
     ...
     double dist_to_focus = (lookfrom - lookat).length();
 ```
-We are looking at an object at `(0,0,-1)`, which is the same as where our blue sphere is. The distance from the camera to the blue sphere is `(lookat - lookfrom).length`, which is what we use for the focus distance.
+We are looking at an object at `(0,0,-1)`, which is the same as where our blue sphere is. The distance from the camera to the blue sphere is `(lookat - lookfrom).length`, which is what we use for the focus distance `dist_to_focus`.
 
 If we want to make the metal sphere on the right in focus instead, we just have to change the focus distance to where the metal sphere is. The metal sphere is placed at point `(1,0,-1)`:
 
