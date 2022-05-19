@@ -122,7 +122,7 @@ color ray_color(const ray& r, const hittable_list& world, int depth) {
     }
 }
 
-void run_ray_tracer() {
+hittable_list tutorial_scene() {
     // Create a world, a list of objects that are hittable by a ray
     hittable_list world;
     
@@ -153,6 +153,28 @@ void run_ray_tracer() {
     world.add(
         make_shared<sphere>(point3(1, 0, -1), 0.5, material_right)
     );
+
+    return world;
+}
+
+// Generate the cover of Ray Tracing in One Woche!
+hittable_list random_scene() {
+    hittable_list world;
+
+    // Create the materials
+    shared_ptr<material> material_ground = make_shared<lambertian>(color(0.8, 0.8, 0.0));
+
+    // Add spheres to this world
+    world.add(
+        make_shared<sphere>(point3(0, -100.5, -1), 100, material_ground)
+    );
+
+    return world;
+}
+
+void run_ray_tracer() {
+    // Add spheres to the scene
+    hittable_list world = tutorial_scene();
 
     // Image attributes 
     const double aspect_ratio = 16.0 / 9.0; // width to height
