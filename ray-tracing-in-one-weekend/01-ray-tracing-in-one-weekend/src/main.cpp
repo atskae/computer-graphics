@@ -161,20 +161,41 @@ hittable_list tutorial_scene() {
 hittable_list random_scene() {
     hittable_list world;
 
-    // Create the materials
-    shared_ptr<material> material_ground = make_shared<lambertian>(color(0.8, 0.8, 0.0));
+    // Colors
+    color blue_gray = color(0.74, 0.77, 0.82);
+    color brown = color(0.30, 0.26, 0.16);
+    color dull_yellow = color(0.77, 0.76, 0.66);
 
+    // Create the materials
+    shared_ptr<material> material_ground = make_shared<lambertian>(blue_gray);
+    shared_ptr<material> material_left = make_shared<lambertian>(brown);
+    shared_ptr<material> material_glass = make_shared<dielectric>(1.5);
+    shared_ptr<material> material_metal = make_shared<metal>(dull_yellow, 0.0);
+    
     // Add spheres to this world
     world.add(
         make_shared<sphere>(point3(0, -100.5, -1), 100, material_ground)
     );
+
+    world.add(
+        make_shared<sphere>(point3(-1.5, 0, -1), 0.5, material_left)
+    );
+
+    world.add(
+        make_shared<sphere>(point3(0, 0, -1), 0.5, material_glass)
+    );
+
+    world.add(
+        make_shared<sphere>(point3(1.5, 0, -1), 0.5, material_metal)
+    );
+
 
     return world;
 }
 
 void run_ray_tracer() {
     // Add spheres to the scene
-    hittable_list world = tutorial_scene();
+    hittable_list world = random_scene();
 
     // Image attributes 
     const double aspect_ratio = 16.0 / 9.0; // width to height
@@ -186,11 +207,11 @@ void run_ray_tracer() {
     const int max_depth = 50;
 
     // Camera
-    double vfov = 20; // vertical field of view, in degrees
-    point3 lookfrom = point3(3, 3, 2);
-    point3 lookat = point3(1,0,-1);
+    double vfov = 15; // vertical field of view, in degrees
+    point3 lookfrom = point3(8, 1.5, 1.5);
+    point3 lookat = point3(-0.5,0,-1);
     vec3 view_up_vector = vec3(0,1,0);
-    double aperature = 0.5;
+    double aperature = 0.1;
     double dist_to_focus = (lookfrom - lookat).length();
     const camera cam(lookfrom, lookat, view_up_vector, vfov, aspect_ratio, aperature, dist_to_focus);
 

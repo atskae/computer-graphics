@@ -625,6 +625,16 @@ We can also look at the metal sphere and keep the focus distance `(lookfrom - lo
 * [Depth of Field in Path Tracing](https://medium.com/@elope139/depth-of-field-in-path-tracing-e61180417027#:~:text=Implementing%20depth%20of%20field%20in,out%20of%20focus%20will%20appear.)
 * [Ray tracer depth of field](https://steveharveynz.wordpress.com/2012/12/21/ray-tracer-part-5-depth-of-field/)
 
+## [13.1. A Final Renderer](https://raytracing.github.io/books/RayTracingInOneWeekend.html#wherenext?/afinalrender)
+
+I tried to generate at least the three spheres on the cover without looking at the solution, and eh, close enough:
+
+![Cover attempt](images/cover-attempt.png)
+
+(guessing and checking for like 1 hour)
+
+
+
 ## Resources
 * [PPM image format](https://www.cs.swarthmore.edu/~soni/cs35/f13/Labs/extras/01/ppm_info.html)
 * [CMake examples](https://github.com/ttroy50/cmake-examples/tree/master/01-basic)
