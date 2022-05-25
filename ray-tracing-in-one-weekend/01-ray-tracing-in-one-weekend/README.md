@@ -633,7 +633,98 @@ I tried to generate at least the three spheres on the cover without looking at t
 
 (guessing and checking for like 1 hour)
 
+Actually followed the code and attempted the final textbook cover.
+I let the ray tracer run for like, 4 days on and off, and it finally completed!!!!!! (Tuesday, May 24, 2022)
 
+```
+➜  01-ray-tracing-in-one-weekend git:(master) ✗ fg
+[1]  + 2395 running    time ./build/RayTracer > textbook-cover.ppm
+Scanlines remaining: 742 ^Z
+[1]  + 2395 suspended  time ./build/RayTracer > textbook-cover.ppm
+➜  01-ray-tracing-in-one-weekend git:(master) ✗ bg
+[1]  + 2395 continued  time ./build/RayTracer > textbook-cover.ppm
+Scanlines remaining: 723 fgekend git:(master) ✗ 
+[1]  + 2395 running    time ./build/RayTracer > textbook-cover.ppm
+^Z
+[1]  + 2395 suspended  time ./build/RayTracer > textbook-cover.ppm
+➜  01-ray-tracing-in-one-weekend git:(master) ✗ bg
+[1]  + 2395 continued  time ./build/RayTracer > textbook-cover.ppm
+Scanlines remaining: 722 fgekend git:(master) ✗ 
+[1]  + 2395 running    time ./build/RayTracer > textbook-cover.ppm
+^Z
+[1]  + 2395 suspended  time ./build/RayTracer > textbook-cover.ppm
+➜  01-ray-tracing-in-one-weekend git:(master) ✗ bg
+[1]  + 2395 continued  time ./build/RayTracer > textbook-cover.ppm
+Scanlines remaining: 711 fgekend git:(master) ✗ 
+[1]  + 2395 running    time ./build/RayTracer > textbook-cover.ppm
+^Z
+[1]  + 2395 suspended  time ./build/RayTracer > textbook-cover.ppm
+➜  01-ray-tracing-in-one-weekend git:(master) ✗ bg
+[1]  + 2395 continued  time ./build/RayTracer > textbook-cover.ppm
+➜  01-ray-tracing-in-one-weekend git:(master) ✗ fg
+[1]  + 2395 running    time ./build/RayTracer > textbook-cover.ppm
+^Z
+[1]  + 2395 suspended  time ./build/RayTracer > textbook-cover.ppm
+➜  01-ray-tracing-in-one-weekend git:(master) ✗ bg
+[1]  + 2395 continued  time ./build/RayTracer > textbook-cover.ppm
+➜  01-ray-tracing-in-one-weekend git:(master) ✗ fg
+[1]  + 2395 running    time ./build/RayTracer > textbook-cover.ppm
+Scanlines remaining: 700 ^Z
+[1]  + 2395 suspended  time ./build/RayTracer > textbook-cover.ppm
+➜  01-ray-tracing-in-one-weekend git:(master) ✗ bg
+[1]  + 2395 continued  time ./build/RayTracer > textbook-cover.ppm
+Scanlines remaining: 639 fgekend git:(master) ✗ 
+[1]  + 2395 running    time ./build/RayTracer > textbook-cover.ppm
+Scanlines remaining: 373 ^Z
+[1]  + 2395 suspended  time ./build/RayTracer > textbook-cover.ppm
+➜  01-ray-tracing-in-one-weekend git:(master) ✗ bg
+[1]  + 2395 continued  time ./build/RayTracer > textbook-cover.ppm
+Scanlines remaining: 371 fgekend git:(master) ✗ 
+[1]  + 2395 running    time ./build/RayTracer > textbook-cover.ppm
+Scanlines remaining: 243 ^Z
+[1]  + 2395 suspended  time ./build/RayTracer > textbook-cover.ppm
+➜  01-ray-tracing-in-one-weekend git:(master) ✗ bg
+[1]  + 2395 continued  time ./build/RayTracer > textbook-cover.ppm
+Scanlines remaining: 242 fgekend git:(master) ✗ 
+[1]  + 2395 running    time ./build/RayTracer > textbook-cover.ppm
+Scanlines remaining: 197 ^Z
+[1]  + 2395 suspended  time ./build/RayTracer > textbook-cover.ppm
+➜  01-ray-tracing-in-one-weekend git:(master) ✗ bg
+[1]  + 2395 continued  time ./build/RayTracer > textbook-cover.ppm
+➜  01-ray-tracing-in-one-weekend git:(master) ✗ fg
+[1]  + 2395 running    time ./build/RayTracer > textbook-cover.ppm
+^Z
+[1]  + 2395 suspended  time ./build/RayTracer > textbook-cover.ppm
+➜  01-ray-tracing-in-one-weekend git:(master) ✗ bg
+[1]  + 2395 continued  time ./build/RayTracer > textbook-cover.ppm
+➜  01-ray-tracing-in-one-weekend git:(master) ✗ fg
+[1]  + 2395 running    time ./build/RayTracer > textbook-cover.ppm
+Scanlines remaining: 34 ^Z
+[1]  + 2395 suspended  time ./build/RayTracer > textbook-cover.ppm
+➜  01-ray-tracing-in-one-weekend git:(master) ✗ bg
+[1]  + 2395 continued  time ./build/RayTracer > textbook-cover.ppm
+Scanlines remaining: 33 fgeekend git:(master) ✗ 
+[1]  + 2395 running    time ./build/RayTracer > textbook-cover.ppm
+Scanlines remaining: 0 ./build/RayTracer > textbook-cover.ppm  142018.58s user 162.97s system 47% cpu 83:11:30.42 total
+```
+
+![Textbook cover](images/textbook-cover.png)
+
+OMGGGGG 素晴らしいいいいいいい 😭💃 Schööön
+
+日記
+
+I totally thought it would result in a black image because it was taking so damn long... I thought it was reaching maximum recursion depth for each pixel/sample. Oh man... so relieved...
+
+In the first attempt I accidently compiled in DEBUG mode, so it was hella more slow... But when I realized that, the ray tracer was pretty far into it, so I fell into the sunk cost fallacy. Then my Mac OS restarted in the middle of the night to install some updates without asking so I had to start over... OTL
+
+Then I tried again, without DEBUG symbols...
+
+This sequential, single-threaded ray tracer forced me to install my air conditioner early this year because it was heating up my laptop and there happend to be a heat advisory warning the weekend that this ran, so my room was turning into an oven 🔥 Now I am grateful that GPUs (and air conditioners) exist.
+
+Completed!!! ✨ On to the next aventura! 🏃‍♀️
+
+つづく
 
 ## Resources
 * [PPM image format](https://www.cs.swarthmore.edu/~soni/cs35/f13/Labs/extras/01/ppm_info.html)

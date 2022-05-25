@@ -161,34 +161,71 @@ hittable_list tutorial_scene() {
 hittable_list random_scene() {
     hittable_list world;
 
-    // Colors
-    color blue_gray = color(0.74, 0.77, 0.82);
-    color brown = color(0.30, 0.26, 0.16);
-    color dull_yellow = color(0.77, 0.76, 0.66);
+    // Create the ground
+    color gray = color(0.5, 0.5, 0.5);
+    shared_ptr<material> material_ground = make_shared<lambertian>(gray);
+    world.add(
+        make_shared<sphere>(point3(0, -1000, 0), 1000, material_ground)
+    );
 
-    // Create the materials
-    shared_ptr<material> material_ground = make_shared<lambertian>(blue_gray);
-    shared_ptr<material> material_left = make_shared<lambertian>(brown);
-    shared_ptr<material> material_glass = make_shared<dielectric>(1.5);
-    shared_ptr<material> material_metal = make_shared<metal>(dull_yellow, 0.0);
+    // Create many spheres!
+    // Iterate over the x and z axes to select where to place the spheres
+    double y = 0.2;
+    point3 ref(4, 0.2, 0);
+    double radius = 0.2;
+    for (int x=-11; x<11; x++) {
+        for (int z=-11; z<11; z++) {
+            // Choose a random delta (<1) from the x and z coordinates
+            // random_double() returns [0, 1)
+            point3 center(x+0.9*random_double(), y, z+0.9*random_double());
+
+            // Ensure small spheres don't intersect larger spheres to be rendered later? 
+            if ((center-ref).length() > 0.9) {
+                shared_ptr<material> sphere_material;
+                
+                // Choose a random value between 0 and 1 (exclusive)
+                double choose_material = random_double();
+                if (choose_material < 0.8) {
+                    // Diffuse
+                    // Why multiply ?
+                    color albedo = color::random() * color::random();
+                    sphere_material = make_shared<lambertian>(albedo);
+                    
+                } else if (choose_material < 0.95) {
+                    // Metal
+                    color albedo = color::random(0.5, 1);
+                    double fuzz = random_double(0, 0.5);
+                    sphere_material = make_shared<metal>(albedo, fuzz);
+                } else {
+                    sphere_material = make_shared<dielectric>(1.5);
+                }
+
+                world.add(
+                    make_shared<sphere>(center, radius, sphere_material)
+                );
+            } // generate sphere
+        } // z-axis
+    } // x-axis
+
+    // Create three giant spheres
+    radius = 1.0;
     
-    // Add spheres to this world
+    shared_ptr<material> material1 = make_shared<dielectric>(1.5);
     world.add(
-        make_shared<sphere>(point3(0, -100.5, -1), 100, material_ground)
+        make_shared<sphere>(point3(0,1,0), radius, material1)
     );
 
+    shared_ptr<material> material2 = make_shared<lambertian>(color(0.4, 0.2, 0.1));
     world.add(
-        make_shared<sphere>(point3(-1.5, 0, -1), 0.5, material_left)
+        make_shared<sphere>(point3(-4,1,0), radius, material2)
     );
 
-    world.add(
-        make_shared<sphere>(point3(0, 0, -1), 0.5, material_glass)
+    shared_ptr<material> material3 = make_shared<metal>(
+        color(0.7, 0.6, 0.5), 0.0 // fuzz
     );
-
     world.add(
-        make_shared<sphere>(point3(1.5, 0, -1), 0.5, material_metal)
+        make_shared<sphere>(point3(4,1,0), radius, material3)
     );
-
 
     return world;
 }
@@ -198,21 +235,21 @@ void run_ray_tracer() {
     hittable_list world = random_scene();
 
     // Image attributes 
-    const double aspect_ratio = 16.0 / 9.0; // width to height
-    const int image_width = 400; // pixels
+    const double aspect_ratio = 3.0 / 2.0; // width to height
+    const int image_width = 1200; // pixels
     const int image_height = static_cast<int>(image_width / aspect_ratio);
-    const int samples_per_pixel = 100;
+    const int samples_per_pixel = 500;
     // Maximum number of times a ray can keep reflecting off of a surface
     //  in a row
     const int max_depth = 50;
 
     // Camera
-    double vfov = 15; // vertical field of view, in degrees
-    point3 lookfrom = point3(8, 1.5, 1.5);
-    point3 lookat = point3(-0.5,0,-1);
+    double vfov = 20; // vertical field of view, in degrees
+    point3 lookfrom = point3(13, 2, 3);
+    point3 lookat = point3(0,0,0);
     vec3 view_up_vector = vec3(0,1,0);
+    double dist_to_focus = 10.0;
     double aperature = 0.1;
-    double dist_to_focus = (lookfrom - lookat).length();
     const camera cam(lookfrom, lookat, view_up_vector, vfov, aspect_ratio, aperature, dist_to_focus);
 
     // Render

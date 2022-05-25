@@ -9,7 +9,7 @@ project(RayTracer)
 set(SOURCES "src/main.cpp")
 
 # Compile with debug symbols (for GDB)
-set(CMAKE_BUILD_TYPE Debug)
+#set(CMAKE_BUILD_TYPE Debug)
 
 # Executable
 add_executable(${PROJECT_NAME} ${SOURCES})
