@@ -22,6 +22,11 @@ class camera {
         vec3 w; // `lookat` to `lookfrom` ("z-axis")
         
         double lens_radius;
+        // Shutter open/close times
+        // For motion blur, the camera will send out rays at random times
+        //  between time0 and time1, then take the average of those images
+        //  to create the motion blur effect
+        double time0, time1; 
 
     public:
         // Constructor
@@ -37,8 +42,10 @@ class camera {
             double vfov, // vertical field of view, in degrees
             double aspect_ratio,
             double aperature, // size of the camera hole, controls defocus blur
-            double focus_dist // the distance between the projection point and the focus plane
-        ): aspect_ratio(aspect_ratio) {
+            double focus_dist, // the distance between the projection point and the focus plane
+            double _time0=0, // shutter open (start time for motion blur) 
+            double _time1=0 // shutter close (end time for motion blur)
+        ): aspect_ratio(aspect_ratio), time0(_time0), time1(_time1) {
 
             double theta = degrees_to_radians(vfov);
             // The height from the triangle starting from the x-z plane with angle theta/2
@@ -95,7 +102,9 @@ class camera {
             // Create a vector from (origin+offset) to the viewport/focus plane
             // Here we are creating a vector using two points
             vec3 direction = (this->lower_left_corner + s*this->horizontal + t*this->vertical) - (this->origin + offset);
-            return ray(this->origin + offset, direction);
+            // Generate a random time between when the camera shutter interval
+            double timestamp = random_double(this->time0, this->time1);
+            return ray(this->origin + offset, direction, timestamp);
         }
 };
 

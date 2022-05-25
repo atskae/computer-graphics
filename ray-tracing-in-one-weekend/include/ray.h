@@ -19,14 +19,18 @@ class ray {
         // P(t) = A + tb; A=origin, b=direction
         point3 orig; // origin
         vec3 dir; // direction
+        double tm; // the time when the ray exists (used for motion blur)
 
         // Constructors
         ray() {}
-        ray(const point3& origin, const vec3 direction): orig(origin), dir(direction) {}
+        ray(const point3& origin, const vec3 direction, double time=0.0)
+            : orig(origin), dir(direction), tm(time)
+        {}
 
         // Getters
         point3 origin() const { return orig; }
         vec3 direction() const { return dir; }
+        double time() const { return tm; }
 
         // Compute position P(t) = A + tb
         point3 at(double t) const {
