@@ -23,8 +23,8 @@ class moving_sphere : public hittable {
             point3 center0, point3 center1, double _time0, double _time1, double radius,
             shared_ptr<material> mat_ptr
         ):
-        center0(center0), center(center1),
-        time0(_time0), time1(time1),
+        center0(center0), center1(center1),
+        time0(_time0), time1(_time1),
         radius(radius), mat_ptr(mat_ptr) {};
 
         // Abstract method to override
@@ -43,8 +43,8 @@ point3 moving_sphere::center(double time) const {
 
     // Use the same percentage of the full time interval 
     //  to the distance between center0 and center1
-    double full_distance = this->center1 - this->center0;
-    double distance = time_percent * full_distance;
+    vec3 full_distance = this->center1 - this->center0;
+    vec3 distance = time_percent * full_distance;
 
     // Move `distance` from center0 to get the center at `time`
     return this->center0 + distance;
@@ -94,6 +94,8 @@ bool moving_sphere::hit(const ray& r, double t_min, double t_max, hit_record& re
     
     rec.set_face_normal(r, outward_normal);
     rec.mat_ptr = this->mat_ptr;
+
+    return true;
 }
 
 #endif // header guard

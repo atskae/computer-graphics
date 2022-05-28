@@ -10,6 +10,7 @@
 #include "color.h"
 #include "hittable_list.h"
 #include "sphere.h"
+#include "moving_sphere.h"
 #include "material.h"
 
 
@@ -173,6 +174,9 @@ hittable_list random_scene() {
     double y = 0.2;
     point3 ref(4, 0.2, 0);
     double radius = 0.2;
+    // Moving sphere
+    double time0 = 0.0;
+    double time1 = 1.0;
     for (int x=-11; x<11; x++) {
         for (int z=-11; z<11; z++) {
             // Choose a random delta (<1) from the x and z coordinates
@@ -185,24 +189,32 @@ hittable_list random_scene() {
                 
                 // Choose a random value between 0 and 1 (exclusive)
                 double choose_material = random_double();
-                if (choose_material < 0.8) {
+                if (choose_material < 0.8) { // moving sphere
                     // Diffuse
                     // Why multiply ?
                     color albedo = color::random() * color::random();
                     sphere_material = make_shared<lambertian>(albedo);
-                    
-                } else if (choose_material < 0.95) {
-                    // Metal
-                    color albedo = color::random(0.5, 1);
-                    double fuzz = random_double(0, 0.5);
-                    sphere_material = make_shared<metal>(albedo, fuzz);
-                } else {
-                    sphere_material = make_shared<dielectric>(1.5);
-                }
+                    // Vertical motion up at some random height within range
+                    point3 center1 = center + vec3(0, random_double(0, 0.5), 0);
+                    world.add(
+                        make_shared<moving_sphere>(
+                            center, center1, time0, time1, radius, sphere_material
+                        )
+                    );
+                } else { // normal sphere
+                    if (choose_material < 0.95) {
+                        // Metal
+                        color albedo = color::random(0.5, 1);
+                        double fuzz = random_double(0, 0.5);
+                        sphere_material = make_shared<metal>(albedo, fuzz);
+                    } else {
+                        sphere_material = make_shared<dielectric>(1.5);
+                    }
 
-                world.add(
-                    make_shared<sphere>(center, radius, sphere_material)
-                );
+                    world.add(
+                        make_shared<sphere>(center, radius, sphere_material)
+                    );
+                } // normal sphere; end
             } // generate sphere
         } // z-axis
     } // x-axis
@@ -235,10 +247,10 @@ void run_ray_tracer() {
     hittable_list world = random_scene();
 
     // Image attributes 
-    const double aspect_ratio = 3.0 / 2.0; // width to height
-    const int image_width = 1200; // pixels
+    const double aspect_ratio = 16.0 / 9.0; // width to height
+    const int image_width = 400; // pixels
     const int image_height = static_cast<int>(image_width / aspect_ratio);
-    const int samples_per_pixel = 500;
+    const int samples_per_pixel = 100;
     // Maximum number of times a ray can keep reflecting off of a surface
     //  in a row
     const int max_depth = 50;
@@ -250,7 +262,12 @@ void run_ray_tracer() {
     vec3 view_up_vector = vec3(0,1,0);
     double dist_to_focus = 10.0;
     double aperature = 0.1;
-    const camera cam(lookfrom, lookat, view_up_vector, vfov, aspect_ratio, aperature, dist_to_focus);
+    double time0 = 0.0;
+    double time1 = 1.0;
+    const camera cam(
+        lookfrom, lookat, view_up_vector, vfov, aspect_ratio, aperature, dist_to_focus,
+        time0, time1
+    );
 
     // Render
     print_ppm_header("P3", image_width, image_height, 255);

@@ -722,6 +722,8 @@ Then I tried again, without DEBUG symbols...
 
 This sequential, single-threaded ray tracer forced me to install my air conditioner early this year because it was heating up my laptop and there happend to be a heat advisory warning the weekend that this ran, so my room was turning into an oven 🔥 Now I am grateful that GPUs (and air conditioners) exist.
 
+Some advice: write a ray tracer in the winter so you can heat your room.
+
 Completed!!! ✨ On to the next aventura! 🏃‍♀️
 
 [つづく](README-ray-tracing-the-next-week.md)
