@@ -55,14 +55,29 @@ For example, in the 2D space:
 
 ![AABB intersection](images/ray-interval-overlaps.png)
 
-The ranges that go through the x-axis slab and the y-axix slab for the ray `r0` does not overlap because it does not go through the AABB.
+The ranges that go through the x-axis slab and the y-axis slab for the ray `r0` does not overlap because it does not go through the AABB.
 
 The ray `r1` does have an overlap of where the ray enters the x-axis and y-axis slabs, and we can see that does go through the AABB
 
+### Intersections
 
+If we had a slab/interval `(x_0, x_1)`, we have to find `t_0` that intersects `x_0` and `t_1` that intersects `x_1`.
+
+![t values that intersect the intervals](images/t-values-intersection.png)
+
+Since it is possible that the ray can be coming from the *negative* x direction, `t_0` and `t_1` can be reversed.
+* We just have to make sure that after our initial calculation, we ensure that `t_0 <= t_1`.
+
+#### Numerical Considerations
 * IEEE floating point, where `inf` means *infinity*, and `NaN` means "not a number"
   * `inf/0 = inf`
   * `0/0 = NaN`
+* If the ray does not intersect the slab, both `t_0` and `t_1` will be +- infinity.
+
+#### Overlaps
+If there is an overlap between the intervals that are created (`(d, D)` and `(e, E)`) after calculating where the ray intersects the slabs (`(x_0, x_1)` and `(y_0,y_1)`), then we know the ray intersects the AABB:
+
+![Intersect AABB calculation](images/intersects-aabb-calc.png)
 
 ## Links
 * [Ray Tracing: the Next Week (blog post)](https://in1weekend.blogspot.com/2016/01/ray-tracing-second-weekend.html)
