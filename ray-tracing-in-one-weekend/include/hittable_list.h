@@ -35,7 +35,7 @@ class hittable_list : public hittable {
 
         // Indicate that the virtual function will be implemented
         virtual bool hit(const ray& r, double t_min, double t_max, hit_record& rec) const override;
-
+        virtual bool bounding_box(double time0, double time1, aabb& output_box) const override;
 };
 
 // If any of the objects in the list was hit by the ray, return True,
@@ -58,6 +58,36 @@ bool hittable_list::hit(const ray& r, double t_min, double t_max, hit_record& re
     }
 
     return hit_any_object;
+}
+
+// Compute the bounding box that holds all objects inside the hittable_list
+bool hittable_list::bounding_box(double time0, double time1, aabb& output_box) const {
+    if (this->objects.empty()) return false;
+
+    // Holds the bounding box of the current object in the loop
+    aabb temp_box;
+    bool is_first_box = true;
+
+    for (const hittable& object : this->objects) {
+        // First, try creating a bounding box around this object,
+        //  and set the box to temp_box
+        bool valid_bounding_box = object->bounding_box(time0, time1, temp_box);
+        if (!valid_bounding_box) return false;
+
+        // If this is the first object in the list, use the bounding box
+        // that was just computed and stored in temp_box
+        if (is_first_box) {
+            output_box = temp_box;
+            is_first_box = false;
+        } else {
+            // Otherwise, create a new bounding box that encapsulates the previously
+            //  created box that holds all the objects seen so far (output_box)
+            //  and the bounding box of the current object (temp_box)
+            output_box = surrounding_box(output_box, temp_box);
+        }
+    }
+
+    return true;
 }
 
 #endif // header guard
