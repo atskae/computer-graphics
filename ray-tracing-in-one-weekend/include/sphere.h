@@ -22,6 +22,7 @@ class sphere : public hittable {
 
         // Indicate that the virtual method will be implemented by replacing `= 0` with `override`
         virtual bool hit(const ray& r, double t_min, double t_max, hit_record& rec) const override;
+        virtual bool bounding_box(double time0, double time1, aabb& output_box) const override;
 };
 
 // Implementation of virtual function
@@ -93,6 +94,17 @@ bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) cons
 
         return true;
     }
+}
+
+// Create a bounding box that encapsulates this sphere
+bool sphere::bounding_box(double time0, double time1, aabb& output_box) const {
+    // The slab of the bounding box for each axis:
+    //  (center - radius) to (center + radius)
+    output_box = aabb(
+        this->center - point3(this->radius, this->radius, this->radius),
+        this->center + point3(this->radius, this->radius, this->radius)
+    );
+    return true; 
 }
 
 #endif // header guard

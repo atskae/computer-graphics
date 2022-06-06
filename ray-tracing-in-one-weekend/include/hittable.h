@@ -3,6 +3,7 @@
 
 #include "rtweekend.h"
 #include "ray.h"
+#include "aabb.h"
 
 // Forward declaration of the the material class in material.h
 class material;
@@ -32,13 +33,22 @@ struct hit_record {
 // Abstract class for objects that can be hit by a ray
 //  ex. a sphere, a list of spheres
 class hittable {
-    // Given a ray P(t) = A + tb, return True if the ray hits this hittable object
-    //  given an interval of the input `t`
-    // method() = 0 means this function is a pure virtual function.
-    //  subclasses must implement this method, otherwise they will remain abstract
-    //  and cannot be instantiated
     public:
+        // Given a ray P(t) = A + tb, return True if the ray hits this hittable object
+        //  given an interval of the input `t`
+        // method() = 0 means this function is a pure virtual function.
+        //  subclasses must implement this method, otherwise they will remain abstract
+        //  and cannot be instantiated
         virtual bool hit(const ray& r, double t_min, double t_max, hit_record& rec) const = 0;
+
+        // Compute the bounding box that encloses this hittable
+        // Individual primitives (like spheres) become the leaves in the hierarchy
+        //  of bounding boxes.
+        // If the object is a moving object, the bounding box will encapsulate the object
+        //  for its entire time duration (time0 to time1)
+        // If True, the bounding box was created. The bounding box will fail to be created
+        //  for objects such as infinite planes
+        virtual bool bounding_box(double time0, double time1, aabb& output_box) const = 0;
 };
 
 #endif // header guard

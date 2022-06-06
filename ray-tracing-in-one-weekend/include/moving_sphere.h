@@ -29,7 +29,8 @@ class moving_sphere : public hittable {
 
         // Abstract method to override
         virtual bool hit(const ray& r, double t_min, double t_max, hit_record& rec) const override;
-
+        virtual bool bounding_box(double time0, double time1, aabb& output_box) const override;
+        
         // Return the center of the sphere at timestamp `time`
         point3 center(double time) const;
 };
@@ -95,6 +96,29 @@ bool moving_sphere::hit(const ray& r, double t_min, double t_max, hit_record& re
     rec.set_face_normal(r, outward_normal);
     rec.mat_ptr = this->mat_ptr;
 
+    return true;
+}
+
+// Compute the bounding box that encapsulates all positions of this sphere
+//  across the entire time duration
+// We get the box at time0 and the box at time1,
+//  then create a new box that holds both boxes
+bool moving_sphere::bounding_box(double time0, double time1, aabb& output_box) const {
+    point3 dist_from_center = point3(this->radius, this->radius, this->radius);
+    point3 center_time0 = this->center(time0);
+    aabb box0(
+        center_time0 - dist_from_center,
+        center_time0 + dist_from_center
+    );
+
+    point3 center_time1 = this->center(time1);
+    aabb box1(
+        center_time1 - dist_from_center,
+        center_time1 + dist_from_center
+    );
+
+    // Create a bounding box that holds the two bounding boxes
+    output_box = surrounding_box(box0, box1);
     return true;
 }
 
