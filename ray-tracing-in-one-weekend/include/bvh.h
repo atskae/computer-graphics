@@ -33,6 +33,74 @@ class bvh_node : public hittable {
         virtual bool bounding_box(double time0, double time1, aabb& output_box) const override;
 };
 
+// Comparator function for a hittable using its bounding boxes
+// If a<b, return True
+bool box_compare(
+    const shared_ptr<hittable> a,
+    const shared_ptr<hittable> b,
+    int axis,
+) {
+    // Obtain the bounding boxes of each hittable
+    aabb box_a, box_b;
+    bool a_valid, b_valid;
+    a_valid = a.bounding_box(0, 0, box_a);
+    b_valid = b.bounding_box(0, 0, box_b);
+
+    // TODO: handle the case where both are invalid, or either one of them is invalid
+    if (!a_valid || !b_valid) {
+        std::cerr << "No bounding box in bvh_node constructor" << std::endl;
+    }
+
+    // Make the comparison with the axis value of the bounding boxes
+    return box_a.min()[axis] < box_b.min()[axis];
+}
+
+// Axis-specific comparison functions
+// We have to create these since the comparison function
+//  can only take in the operands as arguments
+bool box_x_compare(const shared_ptr<hittable> a, const shared_ptr<hittable> b) {
+    return box_compare(a, b, 0);
+}
+bool box_y_compare(const shared_ptr<hittable> a, const shared_ptr<hittable> b) {
+    return box_compare(a, b, 1);
+}
+bool box_z_compare(const shared_ptr<hittable> a, const shared_ptr<hittable> b) {
+    return box_compare(a, b, 2);
+}
+
+/*
+    BVH constructor
+
+    1. Randomly choose an axis (x,y,z)
+    2. Sort the objects/primitives/hittables
+    3. Split the sorted list in half and put each half into its own subtree (the child nodes)
+*/
+bvh_node::bvh_node(
+    std::vector<shared_ptr<hittable>>& src_objects,
+    size_t start, size_t end, double time0, double time1
+) {
+    // Create a copy of the objects (since we will modify its order)
+    auto objects = src_objects;
+    
+    // 0, 1, 2 => x, y, z
+    int axis = random_int(0, 2);
+
+    // Sort the objects along the axis
+    switch(axis) {
+        case 0:
+            std::sort(objects.at(start), objects.at(end), box_x_compare);
+            break;
+        case 1:
+            std::sort(objects.at(start), objects.at(end), box_y_compare);
+            break;
+        default:
+            std::sort(objects.at(start), objects.at(end), box_z_compare);
+            break;
+    }
+
+    // TODO Put each half in the left/right sub-trees
+}
+
 bool bvh::hit(const ray& r, double t_min, double t_max, hit_record& rec) const {
     // Check if the ray even hits the tree's bounding box
     if (!this->box.hit(r, t_min, t_max)) {

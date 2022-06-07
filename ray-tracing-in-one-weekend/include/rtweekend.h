@@ -43,6 +43,11 @@ inline double clamp(double x, double min, double max) {
     return x;
 }
 
+// Return a random integer between [min, max]
+inline int random_int(int min, int max) {
+    return static_cast<int>(random_double(min, max+1));
+}
+
 // Common Headers
 #include "ray.h"
 #include "vec3.h"
