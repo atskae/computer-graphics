@@ -79,26 +79,63 @@ bvh_node::bvh_node(
     std::vector<shared_ptr<hittable>>& src_objects,
     size_t start, size_t end, double time0, double time1
 ) {
-    // Create a copy of the objects (since we will modify its order)
-    auto objects = src_objects;
     
-    // 0, 1, 2 => x, y, z
-    int axis = random_int(0, 2);
+    size_t object_span = end - start;
+    // We only have one object
+    if (object_span == 1) {
+        // Set both children to the same object
+        this->left = src_objects[start];
+        this->right = src_objects[start];
+    } else { // More than one object
+        // Create a copy of the objects (since we will modify its order)
+        auto objects = src_objects;
+        
+        // 0, 1, 2 => x, y, z
+        int axis = random_int(0, 2);
+    
+        // Sort the objects along the axis
+        switch(axis) {
+            case 0:
+                std::sort(objects.at(start), objects.at(end), box_x_compare);
+                break;
+            case 1:
+                std::sort(objects.at(start), objects.at(end), box_y_compare);
+                break;
+            default:
+                std::sort(objects.at(start), objects.at(end), box_z_compare);
+                break;
+        }
 
-    // Sort the objects along the axis
-    switch(axis) {
-        case 0:
-            std::sort(objects.at(start), objects.at(end), box_x_compare);
-            break;
-        case 1:
-            std::sort(objects.at(start), objects.at(end), box_y_compare);
-            break;
-        default:
-            std::sort(objects.at(start), objects.at(end), box_z_compare);
-            break;
+        if (object_span == 2) {
+            // If there are only two children, we can just set the lesser hittable
+            //  on the left and the other on the right
+            this->left = objects[start];
+            this->right = objects[start+1];
+        } else {
+            // More than 2 objects, we have to create two halves
+            
+            // Get the array index of the middle object
+            // Note that `start` might not be zero, so we have to do start + length of half the list
+            size_t middle = start + (end-start)/2;
+            
+            // Create a node for the left-child and right child
+            this->left = make_shared<bvh_node>(objects, start, middle, time0, time1);
+            this->right = make_shared<bvh_node>(objects, middle, end, time0, time1);           
+        }
+    } // More than one object; end
+    
+    // Create the bounding box for this node
+    // This bounding box will encapsulate both child node's bounding boxes
+    aabb box_left, box_right;
+    bool box_left_valid = this->left->bounding_box(time0, time1, box_left);
+    bool box_right_valid = this->right->bounding_box(time0, time1, box_right);
+
+    if (!box_left_valid || !box_right_valid) {
+        std::cerr << "No bounding box in bvh_node constructor" std::endl;
     }
 
-    // TODO Put each half in the left/right sub-trees
+    // Set the bounding box for this node
+    this->box = surrounding_box(box_left, box_right);
 }
 
 bool bvh::hit(const ray& r, double t_min, double t_max, hit_record& rec) const {
