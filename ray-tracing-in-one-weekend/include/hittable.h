@@ -15,6 +15,12 @@ struct hit_record {
     // The type of material that was hit
     shared_ptr<material> mat_ptr;
     double t;
+    
+    // The location of the surface (the surface coordinate) that the ray hit the object
+    // (u,v) is the texture coordiante: the position of the texture that the ray hit (?)
+    double u;
+    double v;
+    
     // True if the ray came from outside the sphere
     // False if the ray came from inside the sphere
     bool front_face;

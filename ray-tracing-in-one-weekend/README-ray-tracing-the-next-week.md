@@ -79,6 +79,25 @@ If there is an overlap between the intervals that are created (`(d, D)` and `(e,
 
 ![Intersect AABB calculation](images/intersects-aabb-calc.png)
 
+## [4.2 Texture Coordinates for Spheres](https://raytracing.github.io/books/RayTracingTheNextWeek.html#solidtextures/texturecoordinatesforspheres)
+
+Spherical coordinates
+* Longitude and latitude, *spherical coordinates* theta and phi: `(θ, ϕ)`
+* Recall that the ray tracer uses the *right-handed coordinate system*
+
+![Spherical coordinates](images/spherical-coordinates.png)
+
+* Angle θ goes from the bottom pole, upward (from -y axis to +y axis)
+* Angle ϕ goes around the y-axis
+  * (from -x axis to +z axis, to +x axis to -z axis, then back to -x axis)
+
+Texture coordinates (`(u,v)` in the `hit_record` class)
+* We want to map the coordinate on the sphere `(θ, ϕ)` to the *texture coordinates* `(u,v)`
+* `(u=0,v=0)` would map to the bottom-left corner of the texture
+
+![Spherical to texture coordinate](images/spherical-to-texture-coordinate.png)
+
+
 ## Links
 * [Ray Tracing: the Next Week (blog post)](https://in1weekend.blogspot.com/2016/01/ray-tracing-second-weekend.html)
   * Extra links to supplemental reading and advice
