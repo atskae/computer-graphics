@@ -92,10 +92,32 @@ Spherical coordinates
   * (from -x axis to +z axis, to +x axis to -z axis, then back to -x axis)
 
 Texture coordinates (`(u,v)` in the `hit_record` class)
-* We want to map the coordinate on the sphere `(θ, ϕ)` to the *texture coordinates* `(u,v)`
+* We want to map the coordinate on the sphere `(θ, ϕ)` to the *texture coordinates* `(u,v)`, where both `u` and `v` are in range `[0,1]`.
 * `(u=0,v=0)` would map to the bottom-left corner of the texture
 
 ![Spherical to texture coordinate](images/spherical-to-texture-coordinate.png)
+
+`(u,v)` is between 0 and 1, so to convert from the spherical coordinates to `(u,v)`. we can normalize the spherical coordinates:
+
+![Normalize spherical coordinates](images/normalize-spherical-to-uv.png)
+
+### Cartesian Coordinates and Spherical Coordinates Relationship
+
+We should first see how we use angle theta and phi to get the Cartesian coordinate `(x,y,z)`:
+
+```
+y = -cos(θ)
+x = -cos(ϕ)sin(θ)
+z = sin(ϕ)sin(θ)
+```
+
+#### Derivation
+
+Review from [a while ago!](https://github.com/atskae/computer-graphics/tree/master/scratch-a-pixel/notes/02-geometry/08-spherical-coordinates-trig#converting-cartesian-to-spherical-coordinates) (need to be modified since those notes use the left-handed coordinate system, and z is up....)
+
+Deriving `y = -cos(θ)`:
+
+![y-coordinate from spherical](images/y-cartesian.png)
 
 
 ## Links
