@@ -119,6 +119,37 @@ Deriving `y = -cos(θ)`:
 
 ![y-coordinate from spherical](images/y-cartesian.png)
 
+We need the negative sign in front of `cos(θ)` because `cos(θ)` gives us a negative number when the angle is in the positive y-axis
+
+Deriving x and z coordinates:
+
+Tried to do the same thing as above with the other coordinates but didn't get to the equation. Luckily ran in to [this video](https://www.youtube.com/watch?v=Ca-Rz6rZ2Hw) which led me to decompose the vector to get the remaining coordinates (the video uses a different coordinate system though).
+
+Most examples online show the angle `θ`  starting at +y and going down... so we can use the [relationship of vertical angles](https://www.mathsisfun.com/geometry/vertical-angles.html) to flip the view of the angle `θ`:
+
+![Vertical angles are equal](images/vertical-angles-are-equal.png)
+
+Then we can project the vector created by angle `θ` to the -x/+z plane to draw a right triangle; we can see angle `ϕ` in relation to this triangle.
+
+Using [geometry of parallel lines](https://www.mathsisfun.com/geometry/parallel-lines.html) we can find the angles of the right trangle that equal `θ`:
+
+![Theta equals other angles](images/theta-equals-other-angles.png)
+
+If we rotated this image, it is easier to see that the angles are corresonding angles, which makes them equal:
+
+![Corresponding angles are equal](images/corresponding-angles-are-equal.png)
+
+Now we can use the angle `θ` inside the right triangle and trig to find the length of the hypotenuse, which is just `sin(θ)`. To find the x and z coordinates, we then break apart the hypotenuse into its two components.
+
+The following image is the top view. We can form *another* right triangle, now using angle `ϕ`:
+
+![Deriving x and z coordinates](images/derive-x-and-z-coordinates.png)
+
+The x-coordinate is the adjacent side of `ϕ`, and the z-coordinate is the opposite side of `ϕ`. As shown previously, the hypotenuse is `sin(θ)`. We can then use the trig relationships SOH and CAH (from SOH CAH TOA) to find the lengths of the triangle, which correspond to each coordinate x and z.
+
+For the x-coordinate, we need to add a negative sign to `cos(ϕ)` since positive `ϕ` is in the negative x-axis, so we flip the sign.
+
+NOOOICE.
 
 ## Links
 * [Ray Tracing: the Next Week (blog post)](https://in1weekend.blogspot.com/2016/01/ray-tracing-second-weekend.html)
