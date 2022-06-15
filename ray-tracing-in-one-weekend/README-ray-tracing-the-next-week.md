@@ -171,6 +171,8 @@ Explain formula with positive and negative angles:
 
 #### pi rotation (180 degrees)
 
+[Review from a while ago!](https://github.com/atskae/computer-graphics/tree/master/scratch-a-pixel/notes/02-geometry/04-matrices#the-rotation-matrix)
+
 Why `(a,b)` -> `(-a, -b)` is a pi rotation:
 
 ![Review pi rotation](images/review-pi-rotation.png)
