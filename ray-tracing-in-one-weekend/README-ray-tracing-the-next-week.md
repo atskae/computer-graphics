@@ -161,7 +161,7 @@ TODO explain better
 
 ![arctan2 range](images/arctan2-range.png)
 
-Need to convert range to [0, pi]
+Need to convert range to [0, 2*pi]
 
 ![arctan2 range conversion](images/convert-arctan2-range.png)
 
