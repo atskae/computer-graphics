@@ -151,6 +151,30 @@ For the x-coordinate, we need to add a negative sign to `cos(ϕ)` since positive
 
 NOOOICE.
 
+### Getting angles θ and ϕ 
+
+TODO explain better
+
+![Finding angle phi](images/finding-angle-phi.png)
+
+#### arctan2
+
+![arctan2 range](images/arctan2-range.png)
+
+Need to convert range to [0, pi]
+
+![arctan2 range conversion](images/convert-arctan2-range.png)
+
+Explain formula with positive and negative angles:
+
+![arctan2 range conversion explain](images/arctan2-range-conversion-explanation.png)
+
+#### pi rotation (180 degrees)
+
+Why `(a,b)` -> `(-a, -b)` is a pi rotation:
+
+![Review pi rotation](images/review-pi-rotation.png)
+
 ## Links
 * [Ray Tracing: the Next Week (blog post)](https://in1weekend.blogspot.com/2016/01/ray-tracing-second-weekend.html)
   * Extra links to supplemental reading and advice
