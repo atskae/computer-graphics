@@ -1,6 +1,7 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
+#include "texture.h"
 #include "rtweekend.h"
 
 // Forward declaration (tells the C++ compiler that the actual definition
@@ -25,13 +26,15 @@ class lambertian: public material {
     public:
         // Class fields
 
-        // Defines the ratio of reflected light over the amount of incident light
-        // Denotes how bright a surface is
-        color albedo;
+        // If the texture is a solid color,
+        //  defines the ratio of reflected light over the amount of incident light
+        //  Denotes how bright a surface is
+        shared_ptr<texture> albedo;
         
         // Constructors
-        lambertian(const color& a): albedo(a) {}
-
+        lambertian(const color& a): albedo(make_shared<solid_color>(a)) {}
+        lambertian(shared_ptr<texture> a): albedo(a) {}
+        
         // Implement abstract methods
 
         // Reflect in random direction (not influenced by the incoming ray)
@@ -47,7 +50,9 @@ class lambertian: public material {
             }
             
             scattered = ray(rec.p, scatter_direction, r_in.time());
-            attenuation = albedo;
+            // If the texture is a solid color, the hit record values are not used
+            //  and a solid color is returned
+            attenuation = albedo->value(rec.u, rec.v, rec.p);
             return true;
         }
 };

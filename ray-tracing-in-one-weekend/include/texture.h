@@ -8,7 +8,7 @@ class texture {
     public:
         // (u,v) is the surface coordinate of the ray hit point
         virtual color value(double u, double v, const point3& p) const = 0;
-}
+};
 
 // Constant texture
 class solid_color : texture {
@@ -25,6 +25,6 @@ class solid_color : texture {
         virtual color value(double u, double v, const point3& p) const override {
             return this->color_value;
         }
-}
+};
 
 #endif // header guard

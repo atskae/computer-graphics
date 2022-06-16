@@ -23,6 +23,32 @@ class sphere : public hittable {
         // Indicate that the virtual method will be implemented by replacing `= 0` with `override`
         virtual bool hit(const ray& r, double t_min, double t_max, hit_record& rec) const override;
         virtual bool bounding_box(double time0, double time1, aabb& output_box) const override;
+
+    private:
+        // Convert a Cartesian coordinate on the sphere's surface to texture coordinates (u,v)
+        // Args:
+        //  p: a point on the surface of a sphere of radius 1, centered around the origin
+        //  u: value in range [0,1] derived from the angle around the y-axis from x=-1 ( ϕ)
+        //  v: value in range [0,1] derived from angle around the y=-1 to y=+1 (θ)
+        // Examples:
+        //  p=(1, 0, 0) yields (u=0.5, v=0.5)
+        //  p=(-1, 0, 0) yields (u=0.0, v=0.5) 
+        //  p=(0, 1, 0) yields (u=0.5, v=1.0)
+        //  p=(0, -1, 0) yields (u=0.5, v=0.0)
+        //  p=(0, 0, 1) yields (u=0.25, v=0.5)
+        //  p=(0, 0, -1) yields (u=0.75, v=0.5)
+        // `static` means you don't need an instantiated object (sphere) to call this
+        static void get_sphere_uv(const point& p, double& u, double& v) {
+            // angle between y=-1 to y=+1
+            double theta = acos(-p.y());
+            double phi = atan2(-p.z(), p.x()) + pi;
+
+            // Normalize the angles so we get a range between 0 and 1
+            // phi's range is [0, 2pi]
+            u = phi / (2*pi);
+            // theta's range is [0, pi]
+            v = theta / pi; 
+        }
 };
 
 // Implementation of virtual function
@@ -88,6 +114,12 @@ bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) cons
         //  Retain the information of where the ray came from (inside or outside the sphere)
         //   and set the normal to be in the opposite direction of the ray.
         rec.set_face_normal(r, outward_normal);
+
+        // Set the textured coordinate values
+        // (my guess) Here we use the outward_normal (instead of the hit point),
+        //  because it still points to the surface of the sphere
+        //  and it is normalized (length=1)
+        get_sphere_uv(outward_normal, rec.u, rec.v);
 
         // Set the material type of this sphere to the hit record
         rec.mat_ptr = this->mat_ptr;
