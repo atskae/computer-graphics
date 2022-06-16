@@ -162,9 +162,11 @@ hittable_list tutorial_scene() {
 hittable_list random_scene() {
     hittable_list world;
 
-    // Create the ground
-    color gray = color(0.5, 0.5, 0.5);
-    shared_ptr<material> material_ground = make_shared<lambertian>(gray);
+    // Create the ground as a checkered texture
+    color even = color(0.2, 0.3, 0.1);
+    color odd = color(0.9, 0.9, 0.9);
+    shared_ptr<checker_texture> checker = make_shared<checker_texture>(even, odd);
+    shared_ptr<material> material_ground = make_shared<lambertian>(checker);
     world.add(
         make_shared<sphere>(point3(0, -1000, 0), 1000, material_ground)
     );

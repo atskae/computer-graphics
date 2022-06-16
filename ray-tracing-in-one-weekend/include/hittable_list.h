@@ -68,7 +68,7 @@ bool hittable_list::bounding_box(double time0, double time1, aabb& output_box) c
     aabb temp_box;
     bool is_first_box = true;
 
-    for (const hittable& object : this->objects) {
+    for (const auto& object : this->objects) {
         // First, try creating a bounding box around this object,
         //  and set the box to temp_box
         bool valid_bounding_box = object->bounding_box(time0, time1, temp_box);

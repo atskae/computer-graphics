@@ -206,6 +206,20 @@ y = -cos(θ)
 arccos(-y) = θ
 ```
 
+#### C++ Nonsense
+I forgot to put `public` before texture:
+```
+class solid_color : texture {
+```
+Got a spam of errors from the compiler that were not helpful.
+I'm starting to *actually* *really* see the love for Rust...
+
+## [4.3 A Checker Texture]
+
+Wowwwwwwwwww gotta figure out why the sine function and how? ???
+
+![Checker](images/checker.png)
+
 ## Links
 * [Ray Tracing: the Next Week (blog post)](https://in1weekend.blogspot.com/2016/01/ray-tracing-second-weekend.html)
   * Extra links to supplemental reading and advice

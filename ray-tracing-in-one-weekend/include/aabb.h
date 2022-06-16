@@ -1,5 +1,5 @@
 #ifndef AABB_H
-#define ABBB_H
+#define AABB_H
 
 #include "rtweekend.h"
 
@@ -48,56 +48,55 @@ class aabb {
         //    }
         //    return true;
         //}
+
+        // Optimized AABB hit method by Andrew Kensler at Pixar (すごい)
+        // The compiler optimizes this implementation well apparently
+        inline bool hit(const ray& r, double t_min, double t_max) const {
+            // For each axis
+            for (int a=0; a<3; a++) {
+                // Reciprocal of the ray's direction
+                // Also the denominator of finding the t value that intersects the slabs
+                double inverse_direction = 1.0f / r.direction()[a];
+                double t0 = (this->min()[a] - r.origin()[a]) * inverse_direction;
+                double t1 = (this->max()[a] - r.origin()[a]) * inverse_direction;
+
+                // If the ray was going into the negative direction,
+                // we swap the intervals so that t0 < t1
+                // Smaaawt.
+                if (inverse_direction < 0.0f) {
+                    std::swap(t0, t1);
+                }
+
+                // Update the running min/max
+                // If t0 is greater than t_min, set t_min to t0. Otherwise, set t_min to t_min
+                // This logic is the same as fmax(t0, t_min), but optimized for the compiler? 🤷‍♀️
+                t_min = t0 > t_min ? t0 : t_min;
+                // tmin(t_1, t_max)
+                t_max = t1 < t_max ? t1 : t_max;
+
+                if (t_max <= t_min) {
+                    return false;
+                }
+            } // each axis; end
+
+            return true;
+        }
 };
 
-
-// Optimized AABB hit method by Andrew Kensler at Pixar (すごい)
-// The compiler optimizes this implementation well apparently
-inline bool aabb::hit(const ray& r, double t_min, double t_max) const {
-    // For each axis
-    for (int a=0; a<3; a++) {
-        // Reciprocal of the ray's direction
-        // Also the denominator of finding the t value that intersects the slabs
-        double inverse_direction = 1.0f / r.direction()[a];
-        double t0 = (this->min()[a] - r.origin()[a]) * inverse_direction;
-        double t1 = (this->max()[a] - r.origin()[a]) * inverse_direction;
-
-        // If the ray was going into the negative direction,
-        // we swap the intervals so that t0 < t1
-        // Smaaawt.
-        if (inverse_direction < 0.0f) {
-            std::swap(t0, t1);
-        }
-
-        // Update the running min/max
-        // If t0 is greater than t_min, set t_min to t0. Otherwise, set t_min to t_min
-        // This logic is the same as fmax(t0, t_min), but optimized for the compiler? 🤷‍♀️
-        t_min = t0 > t_min ? t0 : t_min;
-        // tmin(t_1, t_max)
-        t_max = t1 < t_max ? t1 : t_max;
-
-        if (t_max <= t_min) {
-            return false;
-        }
-    } // each axis; end
-
-    return true;
-}
-
 // Create a bounding box that holds box0 and box1
-bool surrounding_box(aabb box0, aabb box1) {
+aabb surrounding_box(aabb box0, aabb box1) {
     // Holds the minimum bounds of the new slabs
     point3 min_box(
         fmin(box0.min().x(), box1.min().x()),
         fmin(box0.min().y(), box1.min().y()),
-        fmin(box0.min().z(), box1.min().z()),
+        fmin(box0.min().z(), box1.min().z())
     );
 
     // Holds the maximum bounds of the new slabs
     point3 max_box(
         fmax(box0.max().x(), box1.max().x()),
         fmax(box0.max().y(), box1.max().y()),
-        fmax(box0.max().z(), box1.max().z()),
+        fmax(box0.max().z(), box1.max().z())
     );
 
     return aabb(min_box, max_box);

@@ -38,7 +38,7 @@ class sphere : public hittable {
         //  p=(0, 0, 1) yields (u=0.25, v=0.5)
         //  p=(0, 0, -1) yields (u=0.75, v=0.5)
         // `static` means you don't need an instantiated object (sphere) to call this
-        static void get_sphere_uv(const point& p, double& u, double& v) {
+        static void get_sphere_uv(const point3& p, double& u, double& v) {
             // angle between y=-1 to y=+1
             double theta = acos(-p.y());
             double phi = atan2(-p.z(), p.x()) + pi;
