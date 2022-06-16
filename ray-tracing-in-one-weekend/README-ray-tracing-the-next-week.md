@@ -214,7 +214,7 @@ class solid_color : texture {
 Got a spam of errors from the compiler that were not helpful.
 I'm starting to *actually* *really* see the love for Rust...
 
-## [4.3 A Checker Texture]
+## [4.3 A Checker Texture](https://raytracing.github.io/books/RayTracingTheNextWeek.html#solidtextures/acheckertexture)
 
 Wowwwwwwwwww gotta figure out why the sine function and how? ???
 
