@@ -153,29 +153,58 @@ NOOOICE.
 
 ### Getting angles θ and ϕ 
 
-TODO explain better
+To find angle ϕ we use the ratio of the z and x coordinate values. `tan()` relates these two coordinate values (TOA)
+
+As stated before, the "opposite" side of `ϕ` is the z-coordinate = sin(ϕ)sin(θ) and "adjacent" side of `ϕ` is cos(ϕ)sin(θ).
+
+Since we now have tan(ϕ), we can take the inverse of tan(), arctan(), to get the angle ϕ.
 
 ![Finding angle phi](images/finding-angle-phi.png)
 
 #### arctan2
 
+C++'s arctan2() function gives a range [0, pi], then switches to [-pi, 0] after the angle surpasses pi.
+
 ![arctan2 range](images/arctan2-range.png)
 
-Need to convert range to [0, 2*pi]
+To map the angles to the textured coordinates `u,v`, we need to convert the angles returned by atan2() to range to [0, 2*pi]
+
+To do this, we simply flip the coordinate signs `(a,b)`, and add pi:
+
+```
+arctan2(a,b) = arctan2(-a, -b) + pi
+```
 
 ![arctan2 range conversion](images/convert-arctan2-range.png)
 
-Explain formula with positive and negative angles:
+First we get the delta angle value to either add/subtract from angle pi. This is obtained by flipping the coordinate `(a,b)` -> `(-a,-b)`, which is the same as a pi rotation.
+
+If we had a positive angle (angle is less than pi), then the formula starts at pi and subtracts the delta angle amount to get the original angle (positive angles are already in range [0, 2*pi]).
+
+If we had a negative angle (angle is between -pi and 0 in C++), we start at pi and add the delta angle amount (this gives us a positive angle value greater than pi).
 
 ![arctan2 range conversion explain](images/arctan2-range-conversion-explanation.png)
 
 #### pi rotation (180 degrees)
+
+Just another instance where math *beautifully* makes sense and the joy that an idiot like me can actually understand any of it... 😭 
 
 [Review from a while ago!](https://github.com/atskae/computer-graphics/tree/master/scratch-a-pixel/notes/02-geometry/04-matrices#the-rotation-matrix)
 
 Why `(a,b)` -> `(-a, -b)` is a pi rotation:
 
 ![Review pi rotation](images/review-pi-rotation.png)
+
+It's the transformation matrices from months ago!
+
+### Angle θ
+
+Angle `θ` is easy! Just take the inverse cosine:
+```
+y = -cos(θ)
+-y = cos(θ)
+arccos(-y) = θ
+```
 
 ## Links
 * [Ray Tracing: the Next Week (blog post)](https://in1weekend.blogspot.com/2016/01/ray-tracing-second-weekend.html)
