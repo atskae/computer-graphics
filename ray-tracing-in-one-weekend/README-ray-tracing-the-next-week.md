@@ -274,3 +274,5 @@ Interesting that the checker patterns doesn't *actually* seamlessly continue acr
 * [Bounding volume hierarchy (BVH)](https://en.wikipedia.org/wiki/Bounding_volume_hierarchy)
 * [GeoGebra: 3D graphing calculator](https://www.geogebra.org/3d?lang=en)
 * [Desmos 2D graphing calculator](https://www.desmos.com/calculator)
+* [Perlin Noise](https://en.wikipedia.org/wiki/Perlin_noise)
+  * Reminds me of [WaveFunctionCollapse](https://github.com/mxgmn/WaveFunctionCollapse)
