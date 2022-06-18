@@ -220,7 +220,49 @@ Wowwwwwwwwww gotta figure out why the sine function and how? ???
 
 ![Checker](images/checker.png)
 
+I tried using cosine instead of sine. I hypothesize that the checker colors will simply reverse (since from zero, cosine starts at 1).
+
+Ok, it looks the same with cosine... The checker row slightly shifted but...
+
+![cos(x)](images/checker-cos.png)
+
+Actually this makes a lot of sense because cosine isn't the inverse of sin  🤦‍♀️
+Cosine also starts positive at zero and becomes negative halfway instead:
+
+![Cosine](images/cos-graph.png)
+
+So basically you can create a checker pattern with cosine also.
+
+The checker logic:
+```cpp
+        virtual color value(double u, double v, const point3& p) const override {
+            double sines = sin(10*p.x()) * sin(10*p.y()) * sin(10*p.z());
+            if (sines < 0) {
+                return odd->value(u, v, p);
+            } else {
+                return even->value(u, v, p);
+            }
+        }
+```
+
+I graphed a sphere of radius 1 in this [3D graphing calculator](https://www.geogebra.org/3d?lang=en) and dragged a point around the surface of the sphere.
+We need to multiply by 10 because otherwise, we would never get a coordinate value (x, y, z value) greater than pi in a unit sphere (the greatest value for any coordinate is 1), so we never dip into the negative values in `sin()`.
+
+`sin(x)` (graphed on Desmos!):
+
+![sin(x)](images/sin-x.png)
+
+If we multiply each coordinate by `10`, then we are sort of applying a texture onto a sphere with radius 10 (?)
+
+The checker pattern in 2D makes a lot of sense. Each axis is alternating signs:
+
+![Checker visual](images/checker-sin-visual.png)
+
+So thinking about this in pairs of axes make sense. 3D is still sorta magic... how it seamlessly works...
+
 ## Links
 * [Ray Tracing: the Next Week (blog post)](https://in1weekend.blogspot.com/2016/01/ray-tracing-second-weekend.html)
   * Extra links to supplemental reading and advice
 * [Bounding volume hierarchy (BVH)](https://en.wikipedia.org/wiki/Bounding_volume_hierarchy)
+* [GeoGebra: 3D graphing calculator](https://www.geogebra.org/3d?lang=en)
+* [Desmos 2D graphing calculator](https://www.desmos.com/calculator)
