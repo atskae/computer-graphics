@@ -123,6 +123,22 @@ color ray_color(const ray& r, const hittable_list& world, int depth) {
     }
 }
 
+// Create a world with two checkered spheres
+hittable_list two_spheres() {
+    hittable_list objects;
+    color even(0.2, 0.3, 0.1);
+    color odd(0.9, 0.9, 0.9);
+    auto checker = make_shared<checker_texture>(even, odd);
+    double radius = 10;
+    objects.add(
+        make_shared<sphere>(point3(0, -10, 0), radius, make_shared<lambertian>(checker))
+    );
+    objects.add(
+        make_shared<sphere>(point3(0, 10, 0), radius, make_shared<lambertian>(checker))
+    );
+    return objects;
+}
+
 hittable_list tutorial_scene() {
     // Create a world, a list of objects that are hittable by a ray
     hittable_list world;
@@ -245,9 +261,7 @@ hittable_list random_scene() {
 }
 
 void run_ray_tracer() {
-    // Add spheres to the scene
-    hittable_list world = random_scene();
-
+    
     // Image attributes 
     const double aspect_ratio = 16.0 / 9.0; // width to height
     const int image_width = 400; // pixels
@@ -256,14 +270,36 @@ void run_ray_tracer() {
     // Maximum number of times a ray can keep reflecting off of a surface
     //  in a row
     const int max_depth = 50;
+    
+    // Our scene
+    hittable_list world;
+    // Camera settings depending on the scene
+    point3 lookfrom;
+    point3 lookat;
+    double vfov = 40; // vertical field of view, in degrees
+    double aperature = 0.0;
+
+    switch(0) {
+        case 1:
+            // Textbook cover
+            world = random_scene();
+            lookfrom = point3(13, 2, 3);
+            lookat = point3(0,0,0);
+            vfov = 20.0;
+            aperature = 0.1;
+            break;
+        default:
+        case 2:
+            world = two_spheres();
+            lookfrom = point3(13, 2, 3);
+            lookat = point3(0,0,0);
+            vfov = 20.0;
+            break;
+    }
 
     // Camera
-    double vfov = 20; // vertical field of view, in degrees
-    point3 lookfrom = point3(13, 2, 3);
-    point3 lookat = point3(0,0,0);
     vec3 view_up_vector = vec3(0,1,0);
     double dist_to_focus = 10.0;
-    double aperature = 0.1;
     double time0 = 0.0;
     double time1 = 1.0;
     const camera cam(

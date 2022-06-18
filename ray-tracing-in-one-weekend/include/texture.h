@@ -45,11 +45,11 @@ class checker_texture: public texture {
         // Implement abstract methods of parent class
         // Use the alternating sign of sine and cosine to create a checkered pattern ?!! (wasssss)
         virtual color value(double u, double v, const point3& p) const override {
-            // TODO: why are we multiplying by 10???
+            // Multiply by 10 so that the coordinates are greater than pi (where the signs change)
             double sines = sin(10*p.x()) * sin(10*p.y()) * sin(10*p.z());
-            // TODO: isn't there a higher chance to be negative than positive???
-            // You only need 1 negative value for the entire `sines` to be negative
-            // But all coordinates need to be positive for `sines` to be positive
+            //double sines = cos(10*p.x()) * cos(10*p.y()) * cos(10*p.z());
+            
+            // Each axis is alternating signs, which creates a checker patterns when multiplying across axes
             if (sines < 0) {
                 return odd->value(u, v, p);
             } else {

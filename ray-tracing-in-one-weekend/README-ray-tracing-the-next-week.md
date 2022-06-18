@@ -260,6 +260,14 @@ The checker pattern in 2D makes a lot of sense. Each axis is alternating signs:
 
 So thinking about this in pairs of axes make sense. 3D is still sorta magic... how it seamlessly works...
 
+### [4.4 Rendering a Scene with a Checkered Texture](https://raytracing.github.io/books/RayTracingTheNextWeek.html#solidtextures/renderingascenewithacheckeredtexture)
+
+Wow! This ran faster than the other scene so I thought something was wrong ...
+
+![Two checkered spheres](images/two-checker-spheres.png)
+
+Interesting that the checker patterns doesn't *actually* seamlessly continue across axes(?).
+
 ## Links
 * [Ray Tracing: the Next Week (blog post)](https://in1weekend.blogspot.com/2016/01/ray-tracing-second-weekend.html)
   * Extra links to supplemental reading and advice
