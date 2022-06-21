@@ -260,6 +260,20 @@ hittable_list random_scene() {
     return world;
 }
 
+hittable_list two_perlin_spheres() {
+    hittable_list objects;
+
+    auto texture = make_shared<noise_texture>();
+    objects.add(
+        make_shared<sphere>(point3(0, -1000, 0), 1000, make_shared<lambertian>(texture))
+    );
+    objects.add(
+        make_shared<sphere>(point3(0, 2, 0), 2, make_shared<lambertian>(texture))
+    );
+
+    return objects;
+}
+
 void run_ray_tracer() {
     
     // Image attributes 
@@ -274,26 +288,23 @@ void run_ray_tracer() {
     // Our scene
     hittable_list world;
     // Camera settings depending on the scene
-    point3 lookfrom;
-    point3 lookat;
-    double vfov = 40; // vertical field of view, in degrees
+    point3 lookfrom = point3(13, 2, 3);
+    point3 lookat = point3(0,0,0);
+    double vfov = 20.0; // vertical field of view, in degrees
     double aperature = 0.0;
 
     switch(0) {
         case 1:
             // Textbook cover
             world = random_scene();
-            lookfrom = point3(13, 2, 3);
-            lookat = point3(0,0,0);
-            vfov = 20.0;
             aperature = 0.1;
             break;
-        default:
         case 2:
             world = two_spheres();
-            lookfrom = point3(13, 2, 3);
-            lookat = point3(0,0,0);
-            vfov = 20.0;
+            break;
+        default:
+        case 3:
+            world = two_perlin_spheres();
             break;
     }
 

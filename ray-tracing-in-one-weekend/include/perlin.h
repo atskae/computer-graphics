@@ -8,16 +8,16 @@ class perlin {
     public:
         // Constructor
         perlin() {
-            // Generate an array of random doubles
+            // Generate an array of random doubles, each of range [0, 1)
             this->random_float = new double[perlin::point_count];
             for (int i=0; i<perlin::point_count; i++) {
                 this->random_float[i] = random_double();
             }
 
             // Generate integer Perlin permutations for each axis: x, y, z
-            this->perm_x = perlin::perlin_generate_perm()
-            this->perm_y = perlin::perlin_generate_perm()
-            this->perm_z = perlin::perlin_generate_perm()
+            this->perm_x = perlin::perlin_generate_perm();
+            this->perm_y = perlin::perlin_generate_perm();
+            this->perm_z = perlin::perlin_generate_perm();
         }
 
         // Destructor (not destroyer)
@@ -75,7 +75,7 @@ class perlin {
         static void permute(int* perm, int perm_size) {
             // Swap each value with a random index
             // But over time, the swap index range decreases from perm_size toward zero
-            for (int i<perm_size-1, i>0; i++) {
+            for (int i=perm_size-1; i>0; i--) {
                 // Random index to swap with
                 int target = random_int(0, i);
                 // Swap!

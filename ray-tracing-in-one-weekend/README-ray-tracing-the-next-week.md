@@ -268,6 +268,14 @@ Wow! This ran faster than the other scene so I thought something was wrong ...
 
 Interesting that the checker patterns doesn't *actually* seamlessly continue across axes(?).
 
+### [5.1 Using Random Blocks of Random Numbers](https://raytracing.github.io/books/RayTracingTheNextWeek.html#perlinnoise/usingblocksofrandomnumbers)
+
+Wowwww
+
+![Perlin spheres](images/perlin_spheres.png)
+
+Mine-crafty 🤖
+
 ## Links
 * [Ray Tracing: the Next Week (blog post)](https://in1weekend.blogspot.com/2016/01/ray-tracing-second-weekend.html)
   * Extra links to supplemental reading and advice
