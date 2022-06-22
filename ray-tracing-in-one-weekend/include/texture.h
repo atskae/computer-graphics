@@ -72,7 +72,12 @@ class noise_texture: public texture {
         virtual color value(double u, double v, const point3& p) const override {
             // Start with white and apply a random noise
             // The noise value is a random double between [0, 1)
-            return color(1,1,1) * this->noise.noise(p);
+            
+            // Block random
+            //return color(1,1,1) * this->noise.noise(p);
+            
+            // Smooth random
+            return color(1,1,1) * this->noise.smooth_noise(p);
         }
 };
 

@@ -276,6 +276,15 @@ Wowwww
 
 Mine-crafty 🤖
 
+### [5.2 Smoothing out the Result](https://raytracing.github.io/books/RayTracingTheNextWeek.html#perlinnoise/smoothingouttheresult)
+
+Ugh, a triply-nested loop... derivatives?
+Should probably do some reading on [Interpolation](https://www.scratchapixel.com/lessons/mathematics-physics-for-computer-graphics/interpolation/introduction)
+
+Totally didn't come out right! (but it looks cool 笑) Time to debug 🐛
+
+![Buggy linear interpolation](images/buggy_smooth_trilinear_interpolation.png)
+
 ## Links
 * [Ray Tracing: the Next Week (blog post)](https://in1weekend.blogspot.com/2016/01/ray-tracing-second-weekend.html)
   * Extra links to supplemental reading and advice
