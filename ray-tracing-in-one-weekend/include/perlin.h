@@ -53,8 +53,8 @@ class perlin {
             
             // Get the fractional part of the double
             double u = p.x() - floor_x;
-            auto v = p.y() - floor_y;
-            auto w = p.x() - floor_z;
+            double v = p.y() - floor_y;
+            double w = p.x() - floor_z;
 
             // Get the integer part of the double to obtain the grid coordinates
             // The grid lines are on integers
@@ -71,7 +71,7 @@ class perlin {
 
             // Compute the random delta from each corner of the cube
             // This is not the derivative... ?
-            auto mask = perlin::point_count - 1;
+            int mask = perlin::point_count - 1;
             for (int di=0; di<2; di++) {
                 for (int dj=0; dj<2; dj++) {
                     for (int dk=0; dk<2; dk++) {
