@@ -299,6 +299,50 @@ Fixed!
 
 More reading on noise:
 * [Value Noise and Procedural Patterns: Part 1](https://www.scratchapixel.com/lessons/procedural-generation-virtual-worlds/procedural-patterns-noise-part-1)
+
+* Without textures, objects looked unrealistically *too* smooth
+* (back in the day) Need for procedural textures due to limited RAM when trying texture mapping (get an image of a texture and map it onto some surface)
+* Random number generators (RNGs)
+  * Patterns/textures in nature
+    * Points locally look similar, but points farther apart can look different
+      * Gradual change across the surface
+    * RNGs would generate numbers that are not correlated with its neighbors
+      * Changes are *not* gradual
+      * RNGs alone would generate *white noise*
+* **Noise** in CG is a function that blurs random values generated on a grid (which is called a **lattice**)
+  * Noise is a function that returns a float in range [0:1] for a certain input `x` (where `x` can be a 1D, 2D, 3D, or 4D point)
+
+General steps:
+1. Define a grid, where the the grid lines are at integers
+2. Generate random numbers at the integer points
+3. Linear interpolate ("lerp") values between the integer points
+
+Linear interpolation on a line between two points
+```python
+# a and b are 2D points in a plane
+#   where the x-coordinate of a is less than b's
+# x is the input's x-coordinate
+#   lerp() tries to find the y-coordinate of x with linear interpolation
+#   of the points a and b
+def lerp(a: tuple, b: tuple, x: float):
+  # Unpack the x and y coordinates for each point a and b
+  (ax, ay) = a
+  (bx, by) = b
+
+  # Get the floor of x (the minimum integer bound)
+  x_int = math.floor(x)
+
+  # Calculate t (float between 0 and 1)
+  # This is essentially the fractional part of the input x
+  # ex. If x=1.2, then t=1.2-1 = 0.2
+  t = x - x_int
+
+  # Linear interpolate between ay and by
+  # low=ay, high=by
+  return ay*(1-t) + by*t
+```
+
+
 * [Perlin Noise: Part 2](https://www.scratchapixel.com/lessons/procedural-generation-virtual-worlds/perlin-noise-part-2)
 
 
