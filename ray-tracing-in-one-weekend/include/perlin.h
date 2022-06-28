@@ -54,7 +54,7 @@ class perlin {
             // Get the fractional part of the double
             double u = p.x() - floor_x;
             double v = p.y() - floor_y;
-            double w = p.x() - floor_z;
+            double w = p.z() - floor_z;
 
             // Get the integer part of the double to obtain the grid coordinates
             // The grid lines are on integers

@@ -285,6 +285,18 @@ Totally didn't come out right! (but it looks cool 笑) Time to debug 🐛
 
 ![Buggy linear interpolation](images/buggy_smooth_trilinear_interpolation.png)
 
+Bug was here:
+```cpp
+            // Get the fractional part of the double
+            double u = p.x() - floor_x;
+            double v = p.y() - floor_y;
+            double w = p.x() - floor_z; // <--- raw hur
+```
+
+Fixed!
+
+![Trilinear interpolation](images/trilinear_interpolation.png)
+
 ## Links
 * [Ray Tracing: the Next Week (blog post)](https://in1weekend.blogspot.com/2016/01/ray-tracing-second-weekend.html)
   * Extra links to supplemental reading and advice
