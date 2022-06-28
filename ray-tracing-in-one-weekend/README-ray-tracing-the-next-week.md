@@ -297,6 +297,11 @@ Fixed!
 
 ![Trilinear interpolation](images/trilinear_interpolation.png)
 
+More reading on noise:
+* [Value Noise and Procedural Patterns: Part 1](https://www.scratchapixel.com/lessons/procedural-generation-virtual-worlds/procedural-patterns-noise-part-1)
+* [Perlin Noise: Part 2](https://www.scratchapixel.com/lessons/procedural-generation-virtual-worlds/perlin-noise-part-2)
+
+
 ## Links
 * [Ray Tracing: the Next Week (blog post)](https://in1weekend.blogspot.com/2016/01/ray-tracing-second-weekend.html)
   * Extra links to supplemental reading and advice
