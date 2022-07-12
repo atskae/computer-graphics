@@ -394,7 +394,7 @@ Need to distinguish the position of the grid lines and the *value* at the grid l
 
 Ok all of this was sorta unrelated because the implementation in Ray Tracing in One Weekend doesn't do any of the gradient/distance vector stuff...
 
-I rewrote the trilinear interpolation as [Wikipedia walks you through it](https://en.wikipedia.org/wiki/Trilinear_interpolation#:~:text=linear%20interpolation%20operators.-,Method,-%5Bedit%5D), which makes way more sense to me than the unexplained 3 loops in the book (and the results are the same!)
+I rewrote the trilinear interpolation as [Wikipedia walks you through it](https://en.wikipedia.org/wiki/Trilinear_interpolation#:~:text=linear%20interpolation%20operators.-,Method,-%5Bedit%5D), which makes way more sense to me than the unexplained 3 loops in the book (and the results are ~~the same~~ close!)
 
 ![Wikipedia!](images/wikipedia-3d-lerp.png)
 
