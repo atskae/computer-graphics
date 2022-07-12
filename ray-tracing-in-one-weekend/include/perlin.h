@@ -46,6 +46,7 @@ class perlin {
 
         // Create fuzzy/smooth noise with linear interpolation
         // Trilinear interpolation is interpolation in 3D space
+        // Returns a double with range [0, 1]
         double smooth_noise(const point3& p) const {
             double floor_x = floor(p.x());
             double floor_y = floor(p.y());
@@ -140,29 +141,68 @@ class perlin {
         }
 
         // Args:
-        //  c[2][2][2], the random delta between [0, 1) from each corner of the cube
+        //  c[2][2][2], the random delta between [0, 1) for each corner of the cube
         //  u, v, w are the fractional part of the x, y, and z coordinates, respectively
         // Returns:
         //  A random double between [0, 1)
         static double trilinear_interpolation(double c[2][2][2], double u, double v, double w) {
-            double accum = 0.0;
-            // Iterate over the deltas for the cube corners, c[2][2][2]
-            for (int i=0; i<2; i++) {
-                for (int j=0; j<2; j++) {
-                    for (int k=0; k<2; k++) {
-                        // First iteration: 1-u
-                        // Second interation: u
-                        double x_delta = i*u + (1-i)*(1-u);
-                        double y_delta = j*v + (1-j)*(1-v);
-                        double z_delta = k*w + (1-k)*(1-w);
-                        double delta_product = x_delta * y_delta * z_delta;
-                        
-                        accum += (delta_product * c[i][j][k]);
-                    }
-                }
-            }
+            // Wikipedia explanation
+
+            // Compute the difference between the coordinate value and its smaller lattice coordinate
+            // "Lattice coordinate" is the integer cooridinate of the 3D grid of cubes
+            // In our case, the grid lines are spaced by 1, so x1-x0 is always 1
+            // u, v, and w has already been computed as such, so we simply remap names to match the Wikipedia explanation...
+            double xd = u;
+            double yd = v;
+            double zd = w;
+
+            // Interpolate along the x-axis
+            // Interpolate from the leftmost side of the cube (4 points) to the right side...
+            // For each corner point on the left-side of the cube, interpolate with the point on
+            //  the right side of the cube as you walk along the x-axis
+            // Assumes x goes left/right, y is back/forth, z is up/down 
+            double c00 = c[0][0][0]*(1 - xd) + c[1][0][0]*xd;
+            double c01 = c[0][0][1]*(1 - xd) + c[1][0][1]*xd;
+            double c10 = c[0][1][0]*(1 - xd) + c[1][1][0]*xd;
+            double c11 = c[0][1][1]*(1 - xd) + c[1][1][1]*xd;
+
+            // Interpolate along the y-axis (back/forth) using the interpolated values from the x-axis
+            // Start from front-most face of the cube to the back-most face of the cube
+            double c0 = c00*(1 - yd) + c10*yd;
+            double c1 = c01*(1 - yd) + c11*yd;
+
+            // Interpolate along the z-axis (up/down) using the interpolated values from the y-axis
+            // Baked ziti, baked zd 笑`
+            double lerp_value = c0*(1 - zd) + c1*zd;
+
+            // We done! This is the final value of the point
+            // Recall the distinction of the value of the point and the position of the point
+            // We interpolated the point's value using the surrounding grid points (corners of the cube, c)
+            return lerp_value;
+
+            // Textbook implementation with minimal explanation...
+            //double accum = 0.0;
+            //// Iterate over the deltas for the cube corners, c[2][2][2]
+            //for (int i=0; i<2; i++) {
+            //    for (int j=0; j<2; j++) {
+            //        for (int k=0; k<2; k++) {
+            //            // First iteration: 1-u
+            //            // Second interation: u
+            //            // Each delta value is [0, 1)
+            //            double x_delta = i*u + (1-i)*(1-u);
+            //            double y_delta = j*v + (1-j)*(1-v);
+            //            double z_delta = k*w + (1-k)*(1-w);
+            //            
+            //            // Also [0, 1)
+            //            double delta_product = x_delta * y_delta * z_delta;
+            //            
+            //            // c[i][j][k] is also [0, 1)
+            //            accum += (delta_product * c[i][j][k]);
+            //        }
+            //    }
+            //}
             
-            return accum;
+            //return accum;
         }
 };
 

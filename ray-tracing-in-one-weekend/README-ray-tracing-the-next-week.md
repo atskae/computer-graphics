@@ -342,9 +342,61 @@ def lerp(a: tuple, b: tuple, x: float):
   return ay*(1-t) + by*t
 ```
 
+I realized there are [two perspectives](https://en.wikipedia.org/wiki/Linear_interpolation#Linear_interpolation_between_two_known_points) on computing the linear interpolation: slope and weighted average
+
+I assumed the code was taking the slope. The math made sense but it isn't the same approach as the code. Whatever, I wrote it out anyway:
+
+![1D Linear interpolation with slope](images/1d-linear-interpolation-slope.png)
+
+The code is actually taking the weighted average approach:
+
+![1D Linear interpolation with weighted average](images/1d-linear-interpolation-weighted-average.png) 
+
+I get that the unknown point is the "mixture" of the two known points, and you take a ratio of how far the unknown point is from the two known points... but I also don't get how this magically computes the y-value correctly.
+
+
+#### Smoothing out lerp
+
+Apply a smooth function on the `t` before linear interpolating.
+Again, the linear interpolation logic `lerp()` is the same. A smooth function is simply applied to `t`  to get `t_remapped`, then this `t_remapped` is used in `lerp()` instead:
+```python
+def smoothNoise(a, b, t):
+  t_remapped = smoothFunction(t) # cosine(), Smoothstep, ...
+  return lerp(a, b, t_remapped)
+```
+
+S-shaped smooth functions: cosine(), [Smoothstep](https://en.wikipedia.org/wiki/Smoothstep#:~:text=Smoothstep%20is%20a%20family%20of,game%20engines%2C%20and%20machine%20learning.)
+We just have to ensure that `t_remapped` is still within range the same range as `t`: `(0, 1]`.
+
+
+#### Scaling the Noise Function
+
+Two ways to change the noise function
+* Change it's *frequency* (periodicity) by multiplying the input to the noise function
+  * We stretch how long a period is (stretch along the x-axis)
+  * If a period is too short, then the visual effect would look *too periodic*; repeats are easily seen
+    * We want a periodic long enough so that the visual effect doesn't look repeated
+    * Memory consumption trade-off for large periods
+    * Powers of 2 are good (typically 256, 512) since we can use bit operators instead of modulo (a slower operation) for calculations 
+* Change it's *amplitude* by multiplying the result of the noise function
+  * We stretch how "tall" the noise function is (stretch along the y-axis)
+* Add an offset (move the noise function) by adding an offset to the input to the noise function
+
+#### Signed Noise
+When the range of the noise value can also be negative
+* Simply remap the value to the new range
 
 * [Perlin Noise: Part 2](https://www.scratchapixel.com/lessons/procedural-generation-virtual-worlds/perlin-noise-part-2)
 
+Need to distinguish the position of the grid lines and the *value* at the grid line intersections (these values are random.)
+
+* [A great explanation of the Perlin noise, explains each step](https://adrianb.io/2014/08/09/perlinnoise.html)
+
+Ok all of this was sorta unrelated because the implementation in Ray Tracing in One Weekend doesn't do any of the gradient/distance vector stuff...
+
+I rewrote the trilinear interpolation as [Wikipedia walks you through it](https://en.wikipedia.org/wiki/Trilinear_interpolation#:~:text=linear%20interpolation%20operators.-,Method,-%5Bedit%5D), which makes way more sense to me than the unexplained 3 loops in the book (and the results are the same!)
+
+![Wikipedia!](images/wikipedia-3d-lerp.png)
 
 ## Links
 * [Ray Tracing: the Next Week (blog post)](https://in1weekend.blogspot.com/2016/01/ray-tracing-second-weekend.html)
