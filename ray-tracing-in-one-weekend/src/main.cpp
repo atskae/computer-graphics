@@ -263,7 +263,7 @@ hittable_list random_scene() {
 hittable_list two_perlin_spheres() {
     hittable_list objects;
 
-    auto texture = make_shared<noise_texture>();
+    auto texture = make_shared<noise_texture>(1);
     objects.add(
         make_shared<sphere>(point3(0, -1000, 0), 1000, make_shared<lambertian>(texture))
     );

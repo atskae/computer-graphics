@@ -57,6 +57,13 @@ class perlin {
             double v = p.y() - floor_y;
             double w = p.z() - floor_z;
 
+            // Use the Hermite Cubic to smooth interpolation more
+            // h(s) = -2*s^3 + 3s^2
+            //  goes from 0 to 1 slowly as a curve
+            u = -2*u*u*u + 3*u*u;
+            v = -2*v*v*v + 3*v*v;
+            w = -2*w*w*w + 3*w*w;
+
             // Get the integer part of the double to obtain the grid coordinates
             // The grid lines are on integers
             int i = static_cast<int>(floor_x);

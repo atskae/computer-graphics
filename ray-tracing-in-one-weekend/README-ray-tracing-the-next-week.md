@@ -398,6 +398,30 @@ I rewrote the trilinear interpolation as [Wikipedia walks you through it](https:
 
 ![Wikipedia!](images/wikipedia-3d-lerp.png)
 
+### [5.3 Improvement with Hermitian Smoothing]
+* **Match bands** can see the edge between different shades of colors, even if a gradient was intended
+  * Occurs when there are ]discontinuities when linear interpolating](https://en.wikipedia.org/wiki/Mach_bands#:~:text=line).%5B7%5D-,In%20computer%20graphics,-%5Bedit%5D)
+* [**Hermite Curve Interpolation**](https://www.cubic.org/docs/hermite.htm)
+  * This is pretty much the pen tool in any drawing program 🤯
+    * Actuallly the [Bezier curve](https://en.wikipedia.org/wiki/B%C3%A9zier_curve) is the pen tool !!!?
+  * [Spline](https://en.wikipedia.org/wiki/Spline_(mathematics)) is a piecewise function of polynomials
+
+![Hermitian smoothing](images/hermitian-smoothing.png)
+
+### [5.4 Tweaking the Frequency](https://raytracing.github.io/books/RayTracingTheNextWeek.html#perlinnoise/tweakingthefrequency)
+
+[Scaling the input point will vary the pattern more quickly by increasing the functions *frequency*](https://www.scratchapixel.com/lessons/procedural-generation-virtual-worlds/procedural-patterns-noise-part-1/creating-simple-1D-noise)
+
+Increasing the frequency makes the noise pattern repeat itself more:
+
+Frequencies of 1, 2, 4, 8, 16:
+![Frequency=1](images/noise-frequency-1.png)
+![Frequency=2](images/noise-frequency-2.png)
+![Frequency=4](images/noise-frequency-4.png)
+![Frequency=8](images/noise-frequency-8.png)
+![Frequency=16](images/noise-frequency-16.png)
+
+
 ## Links
 * [Ray Tracing: the Next Week (blog post)](https://in1weekend.blogspot.com/2016/01/ray-tracing-second-weekend.html)
   * Extra links to supplemental reading and advice
