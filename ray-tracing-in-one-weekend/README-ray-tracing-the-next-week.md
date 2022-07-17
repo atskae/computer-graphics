@@ -410,7 +410,7 @@ I rewrote the trilinear interpolation as [Wikipedia walks you through it](https:
 
 ### [5.4 Tweaking the Frequency](https://raytracing.github.io/books/RayTracingTheNextWeek.html#perlinnoise/tweakingthefrequency)
 
-[Scaling the input point will vary the pattern more quickly by increasing the functions *frequency*](https://www.scratchapixel.com/lessons/procedural-generation-virtual-worlds/procedural-patterns-noise-part-1/creating-simple-1D-noise)
+[Scaling the input point will vary the pattern more quickly by increasing the function's *frequency*](https://www.scratchapixel.com/lessons/procedural-generation-virtual-worlds/procedural-patterns-noise-part-1/creating-simple-1D-noise)
 
 Increasing the frequency makes the noise pattern repeat itself more:
 
@@ -421,6 +421,27 @@ Frequencies of 1, 2, 4, 8, 16:
 ![Frequency=8](images/noise-frequency-8.png)
 ![Frequency=16](images/noise-frequency-16.png)
 
+### [5.5 Using Random Vectors on the Lattice Points](https://raytracing.github.io/books/RayTracingTheNextWeek.html#perlinnoise/usingrandomvectorsonthelatticepoints)
+
+Ok *now* we get to the gradient and distance vectors that explanations of Perlin Noise have been talking about!!
+
+I tried to figure it out from using [this post](https://adrianb.io/2014/08/09/perlinnoise.html) and failed:
+
+I used the influence values directly and didn't interpolate:
+
+![Forgot interpolation](images/forgot_interpolation.png)
+
+After interpolating, more failed attempts:
+
+![Failed 1](images/buggy_with_distance_vectors-1.png)
+![Failed 2](images/buggy_with_distance_vectors-2.png)
+
+The textbook version (whose code is hard to understand) works.....
+
+![Textbook random vectors](images/random_vectors_textbook_version.png)
+
+I feel so defeated OTL
+Now I need to figure out what I did wrong... I actually can't mathematically explain why.
 
 ## Links
 * [Ray Tracing: the Next Week (blog post)](https://in1weekend.blogspot.com/2016/01/ray-tracing-second-weekend.html)

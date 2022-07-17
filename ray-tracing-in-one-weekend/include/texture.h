@@ -83,7 +83,8 @@ class noise_texture: public texture {
             
             // Smooth random
             // Apply a scale to adjust the frequency of the noise function
-            return color(1,1,1) * this->noise.smooth_noise(this->scale * p);
+            // Scale the output of noise to [0, 1)
+            return color(1,1,1) * 0.5 * (1.0 + this->noise.noise(this->scale * p));
         }
 };
 
