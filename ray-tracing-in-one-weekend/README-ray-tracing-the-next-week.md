@@ -401,7 +401,7 @@ I rewrote the trilinear interpolation as [Wikipedia walks you through it](https:
 ### [5.3 Improvement with Hermitian Smoothing](https://raytracing.github.io/books/RayTracingTheNextWeek.html#perlinnoise/improvementwithhermitiansmoothing)
 
 * **Match bands** can see the edge between different shades of colors, even if a gradient was intended
-  * Occurs when there are ]discontinuities when linear interpolating](https://en.wikipedia.org/wiki/Mach_bands#:~:text=line).%5B7%5D-,In%20computer%20graphics,-%5Bedit%5D)
+  * Occurs when there are [discontinuities when linear interpolating](https://en.wikipedia.org/wiki/Mach_bands#:~:text=line.%5B7%5D-,In%20computer%20graphics,-%5Bedit%5D)
 * [**Hermite Curve Interpolation**](https://www.cubic.org/docs/hermite.htm)
   * This is pretty much the pen tool in any drawing program 🤯
     * Actuallly the [Bezier curve](https://en.wikipedia.org/wiki/B%C3%A9zier_curve) is the pen tool !!!?
