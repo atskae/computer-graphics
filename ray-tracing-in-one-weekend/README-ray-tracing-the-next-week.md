@@ -415,6 +415,7 @@ I rewrote the trilinear interpolation as [Wikipedia walks you through it](https:
 Increasing the frequency makes the noise pattern repeat itself more:
 
 Frequencies of 1, 2, 4, 8, 16:
+
 ![Frequency=1](images/noise-frequency-1.png)
 ![Frequency=2](images/noise-frequency-2.png)
 ![Frequency=4](images/noise-frequency-4.png)
