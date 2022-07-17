@@ -398,7 +398,8 @@ I rewrote the trilinear interpolation as [Wikipedia walks you through it](https:
 
 ![Wikipedia!](images/wikipedia-3d-lerp.png)
 
-### [5.3 Improvement with Hermitian Smoothing]
+### [5.3 Improvement with Hermitian Smoothing](https://raytracing.github.io/books/RayTracingTheNextWeek.html#perlinnoise/improvementwithhermitiansmoothing)
+
 * **Match bands** can see the edge between different shades of colors, even if a gradient was intended
   * Occurs when there are ]discontinuities when linear interpolating](https://en.wikipedia.org/wiki/Mach_bands#:~:text=line).%5B7%5D-,In%20computer%20graphics,-%5Bedit%5D)
 * [**Hermite Curve Interpolation**](https://www.cubic.org/docs/hermite.htm)
