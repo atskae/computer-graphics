@@ -137,78 +137,78 @@ class perlin {
         //  A random double between [0, 1)
         static double trilinear_interpolation(vec3 c[2][2][2], double u, double v, double w) {
             
-            // Ray Tracing in One Weekend logic
+            //// Ray Tracing in One Weekend logic
 
-            // Hermitian Smoothing
-            double uu = -2*u*u*u + 3*u*u;
-            double vv = -2*v*v*v + 3*v*v;
-            double ww = -2*w*w*w + 3*w*w;
-
-            double accum = 0.0;
-            for (int i=0; i<2; i++) {
-                for (int j=0;j<2; j++) {
-                    for (int k=0; k<2; k++) {
-                        // Not the distance vector... wait it is???
-                        vec3 weight_vector(u-i, v-j, w-k);
-                        accum += (i*uu + (1-i)*(1-uu))
-                            * (j*vv + (1-j)*(1-vv))
-                            * (k*ww + (1-k)*(1-ww))
-                            * dot_product(c[i][j][k], weight_vector);
-                    }
-                }
-            }
-
-            return accum;
-
-            // Failed attempt
-            //// Actual Perlin noise using gradient and distant vectors
-
-            //// Calculate the distance vectors for each corner of the cube/grid
-            //// The distance vector is simply the difference between the point and
-            ////  the random vector at the corner
-            
-            //// The point in the grid
-            //vec3 p(u, v, w);
-            
-            //// The dot product between the distance vector and the gradient vector
-            //double influence_values[2][2][2];
-            
-            //// Iterate through the corners of the cube
-            //for (int di=0; di<2; di++) {
-            //    for (int dj=0; dj<2; dj++) {
-            //        for (int dk=0; dk<2; dk++) {
-            //            // Compute the distance vector
-            //            vec3 gradient_vector = c[di][dj][dk];
-            //            vec3 distance_vector = p - gradient_vector;
-            //            // Compute the dot product = "influence value"
-            //            influence_values[di][dj][dk] = dot_product(gradient_vector, distance_vector);
-            //        }
-            //    }
-            //}
-
-            //// Linear interpolate between the influence values and the point
-            //// Same idea as the Wikipedia explanation on trilinear interpolation
-            //// On a coordinate system where +x (left -> right), +y (front of screen -> inside the screen), +z (down -> up)
-
-            //// Hermitian smoothing...
+            //// Hermitian Smoothing
             //double uu = -2*u*u*u + 3*u*u;
             //double vv = -2*v*v*v + 3*v*v;
             //double ww = -2*w*w*w + 3*w*w;
 
-            //// First interpolate left plane of the cube to the right plane (x-axis)
-            //double c00 = perlin::lerp(influence_values[0][0][0], influence_values[1][0][0], uu);
-            //double c01 = perlin::lerp(influence_values[0][0][1], influence_values[1][0][1], uu);
-            //double c10 = perlin::lerp(influence_values[0][1][0], influence_values[1][1][0], uu);
-            //double c11 = perlin::lerp(influence_values[0][1][1], influence_values[1][1][1], uu);
+            //double accum = 0.0;
+            //for (int i=0; i<2; i++) {
+            //    for (int j=0;j<2; j++) {
+            //        for (int k=0; k<2; k++) {
+            //            // Not the distance vector... wait it is???
+            //            vec3 weight_vector(u-i, v-j, w-k);
+            //            accum += (i*uu + (1-i)*(1-uu))
+            //                * (j*vv + (1-j)*(1-vv))
+            //                * (k*ww + (1-k)*(1-ww))
+            //                * dot_product(c[i][j][k], weight_vector);
+            //        }
+            //    }
+            //}
+
+            //return accum;
+
+            // Failed attempt
+            // Actual Perlin noise using gradient and distant vectors
+
+            // Calculate the distance vectors for each corner of the cube/grid
+            // The distance vector is simply the difference between the point and
+            //  the random vector at the corner
+            
+            // The point in the grid
+            vec3 p(u, v, w);
+            
+            // The dot product between the distance vector and the gradient vector
+            double influence_values[2][2][2];
+            
+            // Iterate through the corners of the cube
+            for (int di=0; di<2; di++) {
+                for (int dj=0; dj<2; dj++) {
+                    for (int dk=0; dk<2; dk++) {
+                        // Compute the distance vector
+                        vec3 gradient_vector = c[di][dj][dk];
+                        vec3 distance_vector = p - gradient_vector;
+                        // Compute the dot product = "influence value"
+                        influence_values[di][dj][dk] = dot_product(gradient_vector, distance_vector);
+                    }
+                }
+            }
+
+            // Linear interpolate between the influence values and the point
+            // Same idea as the Wikipedia explanation on trilinear interpolation
+            // On a coordinate system where +x (left -> right), +y (front-back), +z (inside screen -> front of screen, going out)
+
+            // Hermitian smoothing...
+            double uu = -2*u*u*u + 3*u*u;
+            double vv = -2*v*v*v + 3*v*v;
+            double ww = -2*w*w*w + 3*w*w;
+
+            // First interpolate left plane of the cube to the right plane (x-axis)
+            double c00 = perlin::lerp(influence_values[0][0][0], influence_values[1][0][0], uu);
+            double c01 = perlin::lerp(influence_values[0][1][0], influence_values[1][1][0], uu);
+            double c10 = perlin::lerp(influence_values[0][0][1], influence_values[1][0][1], uu);
+            double c11 = perlin::lerp(influence_values[0][1][1], influence_values[1][1][1], uu);
            
-            //// Interpolate front/back (y-axis)
-            //double c0 = perlin::lerp(c00, c10, vv);
-            //double c1 = perlin::lerp(c01, c11, vv);
+            // Interpolate up/down (y-axis)
+            double c0 = perlin::lerp(c00, c01, vv);
+            double c1 = perlin::lerp(c10, c11, vv);
 
-            //// Get final interpolation value by interpolating up/down (z-axis) 
-            //double c_final = perlin::lerp(c0, c1, ww);
+            // Get final interpolation value by interpolating up/down (z-axis) 
+            double c_final = perlin::lerp(c0, c1, ww);
 
-            //return c_final;
+            return c_final;
 
             //// Wikipedia explanation of trilinear interpolation
 

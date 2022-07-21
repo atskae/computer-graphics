@@ -435,6 +435,8 @@ I used the influence values directly and didn't interpolate:
 
 After interpolating, more failed attempts:
 
+For one of them I didn't scale the Perlin result to [0, 1]
+
 ![Failed 1](images/buggy_with_distance_vectors-1.png)
 ![Failed 2](images/buggy_with_distance_vectors-2.png)
 
@@ -444,6 +446,23 @@ The textbook version (whose code is hard to understand) works.....
 
 I feel so defeated OTL
 Now I need to figure out what I did wrong... I actually can't mathematically explain why.
+
+Switched the order of how values are interpolated so it matches our coordinate system (with y = up/down, z=into screen, out of screen) and it didn't change anything at all.
+
+Also the image file contains ridiculously large negative numbers (unrelated: do you call a very negative number a large negative number???):
+```
+...
+-2147483648 -2147483648 -2147483648
+-2147483648 -2147483648 -2147483648
+-2147483648 -2147483648 -2147483648
+-2147483648 -2147483648 -2147483648
+-2147483648 -2147483648 -2147483648
+-2147483648 -2147483648 -2147483648
+-2147483648 -2147483648 -2147483648
+...
+```
+
+so the cast from the Perlin value to 0 and 1 isn't correct...
 
 ## Links
 * [Ray Tracing: the Next Week (blog post)](https://in1weekend.blogspot.com/2016/01/ray-tracing-second-weekend.html)
