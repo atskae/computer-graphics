@@ -462,26 +462,40 @@ Also the image file contains ridiculously large negative numbers (unrelated: do 
 ...
 ```
 
-so the cast from the Perlin value to 0 and 1 isn't correct...
+~~so the cast from the Perlin value to 0 and 1 isn't correct...~~
 
-Whaaat this works:
+The bug was computing the distance vector:
+```cpp
+                        vec3 gradient_vector = c[di][dj][dk];
+                        vec3 distance_vector = p - gradient_vector;
+```
+
+I was confusing the vector assigned *to a cube corner point* versus *the coordinates* of the cube corner point. The distance vector should be the difference between the cube/grid's corner points and the point inside the cube/grid.
+
+The gradient vector are the random vectors assigned to the corners of the cube. This is not computed in the loop.
+
+~~Whaaat~~ this works:
 ```cpp
             // Iterate through the corners of the cube
             for (int di=0; di<2; di++) {
                 for (int dj=0; dj<2; dj++) {
                     for (int dk=0; dk<2; dk++) {
                         // Compute the distance vector
-                        //vec3 gradient_vector = c[di][dj][dk];
-                        vec3 gradient_vector = vec3(di, dj, dk);
-                        vec3 distance_vector = p - gradient_vector;
+                        point3 grid_corner = point3(di, dj, dk);
+                        vec3 distance_vector = p - grid_corner;
+                        
                         // Compute the dot product = "influence value"
-                        influence_values[di][dj][dk] = dot_product(c[di][dj][dk], distance_vector);
+                        vec3 gradient_vector = c[di][dj][dk];
+                        influence_values[di][dj][dk] = dot_product(gradient_vector, distance_vector);
                     }
                 }
             }
 ```
 
-Gonna stare at this some other time...
+Super sugoi
+
+![Fixed dot product arguments](images/fix_dot_product_args_with_smoothing.png)
+
 
 ## Links
 * [Ray Tracing: the Next Week (blog post)](https://in1weekend.blogspot.com/2016/01/ray-tracing-second-weekend.html)
