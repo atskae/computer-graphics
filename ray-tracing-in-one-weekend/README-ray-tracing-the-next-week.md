@@ -464,6 +464,25 @@ Also the image file contains ridiculously large negative numbers (unrelated: do 
 
 so the cast from the Perlin value to 0 and 1 isn't correct...
 
+Whaaat this works:
+```cpp
+            // Iterate through the corners of the cube
+            for (int di=0; di<2; di++) {
+                for (int dj=0; dj<2; dj++) {
+                    for (int dk=0; dk<2; dk++) {
+                        // Compute the distance vector
+                        //vec3 gradient_vector = c[di][dj][dk];
+                        vec3 gradient_vector = vec3(di, dj, dk);
+                        vec3 distance_vector = p - gradient_vector;
+                        // Compute the dot product = "influence value"
+                        influence_values[di][dj][dk] = dot_product(c[di][dj][dk], distance_vector);
+                    }
+                }
+            }
+```
+
+Gonna stare at this some other time...
+
 ## Links
 * [Ray Tracing: the Next Week (blog post)](https://in1weekend.blogspot.com/2016/01/ray-tracing-second-weekend.html)
   * Extra links to supplemental reading and advice

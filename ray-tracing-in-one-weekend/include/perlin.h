@@ -178,10 +178,11 @@ class perlin {
                 for (int dj=0; dj<2; dj++) {
                     for (int dk=0; dk<2; dk++) {
                         // Compute the distance vector
-                        vec3 gradient_vector = c[di][dj][dk];
+                        //vec3 gradient_vector = c[di][dj][dk];
+                        vec3 gradient_vector = vec3(di, dj, dk);
                         vec3 distance_vector = p - gradient_vector;
                         // Compute the dot product = "influence value"
-                        influence_values[di][dj][dk] = dot_product(gradient_vector, distance_vector);
+                        influence_values[di][dj][dk] = dot_product(c[di][dj][dk], distance_vector);
                     }
                 }
             }
@@ -191,9 +192,12 @@ class perlin {
             // On a coordinate system where +x (left -> right), +y (front-back), +z (inside screen -> front of screen, going out)
 
             // Hermitian smoothing...
-            double uu = -2*u*u*u + 3*u*u;
-            double vv = -2*v*v*v + 3*v*v;
-            double ww = -2*w*w*w + 3*w*w;
+            //double uu = -2*u*u*u + 3*u*u;
+            //double vv = -2*v*v*v + 3*v*v;
+            //double ww = -2*w*w*w + 3*w*w;
+            double uu = u;
+            double vv = v;
+            double ww = w;           
 
             // First interpolate left plane of the cube to the right plane (x-axis)
             double c00 = perlin::lerp(influence_values[0][0][0], influence_values[1][0][0], uu);
@@ -207,7 +211,6 @@ class perlin {
 
             // Get final interpolation value by interpolating up/down (z-axis) 
             double c_final = perlin::lerp(c0, c1, ww);
-
             return c_final;
 
             //// Wikipedia explanation of trilinear interpolation

@@ -28,9 +28,13 @@ void write_color(std::ostream &out, color pixel, int samples_per_pixel) {
     b = sqrt(b);
 
     // Write the translated [0, 255] value of each color component
-    out << static_cast<int>(256 * clamp(r, 0.0, 0.999)) << ' '
-    << static_cast<int>(256 * clamp(g, 0.0, 0.999)) << ' '
-    << static_cast<int>(256 * clamp(b, 0.0, 0.999)) << std::endl;
+    int r_int = static_cast<int>(256 * clamp(r, 0.0, 0.999));
+    int g_int = static_cast<int>(256 * clamp(g, 0.0, 0.999));
+    int b_int = static_cast<int>(256 * clamp(b, 0.0, 0.999));
+
+    out << r_int << ' '
+    << g_int << ' '
+    << b_int << std::endl;
 }
 
 // Header guard
