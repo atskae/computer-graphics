@@ -81,6 +81,26 @@ class perlin {
             return perlin::trilinear_interpolation(c, u, v, w);
         }
 
+        // Compute the sum of repeated noise values
+        // Turbulence = composite noise that has sums of multiple frequencies
+        // Returns a value between [0, 1)
+        double turbulence(const point3& p, int depth=7) const {
+            double accum = 0.0;
+            point3 temp_p = p;
+            double weight = 1.0;
+
+            for (int i=0; i<depth; i++) {
+                accum += weight * this->noise(temp_p);
+                // Decreases the amplitude of the noise function
+                weight *= 0.5;
+                // Scaling the point scales the noise funcion's frequency
+                temp_p *= 2;
+            }
+
+            // Return the absolute value
+            return fabs(accum);
+        }
+
     private:
         // Number of random samples to generate
         // `static` means any object of this class can access this value

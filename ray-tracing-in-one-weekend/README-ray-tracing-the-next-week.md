@@ -497,6 +497,53 @@ The gradient vector are the random vectors assigned to the corners of the cube. 
 ![Fixed dot product arguments](images/fix_dot_product_args_with_smoothing.png)
 
 
+## [5.6 Turbulence](https://raytracing.github.io/books/RayTracingTheNextWeek.html#perlinnoise/introducingturbulence)
+
+Impose [self-similarity](https://en.wikipedia.org/wiki/Self-similarity#:~:text=In%20mathematics%2C%20a%20self%2Dsimilar,statistical%20properties%20at%20many%20scales.) (object looks similar to a part of itself) on noise to add [scale-invariance](https://en.wikipedia.org/wiki/Scale_invariance) (at any magnification, there is always a smaller piece of the object that is similar to the whole).
+
+* [Noise, turbulence, and texture](https://web.cs.wpi.edu/~matt/courses/cs563/talks/noise/noise.html)
+* [Turbulence function](https://web.cs.wpi.edu/~emmanuel/courses/cs563/S07/talks/dmitriy_janaliyev_noise_wk9_p2.pdf)
+
+Marble-like texture:
+
+![Turbulence](images/turbulence.png)
+
+## [5.7 Adjusting the Phase](https://raytracing.github.io/books/RayTracingTheNextWeek.html#perlinnoise/adjustingthephase)
+
+Actual marble-like texture:
+
+![Adjusting the phase](images/adjusting_phase.png)
+
+Keine Ahnung..... 
+```cpp
+            double phase_shift = 10 * this->noise.turbulence(p);
+            // Shift the phase of the sine function
+            return color(1,1,1) * 0.5 * (1 + sin(this->scale * p.z() + phase_shift));
+```
+
+Playing around with the coordinate (x, y, z) in this line:
+```cpp
+sin(scale*p.z() + ...)
+```
+
+`p.x()`:
+
+![Adjusting with x](images/adjusting_phase_x.png)
+
+`p.y()`:
+
+![Adjusting with y](images/adjusting_phase_y.png)
+
+`p.z()` (original):
+
+![Adjusting with z](images/adjusting_phase.png)
+
+The coordinate determines the direction of the undulation (up/down movement) of the wave.
+
+The large sphere's pattern when `y` is used doesn't vary much because the points on the large sphere's is mostly flat.
+
+![Undulation direction](images/undulation-direction.png)
+
 ## Links
 * [Ray Tracing: the Next Week (blog post)](https://in1weekend.blogspot.com/2016/01/ray-tracing-second-weekend.html)
   * Extra links to supplemental reading and advice

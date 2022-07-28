@@ -81,10 +81,17 @@ class noise_texture: public texture {
             // Block random
             //return color(1,1,1) * this->noise.noise(p);
             
-            // Smooth random
-            // Apply a scale to adjust the frequency of the noise function
-            // Scale the output of noise to [0, 1)
-            return color(1,1,1) * 0.5 * (1.0 + this->noise.noise(this->scale * p));
+            // Create a marble-like texture
+            // Make color proportional to sine()
+            // Use turbulence value to adjust the phase (shift sine() left/right) 
+            //  To create a phase shift, add to the input `x`: sin(x + phase_shift)
+            
+            // Compute turblence with increased amplitude
+            double phase_shift = 10 * this->noise.turbulence(p);
+            // Shift the phase of the sine function
+            return color(1,1,1) * 0.5 * (1 + sin(this->scale * p.z() + phase_shift));
+            //return color(1,1,1) * 0.5 * (1 + sin(this->scale * p.y() + phase_shift));
+            //return color(1,1,1) * 0.5 * (1 + sin(this->scale * p.x() + phase_shift));
         }
 };
 
