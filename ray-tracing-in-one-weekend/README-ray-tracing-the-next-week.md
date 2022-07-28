@@ -470,7 +470,7 @@ The bug was computing the distance vector:
                         vec3 distance_vector = p - gradient_vector;
 ```
 
-I was confusing the vector assigned *to a cube corner point* versus *the coordinates* of the cube corner point. The distance vector should be the difference between the cube/grid's corner points and the point inside the cube/grid.
+I was confusing *the vector assigned* to a cube corner point versus *the coordinates* of the cube corner point. The distance vector should be the difference between the cube/grid's corner points and the point inside the cube/grid.
 
 The gradient vector are the random vectors assigned to the corners of the cube. This is not computed in the loop.
 
@@ -492,7 +492,7 @@ The gradient vector are the random vectors assigned to the corners of the cube. 
             }
 ```
 
-Super sugoi
+¡Super sugoi!
 
 ![Fixed dot product arguments](images/fix_dot_product_args_with_smoothing.png)
 
