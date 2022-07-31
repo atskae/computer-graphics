@@ -3,6 +3,8 @@
 
 #include "rtweekend.h"
 #include "perlin.h"
+#include "rtw_stb_image.h" // image utility stb_image
+
 
 // Abstract base class for a texture
 class texture {
@@ -92,6 +94,79 @@ class noise_texture: public texture {
             return color(1,1,1) * 0.5 * (1 + sin(this->scale * p.z() + phase_shift));
             //return color(1,1,1) * 0.5 * (1 + sin(this->scale * p.y() + phase_shift));
             //return color(1,1,1) * 0.5 * (1 + sin(this->scale * p.x() + phase_shift));
+        }
+};
+
+// Texture class that holds an image texture
+class image_texture : public texture {
+    private:
+        // Texture image as an array of unsigned char
+        unsigned char* data;
+        // Dimensions of the texture image
+        int width, height;
+        int bytes_per_scanline;
+
+    public:
+        // RBG (1 byte per color channel ?)
+        const static int bytes_per_pixel = 3;
+        
+        // If no image data, color pixel with constant color for debugging
+        const static color debug_color(0, 1, 1); // cyan
+
+        // Constructors
+        image_texture(): data(nullptr), width(0), height(0), bytes_per_scanline(0) {}
+        image_texture(const char* filename) {
+            // An stb_image "component" = an 8-bit value = a byte
+            int components_per_pixel = this->bytes_per_pixel;
+            
+            // Save the image's pixel data
+            this->data = stbi_load(filename, &this->width, &this->height, &components_per_pixel, components_per_pixel);
+            if (!this->data) {
+                std::cerr << "Failed to read texture image: " << filename << std::endl;
+                this->width = this->height = 0;
+            }
+
+            this->bytes_per_scanline = bytes_per_pixel * this->width;
+        }
+
+        // Destructor
+        ~image_texture() {
+            delete this->data;
+        }
+
+        // Implement abstract base class method
+        virtual color value(double u, double v, const point3& p) const override {
+            if (!this->data) {
+                return image_texture::debug_color;
+            }
+
+            // Clamp u to [0, 1] and v to [1, 0]
+            // Recall, we have an image that starts at the top-left corner
+            //  u goes left to right [0, 1]
+            //  v goes bottom to top, [1, 0]
+            
+            // Review of clamp(): if u < 0.0, return 0.0, if  u > 1.0, return 1.0
+            //  Otherwise return u
+            u = clamp(u, 0.0, 1.0);
+            // (???) Flip v to image coordinates
+            v = 1.0 - clamp(v, 0.0, 1.0);
+
+            // Pixel coordinates
+            int i = static_cast<int>(u * width);
+            int j = static_cast<int>(v * height);
+
+            // More clamping in case i/j > 1.0...
+            if (i >= width) i = width - 1;
+            if (j >= width) j = height - 1;
+
+            const double color_scale = 1.0 / 255.0;
+            unsigned char* pixel = data + j*this->bytes_per_scanline + i*image_texture::bytes_per_pixel;
+
+            return color(
+                color_scale * pixel[0],
+                color_scale * pixel[1],
+                color_scale * pixel[2]
+            );
         }
 };
 

@@ -17,7 +17,7 @@ struct hit_record {
     double t;
     
     // The location of the surface (the surface coordinate) that the ray hit the object
-    // (u,v) is the texture coordiante: the position of the texture that the ray hit (?)
+    // (u,v) is the texture coordinate: the position of the texture that the ray hit (?)
     double u;
     double v;
     
