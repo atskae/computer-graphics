@@ -81,8 +81,6 @@ We created a `4x3` matrix, but how do we get a 4x4 *matrix* that is commonly use
 ## The Trick about Homogenous Points
 A *homogenous point* is a point `P(0,0,0,w)`  where `w` is always `1`: `P(0,0,0,1)`.
 
-(rant to textbook, don't say "w is always 1" without having said what w was 😑...)
-
 `w` is usually not explicitly defined in CG libraries (in other words, only x, y, and z coordinates are explicitly defined).
 
 If the fourth column of a matrix is always `(0,0,0,1)`, then the fourth coordinate of the transformed point `P'` is always `1`.

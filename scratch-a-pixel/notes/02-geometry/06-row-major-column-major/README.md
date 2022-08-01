@@ -144,6 +144,3 @@ OpenGL is an interesting case
 Row-major and column-major will represent axes of the coordinate system and translation matrices differently:
 
 ![Representing axes and translation matrices](images/axes-translation.png)
-
-(when the *Summary* section mentions new information... 😑)
-

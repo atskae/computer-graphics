@@ -85,9 +85,6 @@ If we apply the new matrix `M^((-1)T)` on the normal, the result is still perpen
 
 ![Still perpendicular](images/apply-transpose-inverse-normal.png)
 
-("imagine a sphere as a quadratic shape" <--- doesn't tell you what a quadratic shape is, and also there was a typo in the original)
-* (so *now* they tell you that the tangent and bi-tangent is the deritvative at a point???? In some set-aside textbox?? -siigh-)
-
 ## Mathetmatical Proof on matrices for normals
 
 Recall:
@@ -110,9 +107,6 @@ Let's say we have two orthogonal vectors, `v` and `n`, both at point `p`.
 
 ![Proof v, n, and p](images/proof-tangent-plane.png)
 
-(ugh, I feel like *not* having pictures in a CG explanation should be unacceptable 😤)
-
-(ok, I guess the picture for this proof didn't add much, but I still agree with the above statement.)
 
 Vector `v` and `n` are both a 1x3 matrices. The dot product between `v` and `n` is zero because they orthogonal to each other.
 
@@ -127,8 +121,6 @@ We can add the transformation matrix `M` in the equation as `M * M-1`, which is 
 We continue to re-arrange this equation and carefully ensure the result does not change.
 
 `v * M` is still in the same order. `v * M` is the transformation `M` applied to vector `v`, which gives us `v'`.
-
-(assumption because they never explained it)
 
 The second half, we swapped `M^-1` and `n^T`. First to swap them, we can use this property, which applies the transpose:
 ```
@@ -146,15 +138,6 @@ Since we need to retain the result, we can apply the transpose again, which reve
 ```
 (n * M^((-1)T))^T
 ```
-
-("remember this rule that I never mentioned before!")
-
-("also I won't tell you what this rule is called so you can't look it up")
-
-(this part they totally don't explain so I have keine Ahnung if this was the correct assumption:
-
-God. I thought I understood it until I took a closer look and like, nope. Right near the finish line too. Sheiße -cries-
-)
 
 ![Swap order](images/swap-order.png)
 
@@ -180,5 +163,3 @@ then:
 ```
 n' = n * M^((-1)T)
 ```
-
--sigh, wasn't left on an empowering note of understanding...-

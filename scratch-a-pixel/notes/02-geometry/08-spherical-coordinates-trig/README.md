@@ -46,18 +46,6 @@ hypotenuse^2 = adjacent^2 + opposite^2
 In a cartesian coordinate system, we represented a vector with three values `P(x, y, z)` (a value per axis).
 * We can represent the same vector using only two values with spherical coordinates
 
-(got completely lost here)
-* Is this a typo? "vertical angle (in red)"
-  * The red angle is clearly not vertical...
-
-(sigh)
-(just skip this part and go to the next one since the explanation is trashed later anyway)
-
-(so there is zero explanation why a vector with a phi value that is orignally >`pi` now has a `phi` value less than `pi/2` in their illustration .......)
-* (I can see how this makes the trig relationships with `theta` easier to see later but why don't they say that???)
-
-(they also changed handedness from Figure 3 to Figure 4 & 5 without telling you ???)
-
 [Spherical coordinate grapher](https://www.geogebra.org/m/FzkZPN3K) amazing resource to understand this!
 
 ## Conventions Again: Z is Up!
@@ -73,16 +61,11 @@ This is the *physics* convention of labeing the angles... (as opposed to the *ma
   * After projecting the vector to the horizontal plane, the angle between the x-axis and the projection is angle `phi` (also called the **azimuth** angle)
 * y-axis is defined as the **forward vector**
 
-(I hate it when they tell you to "see the next chapter" in the middle of a chapter, like, why is the next chapter the prerequisite of this chapter... 😑)
-* And with broken links 😡
-
 (Wikipedia and other sources switch `theta` and `phi` UGHHH, there is no convention -cries-)
-* [A Redditor asked the same damn question](https://www.reddit.com/r/Physics/comments/14rb66/why_are_theta_and_phi_switched_between/) !!!
+* [A Redditor asked about flipping theta and phi](https://www.reddit.com/r/Physics/comments/14rb66/why_are_theta_and_phi_switched_between/) !!!
     * [A brief paper on this problem](https://bridge.math.oregonstate.edu/papers/spherical.pdf)
 
 # [Creating an Orientation Matrix or a Local Coordinate System](https://www.scratchapixel.com/lessons/mathematics-physics-for-computer-graphics/geometry/creating-an-orientation-matrix-or-local-coordinate-system)
-
-(doesn't *formally* tell you what a normal is. It's been mentioned randomly but yeah, never defined. Thanks.)
 
 A **normal** is a vector that is perpendicular to a give object (ex. a plane) ([from Wikipedia](https://en.wikipedia.org/wiki/Normal_(geometry)))
 
@@ -92,9 +75,7 @@ This chapter is about building a local coordinate system using a *normal*.
 * [Review from coordinate systems chapter](../02-coordinate-systems/README.md#left-handed-vs-right-handed-coordinate-systems) on the meaning of up vector, forward/down vector, the right vector
   * Note foward/down (interchangeable, ugh)
 
-(does not explain what a *tangent* or *bitangent* is 😑)
 * [This OpenGL article explains it briefly](http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-13-normal-mapping/)️
-  * Is bitangent the same as binormal???? Another stupid lack of consensus?😵
 
 To create a local coordinate system, we take a point `P`:
 * The vector that is perpendicular to the point `P` is the **normal vector**. Let the *normal* at the point `P` to become an axis in the coordinate system
@@ -155,14 +136,8 @@ If we had a vector `V` that is defined in the *world-coordinate system* (or any 
 * [Embree (a renderer from Intel)](https://www.intel.com/content/www/us/en/developer/articles/technical/embree-photo-realistic-ray-tracing-kernels.html) and other renderers may choose to matrices/transformations as *affine space*
   * An affine space uses a location in space and three axes (Vx, Vy, Vz) to describe its coordinate system
 
-I wish I could have just handed in a programming assigment like this:
-```
-// insert code here
-```
 
 ## (back to) Conventions Again: Z is up!
-
-(now this makes sense...-er)
 
 Recall the handedness of a coordinate system:
 
@@ -173,9 +148,6 @@ The coordinate values are the same for each axis, (ex. x-axis is labeled as `(1,
 In previous chapters, we've been using the right-hand coordinate system when we were describing things in the World Coordinate System.
 
 But since the convention in shading uses the *left-hand coordinate system*, when we say we convert from the World Coordinate System (where the up vector is the y-axis) to the Local (target) coordinate system (where the up vector is the z-axis), the World Coordinate System is left-handed!!
-* (the notes totally don't tell you this so I was so confused why the values were flipped in their calculations... 😑 UGH it sucks that you don't know if things are typos, because there are typos that show up often, or you're just stupid or what)
-* (I also don't know if the above is the correct assumption, but whatever. Can't do anything about it...)
-* ("scratchpixel uses the right-handed coordinate system" they said...)
 
 The *local coordinate system* in the following sections will mean the *left-handed* coordinate system where:
 * The right vector is the x-axis

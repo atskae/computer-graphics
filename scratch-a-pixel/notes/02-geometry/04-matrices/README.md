@@ -315,22 +315,7 @@ Key Ideas
 * Matrices are just a way to store the coordinate system
   * The matrix is sometimes called the **orientation matrix**
 
-### Unimportant Rant
-It took me three days to understand what the f they were talking about this part. Why no use pictures?!
-
-![CG education needs work](images/table-flip.png)
-
-They (scratchapixel) actually don't say anything about the row describing the positive direction of the axis, that was just an observation I had. Maybe it's an incorrect fact, who knows...
-
-I guess the benefit of poor explanations is that they force me to actually *try* to understand the concept, draw things out and play around with the theory myself by plugging and chugging in numbers... and figure it out myself.
-
-I think the concept described above is called *passive rotation*? They could have mentioned that at least...
-
-A doodle between frustrations:
-
-![A doodle in betwween trying to understand the damn thing](images/frustration-doodle.png)
-
-(edit) So they have a relevant figure *at the end* 😑 Would have been nice to see this earlier.
+*passive rotation*?
 
 ## Orthogonal Matrices
 The matrices that we described so far (scale, rotation) are **orthogonal matrices**, which have the following properties:
