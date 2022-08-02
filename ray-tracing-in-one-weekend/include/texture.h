@@ -100,21 +100,19 @@ class noise_texture: public texture {
 // Texture class that holds an image texture
 class image_texture : public texture {
     private:
-        // Texture image as an array of unsigned char
+        // Texture image as an array of unsigned char (packed RGBs, each component in range [0, 255])
         unsigned char* data;
-        // Dimensions of the texture image
+        // Dimensions of the texture image, in pixels
         int width, height;
         int bytes_per_scanline;
 
     public:
         // RBG (1 byte per color channel ?)
         const static int bytes_per_pixel = 3;
-        
-        // If no image data, color pixel with constant color for debugging
-        const static color debug_color(0, 1, 1); // cyan
 
         // Constructors
         image_texture(): data(nullptr), width(0), height(0), bytes_per_scanline(0) {}
+        
         image_texture(const char* filename) {
             // An stb_image "component" = an 8-bit value = a byte
             int components_per_pixel = this->bytes_per_pixel;
@@ -137,7 +135,8 @@ class image_texture : public texture {
         // Implement abstract base class method
         virtual color value(double u, double v, const point3& p) const override {
             if (!this->data) {
-                return image_texture::debug_color;
+                // If no image data has been loaded, color pixel with constant color for debugging
+                return color(0,1,1); // cyan
             }
 
             // Clamp u to [0, 1] and v to [1, 0]
@@ -155,17 +154,22 @@ class image_texture : public texture {
             int i = static_cast<int>(u * width);
             int j = static_cast<int>(v * height);
 
-            // More clamping in case i/j > 1.0...
+            // More clamping in case i ==  width or j == height (?)
+            //  since both u and v could == 1.0
             if (i >= width) i = width - 1;
-            if (j >= width) j = height - 1;
+            if (j >= height) j = height - 1;
 
-            const double color_scale = 1.0 / 255.0;
+            // Get the starting address of pixel (i, j) in the image data
+            // start + num_rows + num_columns
             unsigned char* pixel = data + j*this->bytes_per_scanline + i*image_texture::bytes_per_pixel;
 
+            // The color class expects each color channel (R, B, B) to be values between [0, 1)
+            // So we divide the image data pixel value by 255 (max color value)
+            const double color_scale = 1.0 / 255.0;
             return color(
-                color_scale * pixel[0],
-                color_scale * pixel[1],
-                color_scale * pixel[2]
+                color_scale * pixel[0], // red
+                color_scale * pixel[1], // green
+                color_scale * pixel[2] // blue
             );
         }
 };

@@ -123,6 +123,21 @@ color ray_color(const ray& r, const hittable_list& world, int depth) {
     }
 }
 
+hittable_list image_texture_sphere(const char* filename) {
+    shared_ptr<texture> earth_texture = make_shared<image_texture>(filename);
+    shared_ptr<material> earth_surface = make_shared<lambertian>(earth_texture);
+    shared_ptr<sphere> textured_sphere = make_shared<sphere>(point3(0,0,0), 2, earth_surface);
+
+    return hittable_list(textured_sphere);
+}
+
+
+// Sphere with an earth pattern
+hittable_list earth() {
+    return image_texture_sphere("images/earthmap.jpeg");
+}
+
+
 // Create a world with two checkered spheres
 hittable_list two_spheres() {
     hittable_list objects;
@@ -294,17 +309,21 @@ void run_ray_tracer() {
     double aperature = 0.0;
 
     switch(0) {
-        case 1:
+        case 1: { // Testing out this bracket thing here
             // Textbook cover
             world = random_scene();
             aperature = 0.1;
-            break;
+        } break;
         case 2:
             world = two_spheres();
             break;
-        default:
         case 3:
             world = two_perlin_spheres();
+            break;
+        default:
+        case 4:
+            world = earth();
+            //world = image_texture_sphere("images/fur-texture.jpeg");
             break;
     }
 

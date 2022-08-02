@@ -544,6 +544,75 @@ The large sphere's pattern when `y` is used doesn't vary much because the points
 
 ![Undulation direction](images/undulation-direction.png)
 
+## [6.2 Using an Image Texture](https://raytracing.github.io/books/RayTracingTheNextWeek.html#imagetexturemapping/usinganimagetexture)
+
+Using a 1024x512 image of earth:
+
+![A planet called Earth](images/earthmap.jpeg)
+
+Wow!!
+
+![Earth texture](images/earth_texture.png)
+
+I was surprised how fast this was, but this makes sense; there is not much color calculation other than grabbing the color from the image.
+
+Playing around with more textures:
+
+[A forest](https://www.iucn.org/sites/default/files/content/images/2021/beautiful-pine-trees-mountains.png)
+
+![Forest sphere](images/forest_sphere.png)
+
+[Newspaper](https://i.insider.com/5ba2a042e199f336008b60ba?width=1000&format=jpeg&auto=webp)
+
+![Newspaper sphere](images/newspaper_sphere.png)
+
+[Fur](https://www.patternpictures.com/wp-content/uploads/Polar-bear-fur-texture-close-up-patternpictures-5714-1500x996.jpg)
+
+![Furball](images/fur_ball.png)
+
+I was going to make a tar ball but all the pictures are icky.
+
+Moving the camera around the earth:
+
+Looked at the earth from the opposite side (x-axis):
+```cpp
+            world = earth();
+            lookfrom = point3(-13, 2, 3);
+```
+
+![Earth negative x](images/earth_negative_x.png)
+
+Move camera to the front of earth:
+```cpp
+            world = earth();
+            lookfrom = point3(5, 2, 15);
+```
+(had to back up here (adjust `z` from 3 to 15) since we got too close to earth otherwise)
+
+![North America](images/front_north_america.png)
+
+Flip the camera to the other size (z-axis):
+```cpp
+            world = earth();
+            lookfrom = point3(5, 2, -15);
+```
+
+![Afro-eurasia](images/afro-eurasia.png)
+
+Earth from above (increased y):
+```cpp
+            lookfrom = point3(13, 15, 3);
+```
+
+![Earth from above](images/earth_from_above.png)
+
+Earth from below:
+```cpp
+            lookfrom = point3(13, -15, 3);
+```
+
+![Earth from below](images/earth_from_below.png)
+
 ## Links
 * [Ray Tracing: the Next Week (blog post)](https://in1weekend.blogspot.com/2016/01/ray-tracing-second-weekend.html)
   * Extra links to supplemental reading and advice
