@@ -613,6 +613,13 @@ Earth from below:
 
 ![Earth from below](images/earth_from_below.png)
 
+### More on Texture Mapping
+
+* **Texel** is a texture pixel `(s,t)`
+  * Usually `s` and `t` normalized to a `[0,1]` range (percentages of the texture image)
+    * So they are not integers, if not on pixel boundary, value must be interpolated (or nearest-neighbor'd)
+* Every `(s,t)` maps to a unique image value (R, G, B)
+
 ## Links
 * [Ray Tracing: the Next Week (blog post)](https://in1weekend.blogspot.com/2016/01/ray-tracing-second-weekend.html)
   * Extra links to supplemental reading and advice

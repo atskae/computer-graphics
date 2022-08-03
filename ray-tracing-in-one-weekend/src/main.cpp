@@ -339,7 +339,7 @@ void run_ray_tracer() {
 
     // Render
     print_ppm_header("P3", image_width, image_height, 255);
-    // Start from the upper-right corner of the image
+    // Start from the upper-left corner of the image
     for (int j=image_height-1; j >= 0; --j) {
         std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
         for (int i=0; i<image_width; ++i) {
