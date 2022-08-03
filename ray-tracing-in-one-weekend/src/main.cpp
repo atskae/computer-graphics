@@ -58,9 +58,7 @@ void print_ppm_file() {
 
 // Return the color of the pixel where the ray points to.
 // If the ray does not hit the sphere, return the background color.
-//  The background is a gradient of blue and white
-//    with the color value dependent on the height (y-value) of the coordinate
-color ray_color(const ray& r, const hittable_list& world, int depth) {
+color ray_color(const ray& r, const color& background, const hittable_list& world, int depth) {
     // Base case
     if (depth <= 0) {
         // Return color that contributes no light.
@@ -80,26 +78,28 @@ color ray_color(const ray& r, const hittable_list& world, int depth) {
     
         // No intersection of the sphere
         // Return the background color
-    
-        // Get the height (y-value) to range between -1.0 and 1.0
-        vec3 unit_direction = unit_vector(r.direction());
-        // Get t to range 0.0 to 1.0
-        double t = 0.5 * (unit_direction.y() + 1.0);
+        return background; 
         
-        // Scale t to range between 0.0 and 1.0
-        // t=0.0 -> white; t=1.0 -> blue; in-between -> blend of white and blue
-        // This trick is called a "linear blend", "linear interpolation", or "lerp" for short:
-        //      blendedValue = (1-t)*startValue + t*endValue
-        // where t goes from 0.0 to 1.0
+        //// Gradient sky logic
+        //// Get the height (y-value) to range between -1.0 and 1.0
+        //vec3 unit_direction = unit_vector(r.direction());
+        //// Get t to range 0.0 to 1.0
+        //double t = 0.5 * (unit_direction.y() + 1.0);
         
-        // Start color (we start at the bottom of the viewport)
-        color white = color(1.0, 1.0, 1.0); // All channels (R, G, B) at 100%
-        // End color (we end at the top of the viewport)
-        color blue = color(0.5, 0.7, 1.0); // Blue channel at 100%, with other colors < 100%
+        //// Scale t to range between 0.0 and 1.0
+        //// t=0.0 -> white; t=1.0 -> blue; in-between -> blend of white and blue
+        //// This trick is called a "linear blend", "linear interpolation", or "lerp" for short:
+        ////      blendedValue = (1-t)*startValue + t*endValue
+        //// where t goes from 0.0 to 1.0
+        
+        //// Start color (we start at the bottom of the viewport)
+        //color white = color(1.0, 1.0, 1.0); // All channels (R, G, B) at 100%
+        //// End color (we end at the top of the viewport)
+        //color blue = color(0.5, 0.7, 1.0); // Blue channel at 100%, with other colors < 100%
     
-        // Blue to white gradient, from top to bottom
-        // blendedValue = (1-t)*startValue + t*endValue
-        return (1.0-t)*white + t*blue;
+        //// Blue to white gradient, from top to bottom
+        //// blendedValue = (1-t)*startValue + t*endValue
+        //return (1.0-t)*white + t*blue;
     }
     
     // Ray has hit an object in the world
@@ -113,13 +113,17 @@ color ray_color(const ray& r, const hittable_list& world, int depth) {
     // How much the incoming ray/light impacts the resulting color 
     color attenuation;
 
+    // Emitted light from the material, if material is emissive
+    color emitted = hit_rec.mat_ptr->emitted(hit_rec.u, hit_rec.v, hit_rec.p);
+
     // If the ray reflects outward from the surface
     if (hit_rec.mat_ptr->scatter(r, hit_rec, attenuation, scattered)) {
         return attenuation * ray_color(scattered, world, depth-1);
     } else {
-        // The reflected ray inward (inside the surface), which means
+        // The material does not reflect any rays; return emitted color
+        // Or the reflected ray inward (inside the surface), which means
         //  the ray is absorbed (???)
-        return color(0,0,0);
+        return emitted;
     }
 }
 
@@ -307,6 +311,7 @@ void run_ray_tracer() {
     point3 lookat = point3(0,0,0);
     double vfov = 20.0; // vertical field of view, in degrees
     double aperature = 0.0;
+    color background(0.70, 0.80, 1.00); // light blue
 
     switch(0) {
         case 1: { // Testing out this bracket thing here
@@ -320,10 +325,14 @@ void run_ray_tracer() {
         case 3:
             world = two_perlin_spheres();
             break;
-        default:
         case 4:
             world = earth();
             //world = image_texture_sphere("images/fur-texture.jpeg");
+            break;
+        default:
+        case 5:
+            // Set the background to black to be able to see emissive materials (emits light)
+            background = color(0,0,0);
             break;
     }
 
@@ -357,7 +366,7 @@ void run_ray_tracer() {
                 ray r = cam.get_ray(u, v);
                 // Add this sample's color channel values
                 // The average of all samples will be calculated by write_color()
-                pixel_color += ray_color(r, world, max_depth);
+                pixel_color += ray_color(r, background, world, max_depth);
             }
 
             write_color(std::cout, pixel_color, samples_per_pixel);

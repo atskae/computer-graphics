@@ -620,6 +620,41 @@ Earth from below:
     * So they are not integers, if not on pixel boundary, value must be interpolated (or nearest-neighbor'd)
 * Every `(s,t)` maps to a unique image value (R, G, B)
 
+## [7.3 Creating Rectangle Objects](https://raytracing.github.io/books/RayTracingTheNextWeek.html#rectanglesandlights/creatingrectangleobjects)
+
+Recall, a ray is a line `P(t) = A + tb`
+* `A` is the ray origin
+* `b` is the ray direction
+* `t` is ray parameter (input) 
+* `P(t)` gives us a 3D point along the ray line
+
+We can break up the point `P(t)` into its three components: x, y, and z-axis components. For example, to get the z component of `P(t)`:
+```
+P_z(t) = A_z + t*b_z
+```
+
+### Ray-Rectangle intersection
+
+If we have an axis-aligned rectangle at depth `z=k`, we can first find the `t` value of the ray `P(t)` that hits the rectangle at `z=k`:
+```
+t = (k - A_z) / b_z
+```
+
+Then we can plug in this `t` value to find the x and y components of `P(t)`:
+```
+x = A_x + t * b_x
+y = A_y + t * b_y
+```
+
+Then we can check whether `x` and `y` are in the bounds of the axis-aligned rectangle
+```
+x_0 < x < x_1
+y_0 < y < y_1
+```
+
+![Ray-rectangle intersection](images/rectangle-intersection.png)
+
+
 ## Links
 * [Ray Tracing: the Next Week (blog post)](https://in1weekend.blogspot.com/2016/01/ray-tracing-second-weekend.html)
   * Extra links to supplemental reading and advice

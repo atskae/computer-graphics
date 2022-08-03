@@ -19,6 +19,12 @@ class material {
         virtual bool scatter(
             const ray& r_in, const hit_record& rec, color& attenuation, ray& scattered
         ) const = 0;
+
+        // By default, don't have the material emit any light
+        virtual color emitted(double u, double v, const point3& p) const {
+            // Return black
+            return color(0,0,0);
+        }
 };
 
 // Diffuse materials (ray is randomly scattered)
@@ -155,5 +161,29 @@ class dielectric : public material {
             return r0 + (1-r0) * pow(1-cosine, 5);
         }
 };
+
+// Light-emitting material
+// Emissive materials emit light across their surface area
+// When the ray hits this object, it just returns the object's color (like the background)
+class diffuse_light: public material {
+    public:
+        shared_ptr<texture> emit;
+
+        // Constructors
+        diffuse_light(shared_ptr<texture> a): emit(a) {}
+        diffuse_light(color c): emit(make_shared<solid_color>(c)) {}
+
+        // Implement abtract base class methods
+        // Material performs no reflection
+        virtual bool scatter(
+            const ray& r_in, const hit_record& rec, color& attenuation, ray& scattered
+        ) const override {
+            return false;
+        }
+
+        virtual color emitted(double u, double v, const point3& p) const override {
+            return this->emit->value(u, v, p);
+        }
+}
 
 #endif // header guard
