@@ -10,4 +10,4 @@ Being a wannabe student.
 
 The notes references other textbooks:
 * `H&B` = [Computer Graphics, C Version](https://www.amazon.com/Computer-Graphics-C-Version-2nd/dp/817758765X)
-* [FvDFH] = [Computer Graphics, Principles and Practice](https://www.amazon.com/Computer-Graphics-Principles-Practice-2nd/dp/0201848406)
+* `FvDFH` = [Computer Graphics, Principles and Practice](https://www.amazon.com/Computer-Graphics-Principles-Practice-2nd/dp/0201848406)
