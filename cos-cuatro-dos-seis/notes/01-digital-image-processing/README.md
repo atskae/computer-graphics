@@ -101,6 +101,8 @@ Sharpen
 
 Examples: median filter, bilateral filter
 
+Bilaterial filter - blur but preserve edges (See paper under Readings)
+
 ## [Dithering](https://en.wikipedia.org/wiki/Dither#Digital_photography_and_image_processing)
 
 Quantization
@@ -119,3 +121,9 @@ Dithering algorithms: random dithering, [ordered](https://en.wikipedia.org/wiki/
   * For each pixel, we see how off the pixel value is (from white? ), then compensate for this error across the neighboring pixels
     * Make pixel brighter, make surrounding pixels darker (compensate for error), which overall gives a gray appearance
   * Floyd-Steinberg chooses hard-coded values of how the error is distributed
+
+## Readings
+* [A pixel is not a little square!](https://www.cs.princeton.edu/courses/archive/spring22/cos426/readings/Smith95b.pdf)
+  * [Graphics Programing Virtual Meetup discussion](https://www.youtube.com/watch?v=gpGc7N1vsQc&ab_channel=GraphicsProgrammingVirtualMeetup)
+* [Bilateral Filtering](https://www.cs.princeton.edu/courses/archive/spring22/cos426/readings/Paris09.pdf)
+  * Sections 1-2
