@@ -13,6 +13,9 @@ Primary output device in a graphics system is a video monitor
 * Need to regenerate the image after the light fades (electrons go from excited state to ground state); refresh rate
 
 #### Raster-Scan Displays
+A **raster system** stores an image as pixels
+* Devices use a frame buffer to store pixel data
+
 * Electrons sweep one row at a time, each row called a **scan line**
   * (So that's why RTioW calls it a *scanline*...)
 * **Refresh buffer**/**frame buffer**/**color buffer** stores the frame data (image to be displayed on screen)
@@ -74,3 +77,90 @@ Two categories of flat-panel displays
   * Need two views of the scene (left and right eyes' directions)
     * We see depth when these two images merge
   * Used in virtual reality systems
+
+## Raster-Scan Systems
+* Uses a special-purpose processor called the **video controller**/**display controller** that controls the operations on the display device
+  * Frame buffer can be anyone on the system and is accessed by the video controller
+* Raster-Scan systems also use other processors in addition to the video controller
+  * CPU, accelerators
+
+### Video Controller
+* The frame buffer is typically a subset of the system memory
+  * Frame buffer contents accessed with Cartesian coordinates which correspond to screen positions
+
+### Raster-Scan Display Processor
+* Have a designated **display processor**/**graphics controller**/**display co-processor**
+  * Frees the CPU from graphics chores 🧹
+  * Also could have own memory
+  * (GPU?)
+* **Scan conversion**: image to frame buffer format
+  * Ex. Convert lines and shapes to pixel values to store in the frame buffer
+* Generate line styles (dotted, dashed), display color areas, apply transformations to objects
+* Interact with other interfaces (ex. mouse, drawing tablet!)
+* [**Run-lenght encoding**](https://en.wikipedia.org/wiki/Run-length_encoding), store repeated data as its value and count.
+  * Ex. pixel color and count
+  * Save storage space
+* **Cell encoding**: store rectangular areas...
+
+## Graphics Workstations and Viewing Systems
+Basically a bunch of examples of where screens are used!
+
+## Input Devices
+Keyboards, mice, data gloves, joysticks...
+
+The best one out of them all:
+
+### Digitizers!!
+**Digitizer** inputs 2D/3D coordinates
+* Ex. engineering/architectural applications, the digitizer scans the drawing/object and converts them to discrete coordinates
+  * The points are joined with straight-line segments to approximate a curve or surface shape
+* One type of digitizer: a **graphics tablet** !!!! 🥳💃🌟 Wahoooooo
+  * Constructed with rectangular grid of wires embedded in the tablet surface
+  * Electromagnetic waves interact with the electric signal in the pen/stylus to record a tablet position
+
+[How does a drawing tablet work](https://essentialpicks.com/how-does-drawing-tablet-work/) 😍🤯
+* No batteries in the stylus
+  * The pen gets its energy wirelessly from the tablet via **electromagnetic resonance (EMR)**
+* The stylus contains coils that converts electromagnetic waves to electrical energy
+  * The electrical energy is used to measure pen pressure and buttton clicks
+  * The measured data is sent back to the tablet with electromagnetic waves
+* Oscillator, pulse signal, ... this sounds awfully familiar...
+* When the coil in the stylus experiences a pulse of electromagnetic wave, an electric current is induced into the stylus
+* Locating and tracking stylus position
+  * A voltage increases occurs when the pen tip touches the tablet surface
+  * The tip of the stylus has the highest voltage increase
+* Pressure data
+  * Is stored in the form of *phase difference*
+    * Higher pen pressure results in a higher phase difference between the transmitted EM wave (from the tablet surface) to the received EM wave (from the stylus)
+* Pen tablet drivers
+  * Gives artist advanced settings (pen pressure sensitivity, button shortcuts, etc)
+  * Communicates with the OS
+    * The OS is not designed to work with pen pressure and pen tilt, so the driver helps the OS understand this data
+* Display tablet
+  * The resonant frequency of the tablet restricts which styluses could interact with the tablet
+  * This sounds awfully familiar too...
+
+Aug 26, 2022... What is this feeling?
+
+* Acoustic/sonic tablets
+  * Use soundwaves to determine positions (waaas (Deutsch))
+
+### Hard-copy devices
+* *Impact printers* directly contact the paper
+  * Ex. dot-matrix printers
+* *Non-impact printers* do not contact the paper
+  * Instead use laser techniques, electrostatic and eletrothermal methods
+  * Ex. Ink-jet: electrically-charged ink stream is deflected by the electric field
+  * Ex. *Electrostatic devices* places a negative charge on paper
+    * The toner is positively charged; toner becomes attracted to the negatively-charged areas on the paper
+  * Ex. *electrothermal* heat is applied to generate images on heat-sensitive paper
+
+## Graphics Network
+* Graphics applications in multi-user environments across a computer network
+* **Graphics server** a monitor on the network
+
+## Graphics on the Internet
+* Communicate with *transmission control protocol*/*internet protocol* (TCP/IP)
+* *Uniform/universal resource locator* (URL)
+  * Two parts, the protocol (http/https/ftp) for transferring the document, and the sever `www.siggraph.org`
+    * `ftp://`
