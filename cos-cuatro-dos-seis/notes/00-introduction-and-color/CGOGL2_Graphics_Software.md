@@ -104,3 +104,6 @@ Hardware-independent
 
 (p.34+ for reference)
 
+Ok, it looks like OpenGL has been deprecated on Mac OS for years now... . .
+
+Welp, [OpenGL on Mac OS](https://methi1999.github.io/2020/08/19/opengl.html)
