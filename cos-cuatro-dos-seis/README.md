@@ -2,6 +2,8 @@
 
 (Or is it ¿cuatrocientos veintiséis?)
 
+(Or the cosine of 426 radians?)
+
 Being a wannabe student.
 
 ## Resources
