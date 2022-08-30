@@ -61,23 +61,19 @@ Filters.brushFilter = function( image, radius, color, vertsString ) {
   // radius and color are specified in function arguments.
   // ----------- STUDENT CODE BEGIN ------------
   // ----------- Our reference solution uses 10 lines of code.
-  console.log("Filling in " + centers.length + " circles");
+  console.log("Filling in " + centers.length + " circles with brush filter");
   for (const center of centers) {
     // Iterate through the pixels within the square that bounds the circle
     // If the point is within the circle, color in the pixel
-    let center_x = center.x
-    let center_y = center.y
-    //console.log("Circle center: (" + center_x + "," + center_y + ")");
-    
-    for (let x=center_x-radius; x<center_x+radius; x++) {
+    for (let x=center.x-radius; x<center.x+radius; x++) {
       // Skip this point if it is out of bounds of the bounding square
       // The circle/brush could be out of bounds at the image corners
       if (x<0) { continue; }
       
-      for (let y=center_y-radius; y<center_y+radius; y++) {
+      for (let y=center.y-radius; y<center.y+radius; y++) {
           if (y<0) { continue; }
           // Compute the distance from the circle center and the point
-          let distance = Math.sqrt(Math.pow(x-center_x, 2) + Math.pow(y-center_y, 2));
+          let distance = Math.sqrt(Math.pow(x-center.x, 2) + Math.pow(y-center.y, 2));
           
           // Outside the circle bounds; do not fill
           if (distance >= radius) { continue; }
@@ -98,6 +94,8 @@ Filters.brushFilter = function( image, radius, color, vertsString ) {
 /*
  * At each center, draw a soft circle with the specified radius and color.
  * Pixel opacity should linearly decrease with the radius from alpha_at_center to 0.
+ * 
+ * https://en.wikipedia.org/wiki/Alpha_compositing#Description
  */
 Filters.softBrushFilter = function( image, radius, color, alpha_at_center, vertsString ) {
   // centers is an array of (x, y) coordinates that each defines a circle center
@@ -108,8 +106,56 @@ Filters.softBrushFilter = function( image, radius, color, alpha_at_center, verts
   // radius and color are specified in function arguments.
   // ----------- STUDENT CODE BEGIN ------------
   // ----------- Our reference solution uses 21 lines of code.
+  console.log("Filling in " + centers.length + " circles with soft brush filter");
+  // Alpha/transparency of the image is constant (not see-through)
+  let alpha_b = 1.0;
+  for (const center of centers) {
+    // Iterate through the pixels within the square that bounds the circle
+    // If the point is within the circle, color in the pixel
+    for (let x=center.x-radius; x<center.x+radius; x++) {
+      // Skip this point if it is out of bounds of the bounding square
+      // The circle/brush could be out of bounds at the image corners
+      if (x<0) { continue; }
+      
+      for (let y=center.y-radius; y<center.y+radius; y++) {
+          if (y<0) { continue; }
+          // Apply image composition `A over B`, where A is the foreground and B is the background
+          // A is the soft brush, and B is the image
+         
+          // Compute the distance from the circle center and the point
+          let distance = Math.sqrt(Math.pow(x-center.x, 2) + Math.pow(y-center.y, 2));
+          
+          // Outside the circle bounds; do not fill
+          if (distance >= radius) { continue; }
+          else {
+            // The alpha value decreases linearly from the circle center to the edge starting from alpha_at_center
+            // alpha = (-1 * alpha_at_center/radius) * distance + alpha_at_center
+            //    distance=0 -> alpha_at_center
+            //    distance=radius -> 0
+            // Compute the alpha at this distance from the center
+            // Slope = -1 * alpha_at_center / radius
+            let alpha_a = (-1 * alpha_at_center/radius) * distance + alpha_at_center;
+            //console.log("alpha_a: " + alpha_a + ", at distance: " + distance);
+           
+            let alpha_over = alpha_a + alpha_b * (1 - alpha_a);
+            let color_image = image.getPixel(x, y);
+
+            // Compute the final color of the brush over the image, then set the new color in the image
+            // C_o = final color; C_a = brush color; C_b = image color
+            // C_o = (C_a*alpha_a + C_b*alpha_b*(1-alpha_a)) / alpha_over
+            let left_arg = color.multipliedBy(alpha_a); 
+            let right_arg = color_image.multipliedBy(alpha_b).multipliedBy(1 - alpha_a);
+            let numerator = left_arg.plus(right_arg);
+            let final_color = numerator.dividedBy(alpha_over);
+            //console.log("Final color after soft brush: " + final_color);
+            image.setPixel(x, y, final_color);
+          }
+      }
+    }
+  }
+
   // ----------- STUDENT CODE END ------------
-  Gui.alertOnce ('softBrushFilter is not implemented yet');
+  //Gui.alertOnce ('softBrushFilter is not implemented yet');
 
   return image;
 };
