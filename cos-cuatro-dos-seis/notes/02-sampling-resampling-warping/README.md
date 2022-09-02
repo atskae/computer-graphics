@@ -26,6 +26,12 @@ Some actual math example
 
 ![Rotation math](images/rotation-maf.png)
 
+## Digital Image Processing
+Recall, digital images are *sampled* versions of continuous ones.
+
+* **Sampling Theory**
+  * **Aliasing**: when high frequency signals masquerade as lower frequencty signals
+
 ## Temporal Aliasing
 Can make an object that is moving in a cycling motion suspended in air.
 * [Levitating water drops](https://www.youtube.com/watch?v=LqMFiVkvxQw&ab_channel=isaac879)
@@ -39,9 +45,14 @@ Flickering
 ## Spectral Analysis
 * Spacial domain, frequency domain
 * Any signal can be written as a sum of periodic functions
-* Fourier transform (3b1b ❤️)](https://www.youtube.com/watch?v=spUNpyF58BY&ab_channel=3Blue1Brown)
+* [Fourier transform (3b1b ❤️)](https://www.youtube.com/watch?v=spUNpyF58BY&ab_channel=3Blue1Brown)
     * *Center of mass* is the average position of all parts in a system
 
 * [Nyquist-Shannon sampling theorem](https://en.wikipedia.org/wiki/Nyquist%E2%80%93Shannon_sampling_theorem)
+  * A signal is **bandlimited** if it has an upper bound on the highest frequency in the signal
+    * The highest frequency in the signal is called the **bandwidth**
+    * The sampling rate must be > `2 * bandwidth`
+    * The minimum sampling rate required to reconstruct a bandlimited signal with no loss is called the **Nyquist rate**
+
 
 * [`sinc(x)`](https://en.wikipedia.org/wiki/Sinc_function) (NOT a typo of `sine(x)` OTL)
