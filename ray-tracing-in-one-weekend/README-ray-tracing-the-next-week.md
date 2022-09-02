@@ -388,6 +388,12 @@ When the range of the noise value can also be negative
 
 * [Perlin Noise: Part 2](https://www.scratchapixel.com/lessons/procedural-generation-virtual-worlds/perlin-noise-part-2)
 
+(`<edit>` Sep 2, 2022) OMG I found Perlin noise in Clip Studio Paint 🤯
+
+![Perlin in Clip Studio](images/found-perlin-clip-studio.png)
+
+`</edit>`
+
 Need to distinguish the position of the grid lines and the *value* at the grid line intersections (these values are random.)
 
 * [A great explanation of the Perlin noise, explains each step](https://adrianb.io/2014/08/09/perlinnoise.html)
