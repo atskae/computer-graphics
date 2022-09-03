@@ -3,6 +3,12 @@
 ~~Gonna try notebook and pen for this one... Except for adding links.~~ Ok nevermind hmmm need a besser System.
 ## Parametric Mappings
 
+Any function of the image pixels `(u, v)`:
+```
+x = f_x(u)
+y = f_y(v)
+```
+
 Operations on image with dimensions `(u, v)`:
 * Scale by a `factor`
 ```
@@ -25,6 +31,9 @@ The math comes from the [rotation matrix that we derived months ago](https://git
 Some actual math example
 
 ![Rotation math](images/rotation-maf.png)
+
+[Shear mapping](https://en.wikipedia.org/wiki/Shear_mapping)
+* How we get *italics* (oooooh)
 
 ## Digital Image Processing
 Recall, digital images are *sampled* versions of continuous ones.
@@ -56,3 +65,72 @@ Flickering
 
 
 * [`sinc(x)`](https://en.wikipedia.org/wiki/Sinc_function) (NOT a typo of `sine(x)` OTL)
+
+
+### Anti-Aliasing
+* **Aliasing** when high-frequency signals become computed as low-frequency signals after reconstruction
+  * We lose information about the original signal
+  * Solutions:
+    * Sample at a higher rate, above the Nyquist rate (2*bandwidth)
+      * Not always possible
+    * Apply a *pre-filter* to the original signal to create a *bandlimited* signal (a signal with an upper bound)
+      * Apply a *low-pass filter* to remove high frequencies above the threshold
+        * < 1/2 sampling rate
+      * We get an image *blur* instead of aliasing
+
+## Image Processing Steps
+
+![Steps](images/steps.png)
+
+* **Recontruction** filter import for *magnifying*
+* **Bandlimiting** filter important for *minifying*
+
+### Ideal Image Processing filter
+
+* Frequency domain
+  * Bandlimit - remove higher frequencies
+  * Multiplication
+* Spatial domain
+  * Convolution!
+
+### Practical Image Processing filter
+* **Resampling**: discrete convolution to prevent artifacts
+* Finite low-pass filters
+  * Point sampling (👎)
+    * Round/use nearest sample -> causes aliasing
+  * Filters - take the *weighted* average of neighboring samples (*weight*: some pixels are more important thean others in the average)
+    * Box filter
+    * Triangle filter
+    * Gaussian filter
+
+![Practical](images/practical.png)
+
+* Triangle and Gaussian filter
+  * Width of the filter affects blurriness
+
+Reconstruction filter
+* Use if filter is *smaller* than the sampling spacing (the grid bounds)
+  * If filter width < 1
+
+![Smaller than sampling](images/smaller-than-sampling-space.png)
+
+* *Use bilinear interpolation*! ([I did this before!!](https://github.com/atskae/computer-graphics/blob/master/ray-tracing-in-one-weekend/README-ray-tracing-the-next-week.md#52-smoothing-out-the-result))
+
+![Lerping](images/lerping.png)
+
+You can also just force the filter width > 1 to not have to lerp(!)
+
+Sampling trade-offs
+* Aliasing vs blurring
+* Computational speed
+
+### Forward vs Reverse Mapping
+
+(I still don't get how you do *reverse* mapping to do a transform... like start with the result image ??? huh?)
+
+Two options to warp an image:
+* Forward mapping
+* Reverse mapping
+
+keine Ahnung (aa.)
+
