@@ -65,7 +65,7 @@ Represented by three 3D points in 3D space
 
 ![3D plane](images/plane.png)
 
-Implicit representations of a plane 🤷‍♀️
+Implicit representations of a plane ️
 ```
 # Dotting any of the points on the plane with the normal vector gives you zero
 # because N is perpendicular to the plane
