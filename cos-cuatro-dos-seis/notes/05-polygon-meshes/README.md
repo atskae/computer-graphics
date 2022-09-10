@@ -58,9 +58,10 @@ Use adjacency list to store vertices, edges, and faces. Store adjacent elements 
 
 ![Winged edge](images/winged-edge.png)
 
-References that each element (edge, vertex, face) holds:
+References that each element (vertex, face, edge) holds:
 
 ```cpp
+// An entry in the Vertex Table
 class Vertex {
     // Position
     float x, y, z;
@@ -69,12 +70,14 @@ class Vertex {
     Edge* edge;
 }
 
+// An entry in the Face Table
 class Face {
     // An edge surrounding this face
     // Can figure out CW or CCW by comparing this edge's left and right faces
     Edge* edge;
 }
 
+// An entry in the Edge Table
 // A directed edge
 class Edge {
     // Vertices that make up this edge
@@ -85,7 +88,7 @@ class Edge {
     Face* face_left;
     Face* face_right;
 
-    // Four edges to the previous and next edges that surround the left and right facce
+    // Four edges to the previous and next edges that surround the left and right face
     // cw = clockwise
     // ccw = counter-clockwise
     Edge* cw_left_edge;
@@ -97,3 +100,74 @@ class Edge {
 
 [**Half edge data structure**](https://en.wikipedia.org/wiki/Doubly_connected_edge_list)
 
+![Half-edge](images/half-edge.png)
+
+Every node and edge is associated with a half-edge (no need for "ifs")
+
+What each element stores in the half-edge setup:
+```cpp
+class Vertex {
+    HalfEdge* outgoing_half_edge;
+}
+
+class Face {
+    HalfEdge* adjacent_half_edge;
+}
+
+class HalfEdge {
+    HalfEdge* twin_half_edge;
+    
+    // Counter-clockwise direction
+    HalfEdge* next_half_edge;
+    
+    Vertex* next_vertex;
+    Face* incident_face;   
+}
+```
+
+Another view of the relationship (I stole this diagram from [this explanation](https://jerryyin.info/geometry-processing-algorithms/half-edge/))
+
+![Another half-edge example](images/half-angle-another-example.png)
+
+* Can find adjacent edges, faces, vertices, in O(1) time
+
+## Processing
+
+
+Processing polygon meshes involve:
+* Analysis
+* Warps
+* Filters
+
+### Analysis
+
+* Normals
+* Curvature
+
+Finding the normal vector of each face (**face normals**)
+  * Use cross product
+
+![Normals](images/normals.png)
+
+Face normals vs vertex normals:
+
+![Face and vertex](images/face-vertex-normals.png)
+
+Curvature maps, color-coded curvatures
+* Find best-fit circle of a curve ???
+
+### Warps
+
+* Rotate
+* Deform
+
+### Filters
+
+* Smooth
+* Sharpen
+* Truncate
+* Bevel
+
+Smoothing out a surface
+* The Laplacian Operator
+* 
