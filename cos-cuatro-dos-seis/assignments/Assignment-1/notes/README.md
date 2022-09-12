@@ -91,12 +91,33 @@ lightness ~= luminance ^ (1/3)
 [Displaying images to the screen (Scratchapixel)](https://www.scratchapixel.com/lessons/digital-imaging/digital-images/display-image-to-screen)
 * Now our screen's light intensity is linear (unlike CRTs which has a non-linear function of input voltage vs luminance)
 * But we still apply gamma correction because it allows us to have larger varations of luminance for darker shades than lighter shades: **gamma encoding**
-  * Actual luminance goes from `0.1` -> `0.2`, the percieved lightness difference is much larger than actual luminance increasing from `0.8` -> `0.9`
-* *Gamma encoding* is different from actually displaying the image
-  * Once we applied *gamma encoding*, we want to display it on a screen that has linear luminance
-  * Apply the inverse gamma to the gamma-encoded image to display linearly
+  * Apply a gamma `1/γ` to the intensity value, convert it to a byte `[0. 255]` and store this value in the image file
+    * Actual luminance goes from `0.1` -> `0.2`, the percieved lightness difference is much larger than actual luminance increasing from `0.8` -> `0.9`
 
 ![Keine Ahnung](images/nonsense-not-really-maf.png)
+
+*Gamma encoding* is different from actually displaying the image
+* Once we applied *gamma encoding* to an image, we want to display it on a screen *in linear space*
+* Apply the inverse gamma to the gamma-encoded image so that we can *perceive* the image brightness as increasing linearly
+* Gamma encoding is applied *independent* of the display technology!!
+  * It is merely a tool to encode the brightness more efficiently for human perception
+
+![Gamma encoding](images/gamma-encoding.png)
+
+TILs
+* [**psychophysics**](https://en.wikipedia.org/wiki/Psychophysics) tries to quantify the relationship between physical stimuli and how we perceived them / sensations
+* The brightness humans perceived is part of [**Stevens Power Law**](https://en.wikipedia.org/wiki/Stevens%27s_power_law)
+
+
+I think nothing above had anything to do with the filter OTL
+
+We apply `e^x` to the value from the UI `x`. If `x` is negative, we get a fractional exponent, and otherwise we get a postive value > 1. This gives us to exponent to raise each pixel value (`gamma` value):
+
+![e^x](images/e-to-da-x.png)
+
+With a fractional exponent, we get brighter images, and exponents > 1, we get darker images:
+
+![Gamma results](images/gamma-results.png)
 
 
 ## Color Operations

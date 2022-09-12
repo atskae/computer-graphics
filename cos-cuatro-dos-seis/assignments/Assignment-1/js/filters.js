@@ -157,13 +157,36 @@ Filters.contrastFilter = function(image, ratio) {
     return image;
 };
 
-// Note that the argument here is log(gamma)
+// Note that the argument here is log_e(gamma)
+// log_e(gamma) is the value directly read from the UI...
+// ? why is it called `logOfGamma`?
 Filters.gammaFilter = function(image, logOfGamma) {
+    // Math.exp(x) = e^x
+    // e^(log_e(x)) = e^(ln(x)) = x
+    // For y = e^x
+    //  If x is negative, y [0, 1) (fractional)
+    //      This would give us the gamma curve that looks like the human perception of luminance
+    //  If x is positive, y >= 1
+    console.log("logOfGamma: " + logOfGamma);
     const gamma = Math.exp(logOfGamma);
+    console.log("Applying gamma: " + gamma);
     // ----------- STUDENT CODE BEGIN ------------
     // ----------- Our reference solution uses 9 lines of code.
     // ----------- STUDENT CODE END ------------
-    Gui.alertOnce ('gammaFilter is not implemented yet');
+    console.log("gammaFilter");
+    for (let x=0; x<image.width; x++) {
+        for (let y=0; y<image.width; y++) {
+            // Iterate through the color channels
+            const pixel = image.getPixel(x, y);
+            for (let c=0; c<3; c++) {
+                pixel.data[c] = pixel.data[c] ** gamma;
+            }
+
+            // Update image
+            image.setPixel(x, y, pixel);
+        }
+    }
+
     return image;
 };
 
