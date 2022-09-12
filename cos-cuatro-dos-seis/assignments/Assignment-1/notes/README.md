@@ -56,8 +56,47 @@ Now it makes sense that:
 
 * The function is undefined when `contrast` reaches `1`
   * This is because `tan()` is undefined at `pi/2`
+* We only care about `x: [0, 1]` since that's the range of each pixel value
+  * The different `contrast` values yield a different *function*
 
 Makes sense!!! ✨🌈💃
+
+Why `tan()`?
+* It maps more nicely to the [-1, 1] range
+  * Ex) `new_value = (old_value - 0.5) × contrast + 0.5` can take really large positive or negative numbers forever
+* There's probably a better explanation...
+
+
+### Gamma Correction
+
+I saw gamma correction briefly in the [ray tracer!](https://github.com/atskae/computer-graphics/blob/master/ray-tracing-in-one-weekend/README.md#83-gamma-correction)
+
+[A nice post on gamma correction](https://www.cambridgeincolour.com/tutorials/gamma-correction.htm)
+* This is in the context of *cameras*, not a commputer screen...
+
+![Human vision vs camera](images/human-vision-vs-camera.png)
+
+**Why do we need gamma correction?** Our eyes do not experience brightness the same way cameras do.
+* Cameras sense how many photons hit its sensors
+  * So twice the # of photons -> twice the resulting brightness
+    * To a camera, brightness is linear
+    * [Gamma correction (video)](https://www.youtube.com/watch?v=wFx0d9c8WMs&ab_channel=VideoTechExplained)
+* Humans are more sensitive to luminance changes in darker tones than in lighter tones
+* Humans can percieve darker regions much brighter than they truly are ([Scratchapixel](https://www.scratchapixel.com/lessons/digital-imaging/digital-images)) 🤯
+* *Lightness* is how humans percieve the actual luminence
+```
+lightness ~= luminance ^ (1/3)
+```
+
+[Displaying images to the screen (Scratchapixel)](https://www.scratchapixel.com/lessons/digital-imaging/digital-images/display-image-to-screen)
+* Now our screen's light intensity is linear (unlike CRTs which has a non-linear function of input voltage vs luminance)
+* But we still apply gamma correction because it allows us to have larger varations of luminance for darker shades than lighter shades: **gamma encoding**
+  * Actual luminance goes from `0.1` -> `0.2`, the percieved lightness difference is much larger than actual luminance increasing from `0.8` -> `0.9`
+* *Gamma encoding* is different from actually displaying the image
+  * Once we applied *gamma encoding*, we want to display it on a screen that has linear luminance
+  * Apply the inverse gamma to the gamma-encoded image to display linearly
+
+![Keine Ahnung](images/nonsense-not-really-maf.png)
 
 
 ## Color Operations
