@@ -152,6 +152,9 @@ Finding the normal vector of each face (**face normals**)
 Face normals vs vertex normals:
 
 ![Face and vertex](images/face-vertex-normals.png)
+* [**Vertex normal**](https://en.wikipedia.org/wiki/Vertex_normal)
+* To calculate the vertex normal of a vertex, we sum up the face normals of the faces adjacent to the vertex, then normalize
+  * (how does this math work out...)
 
 Curvature maps, color-coded curvatures
 * Find best-fit circle of a curve ???
@@ -170,4 +173,24 @@ Curvature maps, color-coded curvatures
 
 Smoothing out a surface
 * The Laplacian Operator
-* 
+  * [Laplacian intuition (video by サンダアサンさん!)](https://www.khanacademy.org/math/multivariable-calculus/multivariable-derivatives/laplacian/v/laplacian-intuition)
+  * Ok I think is is slightly different
+
+    ![Laplacian](images/general-laplacian.png)
+
+[**Laplacian Mesh Processing (Sorkine 2005)**](https://people.eecs.berkeley.edu/~jrs/meshpapers/Sorkine.pdf)
+
+* Uses the [**Discrete Laplacian operator**](https://en.wikipedia.org/wiki/Discrete_Laplace_operator), which is the Laplace operator on a discrete graph/grid
+
+![Laplancian discrete](images/average-neighboring-vertices.png)
+
+Laplacian Operator in matrix form:
+
+![Laplacian matrix form](images/laplacian-matrix.png)
+
+Preguntas:
+* Aren't the vertices in the ring of `v_i` = the neighbors of `v_i`? Why introduce a new term for the same(?) thing?
+
+Meshes are irregular, so **cotangent weights** can be used as weights that are correlated to the angles opposite of an edge.
+?
+
