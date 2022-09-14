@@ -192,5 +192,70 @@ Preguntas:
 * Aren't the vertices in the ring of `v_i` = the neighbors of `v_i`? Why introduce a new term for the same(?) thing?
 
 Meshes are irregular, so **cotangent weights** can be used as weights that are correlated to the angles opposite of an edge.
-?
+* This creates a better approximation of the geometric attributes (ex. normal vectors, curvature) of the triangle mesh
+* Proposed in [Discrete Differential-Geometry Operators
+for Triangulated 2-Manifolds](http://multires.caltech.edu/pubs/diffGeoOps.pdf)
+* [**Differential geometry**](https://en.wikipedia.org/wiki/Differential_geometry): the study of smooth shapes and smooth spaces
+
+![Cotangent weights](images/cotangent-weights.png)
+
+-shrug- ...
+
+Solve constrained Laplacian Optimization
+???!
+* In the [same paper (Sorkine 05)](https://people.eecs.berkeley.edu/~jrs/meshpapers/Sorkine.pdf)
+
+What is this operator?
+
+![Vertical line](images/vertical-line.png)
+
+How do I even look this up? I tried:
+* "What is a vertical line in denominator"
+* "Linear system bar operator"
+* "Linear system notation"
+* "What is | in math?"
+  * [Glossary of Mathematical symbols](https://en.wikipedia.org/wiki/Glossary_of_mathematical_symbols)
+  * Discovered the [Bourbaki dangerous bend symbol](https://en.wikipedia.org/wiki/Bourbaki_dangerous_bend_symbol)
+    * "Marks passages as tricky on the first reading or with an especially difficult argument"
+    * "...designed to forewarn the reader against serious errors, where he risks falling;"
+* "Linear system symbol"
+
+Ok I give up for now OTL
+
+Laplacian Operator applications
+* Deformation
+* Blending by concatenating rows in matrix (?)
+* Hole filling
+* Coating, detail transfer
+  * Adding surface textures on top of another surface?
+* Spectral mesh processing through eigen analysis
+  * [**Spectral method**](https://en.wikipedia.org/wiki/Spectral_method) are techniques to solve certain differential equations
+    * Write a solution of the differential equation as a sum of "basic" functions
+      * Ex. fourier series as a sum of sinusoids
+    * Then choose coefficients in the sum to satsify the differential equation as best as possible
+    * Examines the eigen-values/vectors/space projections
+      * [Math is fun](https://www.mathsisfun.com/algebra/eigenvalue.html) on eigenvalues and eigenvectors in general:
+        * It allows us to do transformations in space
+        * Eigenvector is "the direction that doesn't change direction" in a (stretch?) transformation
+        * Eigenvalue is the scale of the stretch
+          * 1 means no change, 2 means double in length, -1 means point backwards...
+  * [Spectral mesh processing](https://www.cs.sfu.ca/~haoz/pubs/zhang_cgf10_spect_survey.pdf)
+    * A survey paper on a variety of spectral methods in general
+
+Back to other Polygonal Mesh Processing
+
+Filters
+* Sharpen 3D models
+* Truncate
+  * *Truncating a polyhedra* means the corners are cut off
+    
+    ![Truncated cube](images/truncated-cube.png)
+    
+    * [Nice visual here!](http://www.matematicasvisuales.com/english/html/geometry/space/truncatedcubeoctahedron.html#:~:text=Truncating%20a%20polyhedron%20means%20that,(semi%2Dregular%20polyhedra).)
+
+  * [Archimedean solid](https://en.wikipedia.org/wiki/Archimedean_solid)
+
+## More Polygonal Mesh Processing
+
+Remeshing, topological fixup, boolean operations
 
