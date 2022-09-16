@@ -222,6 +222,15 @@ How do I even look this up? I tried:
 
 Ok I give up for now OTL
 
+`<edit>`
+
+OK this vertical bar means add a column of zeros to the matrix!!
+TODO: go back to this formula thing and figure out what's it's doing
+
+At a high level, the formula is trying to find the original coordinates of the polygon mesh given the approximation represented by the differential coordinates
+
+`</edit>`
+
 Laplacian Operator applications
 * Deformation
 * Blending by concatenating rows in matrix (?)
@@ -258,4 +267,43 @@ Filters
 ## More Polygonal Mesh Processing
 
 Remeshing, topological fixup, boolean operations
+
+### Remeshing
+Subdivide, [subdivision surface](https://en.wikipedia.org/wiki/Subdivision_surface)
+* Coarser polygon mesh
+
+![Subdivide](images/subdivide.png)
+
+* [Fractal landscapes](https://en.wikipedia.org/wiki/Fractal_landscape)
+  * Apply subdivide to mimic the appearance of natural terrain
+  * Fractal behavior
+  * [Terragen](https://en.wikipedia.org/wiki/Terragen) software for scenery generator
+
+Resampling
+* Create more uniform distribution of polygons
+
+Simplify
+* Opposite of subdivide? Combine polygons
+
+### Topological Fixup
+
+Filling holes
+*  [Fill gaps of a polygon mesh with polygons](https://knowledge.autodesk.com/support/maya/learn-explore/caas/CloudHelp/cloudhelp/2020/ENU/Maya-Modeling/files/GUID-83ECB78E-950F-455D-B43E-47D76F3F9912-htm.html)
+
+Fix self-intersections
+
+### Boolean Operations
+* Crop, subtract, etc.
+* Intersection, subtraction, addition
+
+## Summary
+
+Pros/cons of polygon meshes
+
+Pros:
+* Efficient display, HW support
+* Aquisition tools capture in polygon mesh
+
+Cons:
+* Not accurate? Difficult to edit and validate, not guaranteed smoothness, ...
 
