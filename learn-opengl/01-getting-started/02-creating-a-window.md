@@ -30,3 +30,44 @@ Steps to build on Mac OS:
 ```commandline
 make
 ```
+This will create a header and library file in the `build/src` directory:
+```
+➜  build ls src/*.(a|h)
+src/glfw_config.h src/libglfw3.a
+```
+
+7. Create a new directory in the home directory called `OpenGL` and subdirectories `include` and `lib`. We will put all headers and libraries for OpenGL projects in there
+```commandline
+mkdir ~/OpenGL
+mkdir ~/OpenGL/include
+mkdir ~/OpenGL/lib
+```
+8. Copy the library file `src/libglfw3.a` to `~/OpenGL/lib` and the header file `glfw_config.h` to `~/OpenGL/include`
+```commandline
+cp src/src/libglfw3.a ~/OpenGL/lib
+cp src/glfw_config.h ~/OpenGL/include
+```
+
+### Setting up VS Code
+1. Create an empty project folder `hello-window` and open the folder in VS Code
+2. Create a `c_cpp_properties.json` file in the project root
+```commandline
+touch c_cpp_properties.json
+```
+3. Open the Command Palette (Command + Shift + p) and run `C/C++: Edit Configurations (UI)`
+4. Scroll down in the C/C++ Configurations window and add `~/OpenGL/**` to the Inlude Path
+
+
+## GLAD
+
+Initializing the OpenGL driver is also OS-specific, so we need another library to do this.
+
+The OpenGL driver needs to know where the device-specific functions are at runtime. The developer needs to store these function pointers at runtime.
+
+The library [GLAD](https://github.com/Dav1dde/glad) (Loader-Generator) will do these tasks under the hood for us.
+
+GLAD provides a [web-service](https://glad.dav1d.de/) that generates the required files for the requested version of OpenGL (...that's different).
+
+Used [this chart by Apple](https://support.apple.com/en-us/HT202823) to find the correct OpenGL version.
+
+Then follow the [Setting up GLAD Steps](https://learnopengl.com/Getting-started/Creating-a-window)
