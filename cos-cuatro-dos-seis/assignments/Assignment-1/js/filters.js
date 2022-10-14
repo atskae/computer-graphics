@@ -205,7 +205,63 @@ Filters.vignetteFilter = function(image, innerR, outerR) {
     // ----------- STUDENT CODE BEGIN ------------
     // ----------- Our reference solution uses 17 lines of code.
     // ----------- STUDENT CODE END ------------
-    Gui.alertOnce ('vignetteFilter is not implemented yet');
+    // cos^4(x) fall-off
+
+    // Compute the image half-diagonal
+    let image_diagonal = Math.sqrt(Math.pow(image.width, 2) + Math.pow(image.height, 2));
+    let image_half_diagonal = image_diagonal / 2;
+   
+    // Computer the center of the image
+    let image_center = {x: image.width/2, y: image.height/2};
+
+    console.log("Applying vignette, with image_half_diagonal=" + image_half_diagonal + ", and image_center=" + image_center.x + "," + image_center.y);
+    console.log("innerR=" + innerR + ", outerR=" + outerR);
+
+    // Get the proportion of where the point is along the half-diagonal of the image
+    for (let x=0; x<image.width; x++) {
+        for (let y=0; y<image.width; y++) {
+            
+            // Get the pixel value at this point
+            const pixel = image.getPixel(x, y);
+            
+            // Compute the distance from the center of the image to the point
+            let dist_from_center = Math.sqrt(Math.pow(x-image_center.x, 2) + Math.pow(y-image_center.y, 2));
+            
+            // Compute the ratio that the point is along the half-diagonal
+            // Normalize so that the value is comparable to innerR and outerR
+            let r = dist_from_center / image_half_diagonal;
+            
+            if (r > outerR) {
+                // If the point is outside of outerR, return black
+                for (let c=0; c<3; c++) {
+                    pixel.data[c] = 0;
+                }
+            } else if (r > innerR && r < outerR) {
+                //console.log("Point is inside ring");
+                //console.log("x=" + x + ", y=" + y + "; Distance from center: " + dist_from_center);
+                // If the point is inside the ring (area formed by innerR and outerR), apply the cos^4(x) fall-out
+                
+                // Compute the ratio of where the point is in the ring
+                let ring_ratio = (r - innerR) / (outerR - innerR);
+
+                //console.log("r=" + r + ", ring_ratio=" + ring_ratio);
+
+                // Compute the multiplier from the cos^4() function
+                let multiplier = Math.pow(Math.cos(ring_ratio * pi/2), 4);
+                //console.log("Multiplier: " + multiplier);
+
+                // Apply the multiplier to each pixel value
+                for (let c=0; c<3; c++) {
+                    pixel.data[c] = pixel.data[c] * multiplier;
+                }
+            
+            } // else, the point is inside the circle formed by innerR; leave pixels alone
+            
+            // Update image
+            image.setPixel(x, y, pixel);
+        }
+    }
+
     return image;
 };
 
