@@ -120,6 +120,18 @@ With a fractional exponent, we get brighter images, and exponents > 1, we get da
 ![Gamma results](images/gamma-results.png)
 
 
+### Vignette
+We have the diagonal of the image `D`. Everything outside of `outerR` is black. Everything inside of `innerR` is clear/untouched. The color values between `innerR` and `outerR` slowly become darker.
+
+![Vignette image labels](images/vignette-image-diagonal.png)
+
+For **linear falloff**, we see how far the point `(x,y)` is along the image's half-diagonal `D/2`, then we get the proportional of where the point is in the ring that `innerR` and `outerR` creates.
+
+We subtract 1 from the result so that the pixels are brighter toward the center.
+
+![Vignette linear falloff](images/vignette-linear.png)
+
+
 ## Color Operations
 
 ### Grayscale
