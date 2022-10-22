@@ -30,3 +30,32 @@ Steps to build on Mac OS:
 ```commandline
 make
 ```
+
+Steps to build CMake on Linux:
+
+Install the C++ compiler:
+```
+sudo apt-get install g++
+```
+
+Install `make`:
+```
+sudo apt-get install make
+```
+
+Install OpenSSL development headers:
+```
+sudo apt -y install libssl-dev
+```
+
+[Install Qt](https://askubuntu.com/questions/1335184/qt5-default-not-in-ubuntu-21-04):
+```
+sudo apt-get install qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
+```
+
+Build CMake from source:
+```
+~/Downloads/cmake-3.24.2$ ./bootstrap --qt-gui && make && sudo make install
+```
+
+`--qt-gui` builds the CMake GUI.
