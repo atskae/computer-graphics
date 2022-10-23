@@ -65,3 +65,8 @@ We can now compile the program that uses glad and glfw:
 ```
 g++ $(pkg-config --cflags glfw3) -o hello-window main.cpp glad.c $(pkg-config --static --libs glfw3)
 ```
+
+We can now run the program!
+```
+./hello-window
+```
