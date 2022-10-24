@@ -71,3 +71,93 @@ GLAD provides a [web-service](https://glad.dav1d.de/) that generates the require
 Used [this chart by Apple](https://support.apple.com/en-us/HT202823) to find the correct OpenGL version.
 
 Then follow the [Setting up GLAD Steps](https://learnopengl.com/Getting-started/Creating-a-window)
+
+Steps to build CMake on Linux:
+
+Install the C++ compiler:
+```
+sudo apt-get install g++
+```
+
+Install `make`:
+```
+sudo apt-get install make
+```
+
+Install OpenSSL development headers:
+```
+sudo apt -y install libssl-dev
+```
+
+[Install Qt](https://askubuntu.com/questions/1335184/qt5-default-not-in-ubuntu-21-04):
+```
+sudo apt-get install qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
+```
+
+Build CMake from source:
+```
+~/Downloads/cmake-3.24.2$ ./bootstrap --qt-gui && make && sudo make install
+```
+
+`--qt-gui` builds the CMake GUI.
+
+## Building GLFW in Linux
+
+Need to install the RandR, Xinerama, Xcursor, XInput headers:
+```
+sudo apt-get install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev
+```
+
+Then open the CMake GUI, set the source/destination directories, then click `Configure`.
+
+We can now go into the build folder and run `make` to build and install the package:
+```
+glfw-3.3.8/build$ make && sudo make install
+```
+
+(from here on out it is assumed that we're running on Linux!)
+
+## GLAD
+OpenGL is only a specification. The implementations will differ by graphics cards and operating system. *Function pointers* need to be calculated at run-time to point to the correct OpenGL implementation.
+
+GLAD is a library that finds the correct function pointers for you.
+
+First get the OpenGL version installed, you'd need to install `mesa-utils` first:
+```
+sudo apt install mesa-utils
+```
+
+[Mesa](https://www.mesa3d.org/) is an open-source implementation of OpenGL. `mesa-utils` are misc utility functions for Mesa.
+
+Get the OpenGL version:
+```
+glxinfo | grep "OpenGL version"
+```
+
+After download the GLAD zip, move `include/glad`:
+```
+sudo mv KHR/ /usr/include/
+```
+
+The version 1 glad webserver provides `glad.h` but the version 2 webserver gives `gl.h`... Using version 1...
+
+
+I already had the `KHR` directory in `usr/include`... The `diff` seems minor so I will leave it as is.
+
+Test compilation (for some reason `glad` needs to be imported before `glfw` OTL)
+
+```cpp
+#include <iostream>
+
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
+int main(int argc, char* argv[]) {
+    std::cout << "I hope glfw and glad compiles!" << std::endl;
+    return 0;
+}
+
+```
+```
+g++ -o test-compile main.cpp
+```
