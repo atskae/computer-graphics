@@ -272,7 +272,54 @@ Filters.histogramEqualizationFilter = function(image) {
     // ----------- STUDENT CODE BEGIN ------------
     // ----------- Our reference solution uses 33 lines of code.
     // ----------- STUDENT CODE END ------------
-    Gui.alertOnce ('histogramEqualizationFilter is not implemented yet');
+    // Create a histogram of the lightness values of the image
+    // The L value is mapped from [0,1] (float) to [0, 100] (integer)
+    let histogram = {};
+    let min_lightness = 100;
+    for (let x=0; x<image.width; x++) {
+        for (let y=0; y<image.width; y++) {
+            const pixel_rgb = image.getPixel(x, y);
+            const pixel_hsl = pixel_rgb.rgbToHsl()
+            // Value between [0, 1]
+            //debugger;
+            let lightness = pixel_hsl.data[2];
+            // Multiply by 100 and round to the nearest integer
+            lightness = Math.floor(lightness * 100);
+            if (!(lightness in histogram)) {
+                histogram[lightness] = 0;
+                if (lightness < min_lightness) {
+                    min_lightness = lightness;
+                }
+            }
+            histogram[lightness]++;
+        }
+    }
+
+    // Calculate the cumulative distribution function (cdf) of the brightness levels
+    let cdf = {}
+    let previous_lightness = min_lightness;
+    console.log("Histogram");
+    let total = 0;
+    for (var lightness in Object.keys(histogram)) {
+        console.log("Lightness " + lightness + ": " + histogram[lightness]);
+        total += histogram[lightness];
+        if (lightness == min_lightness) {
+            cdf[lightness] = histogram[lightness];
+            continue;
+        }
+        cdf[lightness] = cdf[previous_lightness] + histogram[lightness];
+        previous_lightness = lightness;
+    }
+    console.log("Total: " + total);
+
+    // Print cdf
+    console.log("Cumulative distribution");
+    for (var lightness in Object.keys(cdf)) {
+        console.log("Lightness " + lightness + ": " + cdf[lightness]);
+    }
+    console.log("Image width=" + image.width + ", height=" + image.height);
+    console.log(image.width + "x" + image.height + "=" + (image.width * image.height));
+    
     return image;
 };
 
