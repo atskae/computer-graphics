@@ -70,3 +70,9 @@ We can now run the program!
 ```
 ./hello-window
 ```
+
+## User input
+
+`glfwGetKey()` returns the state (press or release) of various inputs (ex. keyboard keys).
+Can check in the render loop in each *frame* - one iteration of the render loop.
+

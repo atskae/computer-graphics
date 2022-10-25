@@ -3,6 +3,20 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+
+// User input callback
+// Checks on every frame (an iteration of the render loop)
+// of keyboard inputs, mouse input, etc.
+void processInput(GLFWwindow* window) {
+    // Check if the Esc key was pressed
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+        // On the next iteration of the render loop
+        // the window will close
+        glfwSetWindowShouldClose(window, true);
+        std::cout << "Escape was pressed" << std::endl;
+    }
+}
+
 // Window-resize callback
 // When the user resizes the window, adjust the OpenGL viewport size
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
@@ -76,6 +90,9 @@ int main(int argc, char* argv[]) {
     // This keeps the application running and handles new input
     //  until the application is closed
     while (!glfwWindowShouldClose(window)) {
+        // Process user input
+        processInput(window);
+
         // SwapBuffer is a 2D buffer with color values for each pixel in the GLFW window
         // Displays the pixels onto the screen
         glfwSwapBuffers(window);
