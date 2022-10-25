@@ -76,3 +76,10 @@ We can now run the program!
 `glfwGetKey()` returns the state (press or release) of various inputs (ex. keyboard keys).
 Can check in the render loop in each *frame* - one iteration of the render loop.
 
+## Render loop
+
+General order of logic in one frame of the render loop:
+1. Check for user input
+2. Render stuff
+3. Check for events
+4. Swap buffers

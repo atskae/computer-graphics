@@ -93,6 +93,21 @@ int main(int argc, char* argv[]) {
         // Process user input
         processInput(window);
 
+        /* Rendering */
+        
+        // Configure the color setting used by glClear()
+        // A minty color
+        GLfloat red = 0.58f;
+        GLfloat green = 0.96f;
+        GLfloat blue = 0.84f;
+        GLfloat alpha = 1.0f; 
+        glClearColor(red, green, blue, alpha);
+
+        // Apply the color to the window's color buffer
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        /* Rendering end */
+
         // SwapBuffer is a 2D buffer with color values for each pixel in the GLFW window
         // Displays the pixels onto the screen
         glfwSwapBuffers(window);
