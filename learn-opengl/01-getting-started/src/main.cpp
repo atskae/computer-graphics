@@ -4,6 +4,23 @@
 #include <GLFW/glfw3.h>
 
 
+// Source code for the vertex shader
+// Written in OpenGL shader language (GLSL)
+const char* vertexShaderSource = "#version 460 core\n" // OpenGL version 4.6 with core-profile functionality
+    // The `in` keyword specifies all the inputs (input vertex attributes) to this vertex shader
+    // The input to this shader program is a 3D vector `vec3`
+    // We name the input variable `aPos`
+    // `layout` allows us to define the location of the input variable
+    "layout (location = 0) in vec3 aPos;\n"
+    "void main()\n"
+    "{\n"
+    // We set the return value to `gl_Position`
+    // Here we are converting the 3D input coordinate to a 4D output coordinate
+    // The fourth coordinate is used for `perspective division`
+    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    // Null-terminator for string...
+    "}\0";
+
 // User input callback
 // Checks on every frame (an iteration of the render loop)
 // of keyboard inputs, mouse input, etc.
@@ -105,6 +122,32 @@ int main(int argc, char* argv[]) {
 
         // Apply the color to the window's color buffer
         glClear(GL_COLOR_BUFFER_BIT);
+
+        // Create a 2D triangle
+        // We keep the z-coordinate (depth) at 0.0 to create a 2D triangle in a 3D scene
+        // Three 3D coordinates
+        float vertices[] = {
+            -0.5f, -0.5f, 0.0f, // one 3D coordinate
+            0.5f, -0.5f, 0.0f,
+            0.0f, 0.5f, 0.0f
+        };
+
+        // Create a vertex buffer object, which stores the vertices
+        // that will be sent to the GPU's memory
+        unsigned int VBO;
+        // Creates a buffer object behind the scenes, and assigns an ID to it
+        unsigned int num_buffers = 1;
+        glGenBuffers(num_buffers, &VBO);
+        // Specify that the newly created buffer object is specifically a vertex buffer object
+        // This binds the GL_ARRAY_BUFFER to the one we created, VBO
+        // Any operations on the GL_ARRAY_BUFFER will configure our VBO object
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+        // Copy over the vertices data to the VBO
+        // The fourth argument specifies how the GPU should manage the data
+        // GL_STATIC_DRAW is best for data that doesn't change much and is read many times
+        // If the data changes a lot, we'd use GL_DYNAMIC_DRAW
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
         /* Rendering end */
 
