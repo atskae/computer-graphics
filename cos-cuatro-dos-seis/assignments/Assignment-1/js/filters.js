@@ -133,7 +133,7 @@ Filters.contrastFilter = function(image, ratio) {
     // ----------- STUDENT CODE END ------------
     console.log("contrastFilter"); 
     for (let x=0; x<image.width; x++) {
-        for (let y=0; y<image.width; y++) {
+        for (let y=0; y<image.height; y++) {
             // Iterate through the color channels
             const pixel = image.getPixel(x, y);
             for (let c=0; c<3; c++) {
@@ -175,7 +175,7 @@ Filters.gammaFilter = function(image, logOfGamma) {
     // ----------- STUDENT CODE END ------------
     console.log("gammaFilter");
     for (let x=0; x<image.width; x++) {
-        for (let y=0; y<image.width; y++) {
+        for (let y=0; y<image.height; y++) {
             // Iterate through the color channels
             const pixel = image.getPixel(x, y);
             for (let c=0; c<3; c++) {
@@ -219,7 +219,7 @@ Filters.vignetteFilter = function(image, innerR, outerR) {
 
     // Get the proportion of where the point is along the half-diagonal of the image
     for (let x=0; x<image.width; x++) {
-        for (let y=0; y<image.width; y++) {
+        for (let y=0; y<image.height; y++) {
             
             // Get the pixel value at this point
             const pixel = image.getPixel(x, y);
@@ -277,7 +277,7 @@ Filters.histogramEqualizationFilter = function(image) {
     let histogram = {};
     let min_lightness = 100;
     for (let x=0; x<image.width; x++) {
-        for (let y=0; y<image.width; y++) {
+        for (let y=0; y<image.height; y++) {
             const pixel_rgb = image.getPixel(x, y);
             const pixel_hsl = pixel_rgb.rgbToHsl()
             // Value between [0, 1]
@@ -291,7 +291,9 @@ Filters.histogramEqualizationFilter = function(image) {
                     min_lightness = lightness;
                 }
             }
+            //console.log("Initial count for " + lightness + ": " + histogram[lightness]);
             histogram[lightness]++;
+            //console.log("New count for " + lightness + ": " + histogram[lightness]);
         }
     }
 
