@@ -276,19 +276,23 @@ Filters.histogramEqualizationFilter = function(image) {
     // The L value is mapped from [0,1] (float) to [0, 100] (integer)
     let histogram = {};
     let min_lightness = 100;
+    let max_lightness = 0;
     for (let x=0; x<image.width; x++) {
         for (let y=0; y<image.height; y++) {
             const pixel_rgb = image.getPixel(x, y);
             const pixel_hsl = pixel_rgb.rgbToHsl()
             // Value between [0, 1]
-            //debugger;
             let lightness = pixel_hsl.data[2];
             // Multiply by 100 and round to the nearest integer
             lightness = Math.floor(lightness * 100);
             if (!(lightness in histogram)) {
                 histogram[lightness] = 0;
+                // Update minimum and maximum lightness values seen
                 if (lightness < min_lightness) {
                     min_lightness = lightness;
+                }
+                else if (lightness > max_lightness) {
+                    max_lightness = lightness;
                 }
             }
             //console.log("Initial count for " + lightness + ": " + histogram[lightness]);
@@ -300,11 +304,9 @@ Filters.histogramEqualizationFilter = function(image) {
     // Calculate the cumulative distribution function (cdf) of the brightness levels
     let cdf = {}
     let previous_lightness = min_lightness;
-    console.log("Histogram");
-    let total = 0;
-    for (var lightness in Object.keys(histogram)) {
-        console.log("Lightness " + lightness + ": " + histogram[lightness]);
-        total += histogram[lightness];
+    //console.log("Histogram");
+    for (let lightness of Object.keys(histogram)) {
+        //console.log("Lightness " + lightness + ": " + histogram[lightness]);
         if (lightness == min_lightness) {
             cdf[lightness] = histogram[lightness];
             continue;
@@ -312,16 +314,43 @@ Filters.histogramEqualizationFilter = function(image) {
         cdf[lightness] = cdf[previous_lightness] + histogram[lightness];
         previous_lightness = lightness;
     }
-    console.log("Total: " + total);
 
     // Print cdf
     console.log("Cumulative distribution");
-    for (var lightness in Object.keys(cdf)) {
+    for (let lightness of Object.keys(cdf)) {
         console.log("Lightness " + lightness + ": " + cdf[lightness]);
     }
     console.log("Image width=" + image.width + ", height=" + image.height);
     console.log(image.width + "x" + image.height + "=" + (image.width * image.height));
-    
+    console.log("Min lightness: " + min_lightness);
+    console.log("Max lightness: " + max_lightness);
+   
+    // Get the minimum non-zero lightness value
+    if (min_lightness == 0) {
+        min_lightness++;
+    }
+
+    // Equalize
+    for (let x=0; x<image.width; x++) {
+        for (let y=0; y<image.height; y++) {
+            const pixel_rgb = image.getPixel(x, y);
+            const pixel_hsl = pixel_rgb.rgbToHsl()
+            let lightness = pixel_hsl.data[2];
+            lightness = Math.floor(lightness * 100);
+            
+            // Calculate the new lightness value
+            //console.log("cdf(" + lightness + "): " + cdf[lightness]);
+            // Already in range [0, 1]
+            let equalized = (cdf[lightness] - min_lightness) / (image.width * image.height - min_lightness);
+            //console.log("Lightness " + lightness + " equalized: " + equalized);
+            pixel_hsl.data[2] = equalized;
+
+            // Update image
+            let pixel = pixel_hsl.hslToRgb();
+            image.setPixel(x, y, pixel);
+        }
+    }
+
     return image;
 };
 

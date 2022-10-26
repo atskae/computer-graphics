@@ -153,7 +153,19 @@ The coefficients that are multiplied to each color channel is related to how sen
 0.2126 + 0.7152 + 0.0722 = 1
 ```
 
+## Etsy
+
+```javascript
+let lightness in Object.keys(cdf)
+```
+is not the same as
+
+```javascript
+let lightness of Object.keys(cdf)
+```
+
+`of` will get you the keys you added. `in`...??? Was zum Teufel OTL
+
 ## Resources
 
 * [Short explanations on GIMP image processing implementations](https://pippin.gimp.org/image-processing/) and other notes on GIMP
-
