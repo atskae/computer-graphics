@@ -51,7 +51,11 @@ int main(int argc, char* argv[]) {
         std::cerr << "GLFW failed to initialize." << std::endl;
         return 1;
     }
-    
+
+    // Return codes and buffer for error messages
+    int success = 0;
+    char infoLog[256] = {0};
+
     // In general, glfwWindowHint() allows us to configure GLFW
     // All possible configuration options are enums that are prefixed with `GLFW_`
     // We set integer values to the configuration option
@@ -131,6 +135,21 @@ int main(int argc, char* argv[]) {
             0.5f, -0.5f, 0.0f,
             0.0f, 0.5f, 0.0f
         };
+
+        // Assign a unique ID to the vertex shader
+        unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+        // Attached the vertex shader unique ID to the shader source code
+        glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+        // Compile the vertex shader source code
+        glCompileShader(vertexShader);
+
+        // Check if compilation was successful
+        glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+        if (!success) {
+            glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+            std::cerr << "Failed to compile vertex shader: " << infoLog << std::endl;
+            glfwTerminate();
+        }
 
         // Create a vertex buffer object, which stores the vertices
         // that will be sent to the GPU's memory
