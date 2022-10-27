@@ -34,3 +34,22 @@ Modern OpenGL requires the user to provide a *vertex shader* and *fragment shade
     * Anything in this range are visible in the screen
 
 We use OpenGL objects called **Vertex Buffer Objects** (VBO) to send vertices to the GPU.
+
+## Shader Program
+We have to compile each type of shader (vertex shader, fragment shader), then combine those shaders into one main shader program.
+The shader program connects the outputs of each shader as inputs to the next shader. If the input/output types do not match, there will be a linkage error.
+
+## Layout (GLSL)
+
+In our vertex program we had to specify the vertex attribute's `location`, which describes the storage for the attribute 
+```
+#version 330 core
+layout (location = 0) in vec3 aPos; // <-- raw-hur
+
+void main()
+...
+```
+
+If we want our C++ logic to pass anything to `vec3 aPos` in our vertex shader, we refer to that input variable with `location = 0`.
+
+[More on layout qualifiers](https://www.khronos.org/opengl/wiki/Layout_Qualifier_(GLSL))

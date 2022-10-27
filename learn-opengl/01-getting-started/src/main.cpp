@@ -21,6 +21,17 @@ const char* vertexShaderSource = "#version 460 core\n" // OpenGL version 4.6 wit
     // Null-terminator for string...
     "}\0";
 
+// Source code for the fragment shader
+// Fragement shader is responsible for calculating the colors
+const char* fragmentShaderSource = "#version 460 core\n"
+    // Fragment shader's only required output, a vector of size 4
+    "out vec4 FragColor;\n"
+    "void main()\n"
+    "{\n"
+    // Lime-green color
+    "   FragColor = vec4(0.79f, 0.98f, 0.44f, 1.0f);\n"
+    "}\0";
+
 // User input callback
 // Checks on every frame (an iteration of the render loop)
 // of keyboard inputs, mouse input, etc.
@@ -54,7 +65,7 @@ int main(int argc, char* argv[]) {
 
     // Return codes and buffer for error messages
     int success = 0;
-    char infoLog[256] = {0};
+    char infoLog[512] = {0};
 
     // In general, glfwWindowHint() allows us to configure GLFW
     // All possible configuration options are enums that are prefixed with `GLFW_`
@@ -138,7 +149,7 @@ int main(int argc, char* argv[]) {
 
         // Assign a unique ID to the vertex shader
         unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-        // Attached the vertex shader unique ID to the shader source code
+        // Attach the vertex shader unique ID to the shader source code
         glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
         // Compile the vertex shader source code
         glCompileShader(vertexShader);
@@ -161,13 +172,80 @@ int main(int argc, char* argv[]) {
         // This binds the GL_ARRAY_BUFFER to the one we created, VBO
         // Any operations on the GL_ARRAY_BUFFER will configure our VBO object
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
+        
         // Copy over the vertices data to the VBO
         // The fourth argument specifies how the GPU should manage the data
         // GL_STATIC_DRAW is best for data that doesn't change much and is read many times
         // If the data changes a lot, we'd use GL_DYNAMIC_DRAW
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+        // Specify to OpenGL how to interpret the vertex data
+        // This is applied to the currently active VBO specified in BindBuffer()
+        unsigned int vertexAttributeLocation = 0;
+        glVertexAttribPointer(
+            // The value we specified in our vertex shader, `layout (location = 0)`
+            // Where to find the memory location of the vec3 input to the vertex shader
+            vertexAttributeLocation,
+            // The size of the vertex shader's input (vec3 aPos)
+            3,
+            // The type of the value in the input vec3
+            GL_FLOAT,
+            // Indicate whether the data should be normalized ([-1, 1] for signed values, [0, 1] for positive)
+            GL_FALSE,
+            // Stride, the space between vertex attributes, in bytes
+            // If we specify 0, OpenGL tries to figure this out itself
+            //  This only works if the data is tightly-packed (no padding between attributes)
+            sizeof(float) * 3,
+            // Where the data starts in the buffer
+            // Since the data starts at the beginning of the buffer, we use 0
+            (void*)0
+        );
+        
+        // Enable the vertex attributes that we just configured
+        glEnableVertexAttribArray(vertexAttributeLocation);
+
+        // Assign a unique ID to the fragment shader
+        unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+        // Attach the unique ID to the shader source code
+        glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+        // Compile the fragment shader
+        glCompileShader(fragmentShader);
+
+        // Check if compilation was successful
+        glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+        if (!success) {
+            glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+            std::cerr << "Failed to compile fragment shader: " << infoLog << std::endl;
+            glfwTerminate();
+        }
+
+        // Combine the vertex shader and the fragment shader into one main shader program
+        unsigned int shaderProgram = glCreateProgram();
+        if (shaderProgram == 0) { // So zero means error... ..
+            std::cerr << "Failed to get shader program ID" << std::endl;
+            glfwTerminate();
+        }
+
+        glAttachShader(shaderProgram, vertexShader);
+        glAttachShader(shaderProgram, fragmentShader);
+        glLinkProgram(shaderProgram);
+
+        // Check if shader linking was successful
+        glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+        if (!success) {
+            glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+            std::cerr << "Failed to link shader program: " << infoLog << std::endl;
+            glfwTerminate();
+        }
+
+        // Set the shader program as the currently active shader program
+        glUseProgram(shaderProgram);
+
+        // We can delete the vertex and fragment shader objects after the final shader program has been linked
+        glDeleteShader(vertexShader);
+        glDeleteShader(fragmentShader);
+
+        
         /* Rendering end */
 
         // SwapBuffer is a 2D buffer with color values for each pixel in the GLFW window
