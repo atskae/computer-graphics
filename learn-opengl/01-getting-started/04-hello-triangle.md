@@ -65,6 +65,21 @@ Typical workflow:
 2. When we want to draw something, activate/bind the selected VAO
 3. When drawing is done, unbind the VAO
 
-## Misc Thoughts
+## Triangle
+* (Oct 29, 7:22am) Holy crap it compiled in one go that never happens wow!!!!
+
+Spent some time trying to find this bug:
+```cpp
+glDrawArrays(GL_TRIANGLES, numTriangles, numVertices);
+```
+
+The second argument should be `0`, the starting index of the vertices array, not the number of triangles `1`,
+This is why the first vertex was ignored and was always drawn at the origin. (Someone on Earth had the [same problem](https://stackoverflow.com/questions/26359410/opengl-first-vertex-always-drawn-at-origin), that's so... great :`)).
+
+Fixed!
+
+![Hello triangle](images/hello-triangle.png)
+
+## Misc Notes
 * It's very common to set a value at some memory location (when calling a function) than to return the value.
     * Stateful vs. stateless?
