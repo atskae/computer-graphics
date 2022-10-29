@@ -131,6 +131,12 @@ We subtract 1 from the result so that the pixels are brighter toward the center.
 
 ![Vignette linear falloff](images/vignette-linear.png)
 
+TODO: Fix logic because something ain't right...
+
+### Histogram Equalization
+
+There are clusters of intensity values that are close together, that's why there is little contrast.
+Equalization stretches this range out to the full spectrum of the lightness levels (ex. the lightnest pixel in the image will map to the lightest possible level). This makes the histogram "flatter" in the sense that selected lightness values are more spread out across the spectrum, *not* that the counts of each lightness level are redistributed equally (I mistakenly thought that this was what "flatter" meant).
 
 ## Color Operations
 
