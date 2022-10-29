@@ -69,7 +69,7 @@ int main(int argc, char* argv[]) {
     // Return codes and buffer for error messages
     int success = 0;
     char infoLog[512] = {0};
-
+    
     // In general, glfwWindowHint() allows us to configure GLFW
     // All possible configuration options are enums that are prefixed with `GLFW_`
     // We set integer values to the configuration option
@@ -109,6 +109,12 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    // Draw in wireframe mode (only draw outlines of primitive shapes, no fill)
+    // Draw both front and back of the primitive shape
+    //  and only draw the lines of the primitives.
+    // GL_FILL would draw primitives with the fill color
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    
     // Specify window to OpenGL
     // Left x-coordinate of the viewport
     int viewport_x = 0;
@@ -149,6 +155,22 @@ int main(int argc, char* argv[]) {
     int startTriangleIndex = 0;
     unsigned int numVertices = 3;
 
+    // Rectangle using an Element Buffer Object (EBO)
+    // The z-coordinates are zero to keep it 2D in a 3D space
+    float rectangle_vertices[] = {
+        0.5f, 0.5f, 0.0f, // top-right
+        -0.5f, 0.5f, 0.0f, // top-left
+        -0.5f, -0.5f, 0.0f, // bottom-left
+        0.5f, -0.5f, 0.0f // bottom-right
+    };
+    // A list of triangle's (that make up the rectangle) vertices by index
+    // This create a rectangle split from top-left to bottom-right
+    unsigned int indices[] = {
+        0, 1, 3, // top-half triangle
+        1, 2, 3 // bottom-half-triangle
+    };
+    unsigned int numIndices = 6;
+
     // Assign a unique ID to the vertex shader
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
     // Attach the vertex shader unique ID to the shader source code
@@ -174,8 +196,12 @@ int main(int argc, char* argv[]) {
     // that will be sent to the GPU's memory
     unsigned int VBO;
     // Creates a buffer object behind the scenes, and assigns an ID to it
-    unsigned int num_buffers = 1;
-    glGenBuffers(num_buffers, &VBO);
+    glGenBuffers(1, &VBO);
+
+    // Element buffer object
+    unsigned int EBO;
+    // Create one buffer and assign unique ID
+    glGenBuffers(1, &EBO);
 
     // Bind the VAO
     // After this bind call, any functions related to vertex buffer objects (VBO) will store
@@ -187,11 +213,18 @@ int main(int argc, char* argv[]) {
     // Any operations on the GL_ARRAY_BUFFER will configure our VBO object
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     
-    // Copy over the vertices data to the VBO
+    // Copy over the triangle vertices data to the VBO
     // The fourth argument specifies how the GPU should manage the data
     // GL_STATIC_DRAW is best for data that doesn't change much and is read many times
     // If the data changes a lot, we'd use GL_DYNAMIC_DRAW
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    //glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    
+    // Use the rectangle vertices instead
+    glBufferData(GL_ARRAY_BUFFER, sizeof(rectangle_vertices), rectangle_vertices, GL_STATIC_DRAW);
+    
+    // Do the same for the Element Buffer Object
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // Specify to OpenGL how to interpret the vertex data
     // This is applied to the currently active VBO specified in BindBuffer()
@@ -256,7 +289,7 @@ int main(int argc, char* argv[]) {
     // We can delete the vertex and fragment shader objects after the final shader program has been linked
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
-
+    
     // Start the render loop
     // This keeps the application running and handles new input
     //  until the application is closed
@@ -278,10 +311,17 @@ int main(int argc, char* argv[]) {
         // (re) activate the VAO
         glBindVertexArray(VAO);
 
+        // (re) activate the EBO
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+
         // Draw the triangle!!!!!
         // Draw a primitive, in this case a triangle
-        glDrawArrays(GL_TRIANGLES, startTriangleIndex, numVertices);
-        
+        //glDrawArrays(GL_TRIANGLES, startTriangleIndex, numVertices);
+
+        // Draw a rectangle from the Element Buffer Object that is currently bound
+        // The last argument is the starting index of the indices array (...?)
+        glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
+
         /* Rendering end */
 
         // SwapBuffer is a 2D buffer with color values for each pixel in the GLFW window

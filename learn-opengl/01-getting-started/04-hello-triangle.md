@@ -80,6 +80,28 @@ Fixed!
 
 ![Hello triangle](images/hello-triangle.png)
 
+
+## Element Buffer Object
+We can ask OpenGL to draw vertices by giving it a list of indicies too.
+We can have a set of vertex data and a list of indicies in a **Element Buffer Object** (EBO).
+
+This way we can refer to the same vertex many times and wouldn't have to duplicate that vertex's coordinates.
+
+The Vertex Array Object (VAO) also keeps track of the EBO state.
+
+## Wireframe Mode
+
+If you call this too early in the code (before `gladLoadGLLoader()`), you get an unexplained segfault:
+```cpp
+glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+```
+
+Makes sense, the function pointers are not calculated before the loader call.
+
+![Rectangle](images/rectangle.png)
+
 ## Misc Notes
 * It's very common to set a value at some memory location (when calling a function) than to return the value.
     * Stateful vs. stateless?
+* Everything is made up of triangles
+  * So a rectangle is two triangles
