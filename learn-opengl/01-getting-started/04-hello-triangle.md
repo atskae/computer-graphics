@@ -53,3 +53,18 @@ void main()
 If we want our C++ logic to pass anything to `vec3 aPos` in our vertex shader, we refer to that input variable with `location = 0`.
 
 [More on layout qualifiers](https://www.khronos.org/opengl/wiki/Layout_Qualifier_(GLSL))
+
+## Vertex Array Object
+
+Any state that has to do with the attributes of vertex data (Vertex Buffer Objects) can be stored and reused in a **Vertex Array Object**, (ex. `glVertexAttribPointer()`).
+* Actually, using a VAO is required, otherwise OpenGL will not draw anything for you...
+* The vertex buffer objects will use the VAO for state information
+
+Typical workflow:
+1. Generate the VAOs, each containing the VBOs and attribute pointers set up
+2. When we want to draw something, activate/bind the selected VAO
+3. When drawing is done, unbind the VAO
+
+## Misc Thoughts
+* It's very common to set a value at some memory location (when calling a function) than to return the value.
+    * Stateful vs. stateless?

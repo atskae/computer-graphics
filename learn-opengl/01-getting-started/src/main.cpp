@@ -162,6 +162,17 @@ int main(int argc, char* argv[]) {
             glfwTerminate();
         }
 
+        // Vertex attribute object
+        // Stores the state of glVertexAttribPointer() and related calls
+        // Assigns a unique ID to the VAO object (created behind the scenes)
+        unsigned int VAO;
+        glGenVertexArrays(1, &VAO);
+
+        // Bind the VAO
+        // After this bind call, any functions related to vertex buffer objects (VBO) will store
+        //  its state inside this VAO
+        glBindVertexArray(VAO);
+
         // Create a vertex buffer object, which stores the vertices
         // that will be sent to the GPU's memory
         unsigned int VBO;
@@ -240,6 +251,15 @@ int main(int argc, char* argv[]) {
 
         // Set the shader program as the currently active shader program
         glUseProgram(shaderProgram);
+
+        // (re?) activate the VAO
+        glBindVertexArray(VAO);
+
+        // Draw the triangle!!!!!
+        // Draw a primitive, in this case a triangle
+        int numTriangles = 1;
+        unsigned int numVertices = 3;
+        glDrawArrays(GL_TRIANGLES, numTriangles, numVertices);
 
         // We can delete the vertex and fragment shader objects after the final shader program has been linked
         glDeleteShader(vertexShader);
