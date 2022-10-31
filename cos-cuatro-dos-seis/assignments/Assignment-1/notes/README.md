@@ -240,6 +240,7 @@ Original purple: Pixel(red=0.77, green=0.54, blue=0.87)
 Saturated purple: Pixel(red=0.93, green=0.47, blue=1.0)
 
 It is indeed more saturated!
+
 ![Saturated purple](images/purple-saturated.png)
 
 Doing this napkin math by hand was very helpful.
