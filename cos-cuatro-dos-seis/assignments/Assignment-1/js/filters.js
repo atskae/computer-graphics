@@ -379,7 +379,31 @@ Filters.saturationFilter = function(image, ratio) {
     // ----------- STUDENT CODE BEGIN ------------
     // ----------- Our reference solution uses 13 lines of code.
     // ----------- STUDENT CODE END ------------
-    Gui.alertOnce ('saturationFilter is not implemented yet');
+    
+    // For some reason I like to refer to things with alpha,
+    // not this ratio thing
+    let alpha = ratio + 1;
+    for (let x = 0; x < image.width; x++) {
+        for (let y = 0; y < image.height; y++) {
+            const pixel = image.getPixel(x, y);
+            // Formula for luminance: https://en.wikipedia.org/wiki/Grayscale#Converting_color_to_grayscale
+            const luminance = 0.2126 * pixel.data[0] + 0.7152 * pixel.data[1] + 0.0722 * pixel.data[2];
+            
+            // Iterate through each color channel
+            for (let c=0; c<3; c++) {
+                // Interpolate/extrapolate value:
+                //  out = (1-alpha)*in0 + alpha*in1
+                // in0 is the degenerate image (grayscale value = luminance)
+                // in1 is the original pixel value
+                pixel.data[c] = (1-alpha)*luminance + alpha*pixel.data[c]
+            }
+
+            // Possible that color values > 1 after extrapolating, so clamp values
+            pixel.clamp();
+            image.setPixel(x, y, pixel);
+        }
+    }
+
     return image;
 };
 

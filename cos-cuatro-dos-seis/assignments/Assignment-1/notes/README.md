@@ -159,6 +159,91 @@ The coefficients that are multiplied to each color channel is related to how sen
 0.2126 + 0.7152 + 0.0722 = 1
 ```
 
+### Saturation
+
+Reading:
+* [Image processing by interpolation and extrapolation](http://graficaobscura.com/interp/index.html)
+* [Image interpolation/extrapolation in an OpenGL context](http://www.yaldex.com/open-gl/ch19lev1sec5.html)
+
+To blend two images together, we **linearly interpolate** them:
+```
+out = (1 - alpha)*in0 + alpha*in1
+```
+
+* If `alpha` is in range `[0, 1]`, we interpolate between the two images
+* If `alpha` > 1.0 will decrease `in0` and scale `in1`, extrapolating between the two images
+* If `alpha` < 1.0, it will scale `in0` and decrease `in1`
+
+We could think of **extrapolation** "away from" a degenerate image as:
+* Going from a blurry image (the degenerate image) to a sharp image
+* Black-and-white image to a saturated image
+
+We could obtain the `alpha` value in different ways to achieve different visual effects
+* Ex. use a function to compute `alpha` using `X` and `Y`
+* Brush controls alpha depending on where the cursor is, where the pixel is from the center of the brush
+
+Visual effects using interpolation and extrapolation
+* Brightness: use pure black image as the degenerate image
+  * Interpolation darkens the image
+  * Extrapolation brightens the image
+* Contrast: use constant grey image with the average image luminance
+  * Interpolation reduces contrast
+  * Extrapolation increases contrast
+  * Negative alpha inverts the image
+  * Average luminance is always preserved
+* **Saturation**: want to either move away from or toward the pixel's luminance value.
+  * Use a ~~black and white~~ grayscale image as the degenerate image
+
+
+`in0` is the grayscale (luminance) pixel (when alpha=0, then the in1 value is disregarded) and `in1` is the source image.
+If `alpha=0`, then `ratio=alpha-1=0-1=-1`, which results in a grayscale image.
+
+```
+out = (1 - alpha)*in0 + alpha*in1
+```
+
+Example with light purple (red=0.77, green=0.54, blue=0.87):
+![Purple original](images/purple-original.png)
+
+The degenerate image is the grayscale image, which is the luminance value of the pixel (recall, [color to grayscale](https://en.wikipedia.org/wiki/Grayscale#Converting_color_to_grayscale)):
+```
+luminance = 0.2126*red + 0.7152*green + 0.072*blue
+```
+
+For our light purple, calculating the luminance value:
+```python
+light_purple = Pixel(red=0.77, green=0.54, blue=0.87)
+luminance = 0.2126*light_purple.red + 0.7152*light_purple.green + 0.072*light_purple.blue
+> ~0.61
+```
+We roughly get luminance=0.61.
+
+To get a more saturated purple, we extrapolate using an `alpha` value greater than 1.
+Extrapolating with `alpha=2`:
+```python
+# in0 is our degenerate image, which is grayscale in this case
+# in0 is the luminance value of the pixel
+# in1 is the orignal pixel value
+# out = (1-alpha)*in0 + alpha*in1
+# luminance for light_purple = 0.61
+out_red = (1-2)*0.61 + 2*light_purple.red
+> ~0.93
+out_green = (1-2)*0.61 + 2*light_purple.green
+> ~0.47
+out_blue = (1-2)*0.61 + 2*light_purple.blue
+# Here we have to clamp the value since it is greater than 1.0
+> ~1.87
+> 1.0 
+```
+
+Original purple: Pixel(red=0.77, green=0.54, blue=0.87)
+Saturated purple: Pixel(red=0.93, green=0.47, blue=1.0)
+
+It is indeed more saturated!
+![Saturated purple](images/purple-saturated.png)
+
+Doing this napkin math by hand was very helpful.
+
 ## Etsy
 
 ```javascript
