@@ -100,6 +100,41 @@ Makes sense, the function pointers are not calculated before the loader call.
 
 ![Rectangle](images/rectangle.png)
 
+## Exercises
+
+### Two triangles next to each other
+
+```cpp
+    float vertices[] = {
+        // First triangle
+        -0.6f, 0.0f, 0.0f, // bottom-left
+        -0.45f, 0.3f, 0.0f, // top
+        -0.3f, 0.0f, 0.0f, // bottom-right
+        // Second triangle
+        -0.1f, 0.0f, 0.0f, // bottom-right
+        0.05f, 0.3f, 0.0f, // top
+        0.2f, 0.0f, 0.0f // bottom-right
+    };
+    unsigned int numVertices = 6;
+```
+Keep vertices normalized to `[-1, 1]`!!
+
+Comment out rectangle logic (since they write to th same `GL_ARRAY_BUFFER`).
+
+Also need to comment out drawing any Elements (seems to affect the triangle vertices...)
+```cpp
+glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
+```
+
+Enable/uncomment:
+```cpp
+glDrawArrays(GL_TRIANGLES, startTriangleIndex, numVertices);
+```
+
+![Two triangles](images/two-triangles.png)
+
+### Two triangles with separate VAO and VBO
+
 ## Misc Notes
 * It's very common to set a value at some memory location (when calling a function) than to return the value.
     * Stateful vs. stateless?

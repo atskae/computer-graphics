@@ -113,7 +113,7 @@ int main(int argc, char* argv[]) {
     // Draw both front and back of the primitive shape
     //  and only draw the lines of the primitives.
     // GL_FILL would draw primitives with the fill color
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     
     // Specify window to OpenGL
     // Left x-coordinate of the viewport
@@ -143,17 +143,32 @@ int main(int argc, char* argv[]) {
     GLfloat green = 0.40f;
     GLfloat blue = 0.42f;
 
-    // 2D triangle
-    // We keep the z-coordinate (depth) at 0.0 to create a 2D triangle in a 3D scene
-    // Three 3D coordinates
-    float vertices[] = {
-        -0.5f, -0.5f, 0.0f, // bottom-left
-        0.5f, -0.5f, 0.0f, // bottom-right
-        0.0f, 0.5f, 0.0f // top
-    };
-    // The index to start in the vertices array
+    //// 2D triangle
     int startTriangleIndex = 0;
-    unsigned int numVertices = 3;
+    
+    //// We keep the z-coordinate (depth) at 0.0 to create a 2D triangle in a 3D scene
+    //// Three 3D coordinates
+    //float vertices[] = {
+    //    -0.5f, -0.5f, 0.0f, // bottom-left
+    //    0.5f, -0.5f, 0.0f, // bottom-right
+    //    0.0f, 0.5f, 0.0f // top
+    //};
+    //// The index to start in the vertices array
+    //unsigned int numVertices = 3;
+
+    // Two triangles
+    // Normalized vertices [-1, 1]
+    float vertices[] = {
+        // First triangle
+        -0.6f, 0.0f, 0.0f, // bottom-left
+        -0.45f, 0.3f, 0.0f, // top
+        -0.3f, 0.0f, 0.0f, // bottom-right
+        // Second triangle
+        -0.1f, 0.0f, 0.0f, // bottom-right
+        0.05f, 0.3f, 0.0f, // top
+        0.2f, 0.0f, 0.0f, // bottom-right
+    };
+    unsigned int numVertices = 6;
 
     // Rectangle using an Element Buffer Object (EBO)
     // The z-coordinates are zero to keep it 2D in a 3D space
@@ -217,10 +232,10 @@ int main(int argc, char* argv[]) {
     // The fourth argument specifies how the GPU should manage the data
     // GL_STATIC_DRAW is best for data that doesn't change much and is read many times
     // If the data changes a lot, we'd use GL_DYNAMIC_DRAW
-    //glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     
     // Use the rectangle vertices instead
-    glBufferData(GL_ARRAY_BUFFER, sizeof(rectangle_vertices), rectangle_vertices, GL_STATIC_DRAW);
+    //glBufferData(GL_ARRAY_BUFFER, sizeof(rectangle_vertices), rectangle_vertices, GL_STATIC_DRAW);
     
     // Do the same for the Element Buffer Object
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -316,11 +331,11 @@ int main(int argc, char* argv[]) {
 
         // Draw the triangle!!!!!
         // Draw a primitive, in this case a triangle
-        //glDrawArrays(GL_TRIANGLES, startTriangleIndex, numVertices);
+        glDrawArrays(GL_TRIANGLES, startTriangleIndex, numVertices);
 
         // Draw a rectangle from the Element Buffer Object that is currently bound
         // The last argument is the starting index of the indices array (...?)
-        glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
+        //glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
 
         /* Rendering end */
 
