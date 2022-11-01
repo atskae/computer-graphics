@@ -209,6 +209,31 @@ I changed the color to pink to, change it  up a bit:
 
 ![Separate VAO and VBO](images/two-triangles-separate-vao-vbo.png)
 
+### Two shader programs
+
+You create two shader programs. Both use the same vertex shader, but use a different fragment shader (which colors the triangle a different color):
+```cpp
+// For each different fragment shader
+// Create the main shader program, which will hold both the vertex shader and the fragment shader
+shaderPrograms[i] = glCreateProgram();
+glAttachShader(shaderPrograms[i], vertexShader);
+glAttachShader(shaderPrograms[i], fragmentShaders[i]);
+glLinkProgram(shaderPrograms[i]);
+```
+
+Then in the render loop, we just activate a different shader program for each triangle:
+```cpp
+// Set the shader program as the currently active shader program
+glUseProgram(shaderPrograms[i]);
+glBindVertexArray(VAO[i]);
+glDrawArrays(GL_TRIANGLES, startTriangleIndex, 3);
+```
+
+![Two shader programs](images/two-shader-programs.png)
+
+(I used the knowledge that I learned for the first time earlier this year that... red+green=yellow. No color picker used here to figure that out =D)
+
+
 ## Misc Notes
 * It's very common to set a value at some memory location (when calling a function) than to return the value.
     * Stateful vs. stateless?
