@@ -135,6 +135,75 @@ glDrawArrays(GL_TRIANGLES, startTriangleIndex, numVertices);
 
 ### Two triangles with separate VAO and VBO
 
+We could still use the same `vertices[]` array and just pass in pointers to the starting vertex for each separate triangle
+```cpp
+    float vertices[] = {
+        // First triangle
+        -0.6f, 0.0f, 0.0f, // bottom-left
+        -0.45f, 0.3f, 0.0f, // top
+        -0.3f, 0.0f, 0.0f, // bottom-right
+        // Second triangle
+        -0.1f, 0.0f, 0.0f, // bottom-right
+        0.05f, 0.3f, 0.0f, // top
+        0.2f, 0.0f, 0.0f, // bottom-right
+    };
+```
+
+We need to make the VAOs and VBOs set the unique IDs into an array:
+
+```cpp
+    unsigned int VAO[2];
+    glGenVertexArrays(2, VAO);
+```
+
+We create an array of 2 since we have two triangles, each with a separate VAO. Same for the VBO:
+
+```cpp
+    unsigned int VBO[2];
+    glGenBuffers(2, VBO);
+```
+Since we could only have one VAO and VBO active at the same time, we draw each triangle separately:
+```cpp
+// Iterate through each triangle
+for (int i=0; i<2; i++) {
+    // Bind the VAO, activate for drawing
+    glBindVertexArray(VAO[i]);
+    
+    // Bind the VBO, activate for drawing 
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[i]);
+    
+    // Copy this triangle's vertex data
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*9, &vertices[i*9], GL_STATIC_DRAW);
+
+    // Specify to OpenGL how to interpret the vertex data
+    // This is applied to the currently active VBO specified in BindBuffer()
+    glVertexAttribPointer(
+        vertexAttributeLocation,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(float) * 3,
+        (void*)0
+    );
+
+    // Enable the vertex attributes that we just configured
+    glEnableVertexAttribArray(vertexAttributeLocation);
+
+    // Draw the current triangle!!!!!
+    glDrawArrays(GL_TRIANGLES, startTriangleIndex, numVertices);
+}
+```
+
+There are 9 floating point values for each triangle:
+
+```cpp
+glBufferData(GL_ARRAY_BUFFER, sizeof(float)*9, &vertices[i*9], GL_STATIC_DRAW);
+```
+
+I changed the color to pink to, change it  up a bit:
+
+![Separate VAO and VBO](images/two-triangles-separate-vao-vbo.png)
+
 ## Misc Notes
 * It's very common to set a value at some memory location (when calling a function) than to return the value.
     * Stateful vs. stateless?
