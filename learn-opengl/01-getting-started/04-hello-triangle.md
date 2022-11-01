@@ -162,36 +162,41 @@ We create an array of 2 since we have two triangles, each with a separate VAO. S
     unsigned int VBO[2];
     glGenBuffers(2, VBO);
 ```
-Since we could only have one VAO and VBO active at the same time, we draw each triangle separately:
+
+(edit) TIL you can actually setup the VAOs and VBOs outside the render loop...
+
+Create the VAOs and VBOs outside the render loop. Bind and configure each triangle accordingly.
+For each triangle:
 ```cpp
-// Iterate through each triangle
-for (int i=0; i<2; i++) {
-    // Bind the VAO, activate for drawing
-    glBindVertexArray(VAO[i]);
-    
-    // Bind the VBO, activate for drawing 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[i]);
-    
-    // Copy this triangle's vertex data
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*9, &vertices[i*9], GL_STATIC_DRAW);
+// Bind the VAO
+glBindVertexArray(VAO[i]);
 
-    // Specify to OpenGL how to interpret the vertex data
-    // This is applied to the currently active VBO specified in BindBuffer()
-    glVertexAttribPointer(
-        vertexAttributeLocation,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        sizeof(float) * 3,
-        (void*)0
-    );
+// Bind the VBO, which reflects the vertices of this triangle
+glBindBuffer(GL_ARRAY_BUFFER, VBO[i]);
 
-    // Enable the vertex attributes that we just configured
-    glEnableVertexAttribArray(vertexAttributeLocation);
+// Copy over the triangle vertices data to the VBO
+glBufferData(GL_ARRAY_BUFFER, sizeof(float)*9, &vertices[i*9], GL_STATIC_DRAW);
 
-    // Draw the current triangle!!!!!
-    glDrawArrays(GL_TRIANGLES, startTriangleIndex, numVertices);
-}
+// Specify to OpenGL how to interpret the vertex data in the vertex shader
+glVertexAttribPointer(
+    vertexAttributeLocation,
+    3,
+    GL_FLOAT,
+    GL_FALSE,
+    sizeof(float) * 3,
+    (void*)0
+);
+
+// Enable the vertex attribute in the vertex shader `(location = 0)`
+glEnableVertexAttribArray(vertexAttributeLocation);
+```
+
+Then in the render loop, all you have to do is re-bind the VAO of the triangle before drawing it:
+```cpp
+// inside render loop
+glBindVertexArray(VAO[i]);
+// Zeichnen!
+glDrawArrays(GL_TRIANGLES, startTriangleIndex, 3);
 ```
 
 There are 9 floating point values for each triangle:

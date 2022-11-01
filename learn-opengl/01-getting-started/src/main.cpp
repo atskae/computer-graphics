@@ -214,6 +214,53 @@ int main(int argc, char* argv[]) {
     unsigned int VBO[2];
     // Creates a buffer object behind the scenes, and assigns an ID to it
     glGenBuffers(2, VBO);
+    
+    // Location of input argument in the vertex shader program
+    unsigned int vertexAttributeLocation = 0;
+
+    // Set up the VAO and VBO for each triangle 
+    for (int i=0; i<2; i++) {
+        // Bind the VAO
+        // After this bind call, any functions related to vertex buffer objects (VBO) will store
+        //  its state inside this VAO
+        glBindVertexArray(VAO[i]);
+        
+        // Specify that the newly created buffer object is specifically a vertex buffer object
+        // This binds the GL_ARRAY_BUFFER to the one we created, VBO
+        // Any operations on the GL_ARRAY_BUFFER will configure our VBO object
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[i]);
+        
+        // Copy over the triangle vertices data to the VBO
+        // The fourth argument specifies how the GPU should manage the data
+        // GL_STATIC_DRAW is best for data that doesn't change much and is read many times
+        // If the data changes a lot, we'd use GL_DYNAMIC_DRAW
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float)*9, &vertices[i*9], GL_STATIC_DRAW);
+
+        // Specify to OpenGL how to interpret the vertex data in the vertex shader
+        // This is applied to the currently active VBO specified in BindBuffer()
+        glVertexAttribPointer(
+            // The value we specified in our vertex shader, `layout (location = 0)`
+            // Where to find the memory location of the vec3 input to the vertex shader
+            vertexAttributeLocation,
+            // The size of the vertex shader's input (vec3 aPos)
+            3,
+            // The type of the value in the input vec3
+            GL_FLOAT,
+            // Indicate whether the data should be normalized ([-1, 1] for signed values, [0, 1] for positive)
+            GL_FALSE,
+            // Stride, the space between vertex attributes, in bytes
+            // If we specify 0, OpenGL tries to figure this out itself
+            //  This only works if the data is tightly-packed (no padding between attributes)
+            sizeof(float) * 3,
+            //0,
+            // Where the data starts in the buffer
+            // Since the data starts at the beginning of the buffer, we use 0
+            (void*)0
+        );
+    
+        // Enable the vertex attribute in the vertex shader `(location = 0)`
+        glEnableVertexAttribArray(vertexAttributeLocation);
+    }
 
     // Element buffer object
     unsigned int EBO;
@@ -227,9 +274,7 @@ int main(int argc, char* argv[]) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    // Location of input argument in the vertex shader program
-    unsigned int vertexAttributeLocation = 0;
-
+    
     // Assign a unique ID to the fragment shader
     unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     // Attach the unique ID to the shader source code
@@ -285,57 +330,20 @@ int main(int argc, char* argv[]) {
         
         // Set the shader program as the currently active shader program
         glUseProgram(shaderProgram);
-
-        // Iterate through each triangle
-        for (int i=0; i<2; i++) {
-            // Bind the VAO
-            // After this bind call, any functions related to vertex buffer objects (VBO) will store
-            //  its state inside this VAO
-            glBindVertexArray(VAO[i]);
-            
-            // Specify that the newly created buffer object is specifically a vertex buffer object
-            // This binds the GL_ARRAY_BUFFER to the one we created, VBO
-            // Any operations on the GL_ARRAY_BUFFER will configure our VBO object
-            glBindBuffer(GL_ARRAY_BUFFER, VBO[i]);
-            
-            // Copy over the triangle vertices data to the VBO
-            // The fourth argument specifies how the GPU should manage the data
-            // GL_STATIC_DRAW is best for data that doesn't change much and is read many times
-            // If the data changes a lot, we'd use GL_DYNAMIC_DRAW
-            glBufferData(GL_ARRAY_BUFFER, sizeof(float)*9, &vertices[i*9], GL_STATIC_DRAW);
-
-            // Specify to OpenGL how to interpret the vertex data
-            // This is applied to the currently active VBO specified in BindBuffer()
-            glVertexAttribPointer(
-                // The value we specified in our vertex shader, `layout (location = 0)`
-                // Where to find the memory location of the vec3 input to the vertex shader
-                vertexAttributeLocation,
-                // The size of the vertex shader's input (vec3 aPos)
-                3,
-                // The type of the value in the input vec3
-                GL_FLOAT,
-                // Indicate whether the data should be normalized ([-1, 1] for signed values, [0, 1] for positive)
-                GL_FALSE,
-                // Stride, the space between vertex attributes, in bytes
-                // If we specify 0, OpenGL tries to figure this out itself
-                //  This only works if the data is tightly-packed (no padding between attributes)
-                sizeof(float) * 3,
-                //0,
-                // Where the data starts in the buffer
-                // Since the data starts at the beginning of the buffer, we use 0
-                (void*)0
-            );
-    
-            // Enable the vertex attributes that we just configured
-            glEnableVertexAttribArray(vertexAttributeLocation);
-
-            // Draw the triangle!!!!!
-            // Draw a primitive, in this case a triangle
-            glDrawArrays(GL_TRIANGLES, startTriangleIndex, numVertices);
-        }
-
+        
         // (re) activate the EBO
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        
+        // Draw each triangle!!!!!
+        // Draw a primitive, in this case a triangle
+        for (int i=0; i<2; i++) {
+            // Activate the VAO for this triangle
+            // The VAO already has the reference to the VBO which contains this triangle's vertices
+            //  so we don't have to activate the VBO again
+            glBindVertexArray(VAO[i]);
+            // Zeichnen!
+            glDrawArrays(GL_TRIANGLES, startTriangleIndex, 3);
+        }
 
         // Draw a rectangle from the Element Buffer Object that is currently bound
         // The last argument is the starting index of the indices array (...?)
