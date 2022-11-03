@@ -245,6 +245,27 @@ It is indeed more saturated!
 
 Doing this napkin math by hand was very helpful.
 
+### White Balance
+
+**White balance** is making an object is supposed to be white to appear more white in the image (as opposed to a light shade of another color).
+
+[**Color balance**](https://en.wikipedia.org/wiki/Color_balance) in general is the global adjustment of the color channels: red, green, and bluehttps://en.wikipedia.org/wiki/Color_balance#Von_Kries.27s_method, to render specific colors more *correctly* (ex. a red object should be red).
+
+[Von Kries method](https://en.wikipedia.org/wiki/Color_balance#Von_Kries.27s_method)
+* Johannes von Kries pioneered the theory of the three cones in the eye, each cone responsible for capturing a class of wavelengths of color.
+* [LMS color space](https://en.wikipedia.org/wiki/LMS_color_space)
+  * Stands for: long, medium, and short, which correspond to the wavelengths that each cone in the eye is stimulated by  
+* Review von ages ago:
+  * Rods help us see in dim light, cones help us see in lighter situations, distinguishing colors
+  * [*Tristimulus values*](https://en.wikipedia.org/wiki/CIE_1931_color_space#Tristimulus_values): the three primary colors chosen in a particular color space; can represent any color in that color space using the tristimulus values
+    * Ex) CIE XYZ, XYZ are the tristimulus values
+    * Ex) LMS color space, LMS are the tristimulus values
+* [Chromatic adaptation](https://en.wikipedia.org/wiki/Chromatic_adaptation)
+  * We (our eyes) understand the object's underlying color, despite changes to the light source's color that affects the object's color (color constancy)
+    * Ex) a red apple looks red to us in daylight and at night, but a camera would percieve the apple has having a different color depending on the lighting
+    * When a camera adjusts the color of an object based on the current lighting conditions, this is called *color balance*
+
+
 ## Etsy
 
 ```javascript
