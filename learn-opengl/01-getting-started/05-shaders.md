@@ -71,4 +71,44 @@ The fragment shader *must* have a `vec4` as an output
 
 **Uniforms** are another way to pass data from the CPU to the shaders on the GPU.
 * Uniform variables are *global*: accessible by any shader at any stage
+* Also useful if we want to change a value in a shader in each render loop iteration:
+```cpp
+// Inside render loop
+// Get the index/location of the uniform variable in the shader program
+int vertexColorLocation = glGetUniformLocation(shaderPrograms[i], "ourColor");
+// Compute some color
+float redValue = ...
+// Set the color to the uniform variable in the active shader
+glUniform4f(vertexColorLocation, redValue, 0.0f, 0.0f, 1.0f);
+```
 
+## More Attributes
+
+We could also just send the color values through the `vertices` array and VBO.
+
+We assign a color to each vertice of the triangle:
+```cpp
+    float vertices[] = {
+        // First triangle
+        // Positions            // Colors
+        -0.6f, 0.0f, 0.0f,      1.0f, 0.0f, 0.0f, // bottom-left
+        -0.45f, 0.3f, 0.0f,     0.0f, 1.0f, 0.0f, // top
+        -0.3f, 0.0f, 0.0f,      0.0f, 0.0f, 1.0f, // bottom-right
+    // ...
+    }
+```
+
+The vertex shader needs to have two input values (vertex attributes):
+```glsl
+    "layout (location = 0) in vec3 aPos;\n"
+    "layout (location = 1) in vec3 aColor;\n"
+```
+
+Then make a call to `glVertexAttribPointer()` to configure the `aColor` vertex attribute (at `location = 1`) in the vertex shader.
+
+(I still have two tiny triangles):
+
+![Rainbow triangle](images/rainbow-triangle.png)
+
+We only supplied three colors to the fragment shader (1 color per vertex), but a shade of colors is generated.
+* The fragment shader is executing **fragment interpolation** on its input attributes
