@@ -12,12 +12,19 @@ const char* vertexShaderSource = "#version 460 core\n" // OpenGL version 4.6 wit
     // We name the input variable `aPos`
     // `layout` allows us to define the location of the input variable
     "layout (location = 0) in vec3 aPos;\n"
+    // The color to send to the fragment shader
+    "out vec4 fragmentShaderColor;\n"
+    
     "void main()\n"
     "{\n"
     // We set the return value to `gl_Position`
     // Here we are converting the 3D input coordinate to a 4D output coordinate
     // The fourth coordinate is used for `perspective division`
     "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0f);\n"
+    // Set the color as the output to the vertex shader
+    // This becomes the input to the fragment shader
+    // Salmon color
+    "   fragmentShaderColor = vec4(1.0f, 0.54f, 0.42f, 1.0f);"  
     // Null-terminator for string...
     "}\0";
 
@@ -25,6 +32,9 @@ const char* vertexShaderSource = "#version 460 core\n" // OpenGL version 4.6 wit
 // Fragement shader is responsible for calculating the colors
 const char* fragmentShaderSource = "#version 460 core\n"
     // Fragment shader's only required output, a vector of size 4
+    // Input passed in from the vertex shader
+    "in vec4 fragmentShaderColor;\n"
+    
     "out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
@@ -33,7 +43,9 @@ const char* fragmentShaderSource = "#version 460 core\n"
     // Minty color
     //"   FragColor = vec4(0.58f, 0.96f, 0.84f, 1.0f);\n"
     // Pink 
-    "   FragColor = vec4(0.90f, 0.5f, 0.85f, 1.0f);\n"
+    //"   FragColor = vec4(0.90f, 0.5f, 0.85f, 1.0f);\n"
+    // Use color from the vertex shader
+    "   FragColor = fragmentShaderColor;\n"
     "}\0";
 
 // Fragment shader source code that colors the object yellow
