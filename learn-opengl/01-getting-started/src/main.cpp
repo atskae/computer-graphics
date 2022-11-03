@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -34,7 +35,10 @@ const char* fragmentShaderSource = "#version 460 core\n"
     // Fragment shader's only required output, a vector of size 4
     // Input passed in from the vertex shader
     "in vec4 fragmentShaderColor;\n"
-    
+
+    // Color that is recieved from the CPU
+    "uniform vec4 ourColor;\n" 
+
     "out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
@@ -45,7 +49,7 @@ const char* fragmentShaderSource = "#version 460 core\n"
     // Pink 
     //"   FragColor = vec4(0.90f, 0.5f, 0.85f, 1.0f);\n"
     // Use color from the vertex shader
-    "   FragColor = fragmentShaderColor;\n"
+    "   FragColor = ourColor;\n"
     "}\0";
 
 // Fragment shader source code that colors the object yellow
@@ -371,7 +375,31 @@ int main(int argc, char* argv[]) {
         for (int i=0; i<2; i++) {
             // Set the shader program as the currently active shader program
             glUseProgram(shaderPrograms[i]);
-            
+
+            // Change the color of one triangle on each iteration of the render loop
+            if (i==0) {
+                // Compute a color here and send the color to the fragment shader
+                //  by setting the uniform variable in that shader
+                
+                // Get the number of seconds that elapsed since GLFW was initialized
+                float timeValue = glfwGetTime();
+
+                // Compute a value between [0.0, 1.0]
+                // sin() returns a value from [-1, 1], so we have to divide by 2 and add 0.5
+                //  to keep the range between 0 and 1
+                float redValue = (sin(timeValue) / 2.0f) + 0.5f;
+
+                // Get the index/location of the uniform variable in the shader program
+                int vertexColorLocation = glGetUniformLocation(shaderPrograms[i], "ourColor");
+                if (vertexColorLocation == -1) {
+                    std::cerr << "Could not find location of uniform variable `ourColor`" << std::endl;
+                    continue;
+                }
+
+                // Set the color to the uniform variable in the active shader
+                glUniform4f(vertexColorLocation, redValue, 0.0f, 0.0f, 1.0f);
+            }
+
             // Activate the VAO for this triangle
             // The VAO already has the reference to the VBO which contains this triangle's vertices
             //  so we don't have to activate the VBO again

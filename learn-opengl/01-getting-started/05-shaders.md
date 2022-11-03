@@ -67,3 +67,8 @@ The fragment shader *must* have a `vec4` as an output
 * It must generate a color
 * If a color is missing, OpenGL will just render the color as black or white
 
+## Uniforms
+
+**Uniforms** are another way to pass data from the CPU to the shaders on the GPU.
+* Uniform variables are *global*: accessible by any shader at any stage
+
