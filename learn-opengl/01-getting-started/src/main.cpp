@@ -193,9 +193,9 @@ int main(int argc, char* argv[]) {
     float vertices[] = {
         // First triangle
         // Positions            // Colors
-        -0.8f, 0.0f, 0.0f,      1.0f, 0.0f, 0.0f, // bottom-left
-        -0.55f, 0.55f, 0.0f,     0.0f, 1.0f, 0.0f, // top
-        -0.3f, 0.0f, 0.0f,      0.0f, 0.0f, 1.0f, // bottom-right
+        -0.8f, 0.0f, 0.0f,      1.0f, 1.0f, 0.0f, // bottom-left
+        -0.55f, 0.55f, 0.0f,     0.0f, 1.0f, 1.0f, // top
+        -0.3f, 0.0f, 0.0f,      1.0f, 0.0f, 1.0f, // bottom-right
         // Second triangle
         -0.1f, 0.0f, 0.0f,      0.0f, 0.0f, 1.0f,   // bottom-right
         0.05f, 0.3f, 0.0f,      0.0f, 1.0f, 0.0f,   // top

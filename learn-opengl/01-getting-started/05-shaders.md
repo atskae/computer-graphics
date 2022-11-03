@@ -112,3 +112,17 @@ Then make a call to `glVertexAttribPointer()` to configure the `aColor` vertex a
 
 We only supplied three colors to the fragment shader (1 color per vertex), but a shade of colors is generated.
 * The fragment shader is executing **fragment interpolation** on its input attributes
+
+Creating a cyan-magenta-yellow triangle (not in the same order though):
+```cpp
+    float vertices[] = {
+        // First triangle
+        // Positions            // Colors
+        -0.8f, 0.0f, 0.0f,      1.0f, 1.0f, 0.0f, // bottom-left
+        -0.55f, 0.55f, 0.0f,     0.0f, 1.0f, 1.0f, // top
+        -0.3f, 0.0f, 0.0f,      1.0f, 0.0f, 1.0f, // bottom-right
+```
+
+![CMY triangle](images/cmy-triangle.png)
+
+Prettyyyy 😍
