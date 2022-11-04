@@ -264,6 +264,30 @@ Doing this napkin math by hand was very helpful.
   * We (our eyes) understand the object's underlying color, despite changes to the light source's color that affects the object's color (color constancy)
     * Ex) a red apple looks red to us in daylight and at night, but a camera would percieve the apple has having a different color depending on the lighting
     * When a camera adjusts the color of an object based on the current lighting conditions, this is called *color balance*
+* You divide each pixel by *what is believed to be white*
+  * (I think) Whatever color is believed to be white, a pixel with this color will map to pure white, and all colors will be relative/ratio to this chosen color for white (how far is the image pixel from the chosen color for white). 
+  * `chosen_color_for_white`/`chosen_color_for_white` = 1
+    * RBG(1,1,1) = pure white
+
+Preguntas:
+  * Why does the image have to be in LMS? ~~Why doesn't RGB work (well) here?~~
+    * I tried to compare the result images (RGB vs LMS) and I can't tell the difference
+    * I used `town.png` with white=`#d7cab3`
+      
+      Original:
+      ![Town original](images/town.png)
+      
+      White-balanced with RGB:
+      ![Town RGB](images/town-rgb-white-balanced.png)
+
+      White-balanced with LMS:
+      ![Town LMS](images/town-lms-white-balanced.png)
+
+    🤷‍♀️
+
+More interesting tangents:
+* [LMS-based Color bindness simulation](https://daltonlens.org/understanding-cvd-simulation/)
+* [Simulating color blindness deficiencies](https://daltonlens.org/opensource-cvd-simulation/)
 
 
 ## Etsy
@@ -278,6 +302,15 @@ let lightness of Object.keys(cdf)
 ```
 
 `of` will get you the keys you added. `in`...??? Was zum Teufel OTL
+
+---divider---
+
+Why doesn't this give an error?
+```javascript
+const pixel = image.getPixel(x, y);
+// pixel is const, so I shouldn't be able to modify this...
+pixel.data[0] = 0.0;
+```
 
 ## Resources
 

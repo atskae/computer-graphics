@@ -413,7 +413,36 @@ Filters.whiteBalanceFilter = function(image, white) {
     // ----------- STUDENT CODE BEGIN ------------
     // ----------- Our reference solution uses 23 lines of code.
     // ----------- STUDENT CODE END ------------
-    Gui.alertOnce ('whiteBalanceFilter is not implemented yet');
+    console.log("White-balance, white: " + white.data);
+    // Convert to LMS color space
+    let white_lms = white.rgbToXyz().xyzToLms();
+    for (let x = 0; x < image.width; x++) {
+        for (let y = 0; y < image.height; y++) {
+            let pixel = image.getPixel(x, y);
+            
+            // Convert pixel to LMS
+            //console.log("RGB: " + pixel_lms.data);
+            let pixel_lms = pixel.rgbToXyz().xyzToLms();
+            //console.log("LMS: " + pixel_lms.data);
+            
+            // Divide each color channel by the pixel that is believed to be white
+            for (let c=0; c<3; c++) {
+                //pixel.data[c] /= white.data[c];
+                pixel_lms.data[c] /= white_lms.data[c];
+            }
+        
+            // Convert pixel back to RGB
+            //console.log("LMS white-balanced: " + pixel.data);
+            pixel = pixel_lms.lmsToXyz().xyzToRgb();
+            
+            // If a pixel color was brighter/greater than the chosen white, it's value out of range
+            // Clamp the values that are greater than 1.0/255
+            pixel.clamp();
+
+            //console.log("RGB white-balanced: " + pixel.data);
+            image.setPixel(x, y, pixel);
+        }
+    }
     return image;
 };
 
