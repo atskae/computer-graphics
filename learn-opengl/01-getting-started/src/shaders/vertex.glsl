@@ -15,7 +15,7 @@ void main() {
 // We set the return value to `gl_Position`
 // Here we are converting the 3D input coordinate to a 4D output coordinate
 // The fourth coordinate is used for `perspective division`
-    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0f);
+    gl_Position = vec4(-aPos.x, -aPos.y, -aPos.z, 1.0f);
 // Set the color as the output to the vertex shader
 // This becomes the input to the fragment shader
 // Color that was recieved from the CPU-side

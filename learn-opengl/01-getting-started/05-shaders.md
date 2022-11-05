@@ -149,3 +149,12 @@ It compiled on first try whaaaaat.
 I got rid of the other triangle:
 
 ![The one and only CMY triangle](images/one-cmy-triangle.png)
+
+## Exercises
+
+Make the triangle upside down in the vertex shader:
+```glsl
+    gl_Position = vec4(-aPos.x, -aPos.y, -aPos.z, 1.0f);
+```
+
+![Upside down](images/upside-down.png)
