@@ -126,3 +126,14 @@ Creating a cyan-magenta-yellow triangle (not in the same order though):
 ![CMY triangle](images/cmy-triangle.png)
 
 Prettyyyy 😍
+
+## Shader Class
+
+I hate this:
+```cpp
+class Shader
+{ // <--- !!! a bracket on its own line, OTL
+public: // <--- unindented, O...TL
+  /// ...
+};
+```
