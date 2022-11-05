@@ -183,3 +183,18 @@ void main() {
 
 -0.3:
 ![Horizontal shift -0.3](images/horizontal-minus-0.3.png)
+
+Position as color:
+
+![Position as color](images/position-as-color-error.png)
+
+~~I'm guessing it's black because a negative color channel is invalid, so it just defaults to black on error.~~
+Color values are automatically clamped between [0, 1], so a negative color channel value clamps to 0.
+~~But then I don't get why we don't see any red. `rbg(0.5, -0.5, 0)` should map to `rgb(0.5, 0, 0)` ???~~ Oops left this  line of code in:
+```
+shaderProgram.setFloat("horizontalOffset", -0.3f);
+```
+
+It's correct now!
+
+![Position as color](images/position-as-color.png)

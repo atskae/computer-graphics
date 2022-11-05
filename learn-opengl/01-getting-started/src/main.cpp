@@ -107,10 +107,16 @@ int main(int argc, char* argv[]) {
     int startTriangleIndex = 0;
     
     float vertices[] = {
+        // CMY triangle
+        //// Positions            // Colors
+        //-0.5f, -0.5f, 0.0f,     1.0f, 1.0f, 0.0f, // bottom-left
+        //0.0f, 0.5f, 0.0f,       0.0f, 1.0f, 1.0f, // top
+        //0.5f, -0.5f, 0.0f,      1.0f, 0.0f, 1.0f, // bottom-right
+        // RGB triangle
         // Positions            // Colors
-        -0.5f, -0.5f, 0.0f,     1.0f, 1.0f, 0.0f, // bottom-left
-        0.0f, 0.5f, 0.0f,       0.0f, 1.0f, 1.0f, // top
-        0.5f, -0.5f, 0.0f,      1.0f, 0.0f, 1.0f, // bottom-right
+        -0.5f, -0.5f, 0.0f,     1.0f, 0.0f, 0.0f, // bottom-left
+        0.0f, 0.5f, 0.0f,       0.0f, 1.0f, 0.0f, // top
+        0.5f, -0.5f, 0.0f,      0.0f, 0.0f, 1.0f, // bottom-right
     };
 
     // Rectangle using an Element Buffer Object (EBO)
@@ -253,7 +259,7 @@ int main(int argc, char* argv[]) {
         shaderProgram.use(); 
 
         // Add a horizontal offset
-        shaderProgram.setFloat("horizontalOffset", -0.3);
+        shaderProgram.setFloat("horizontalOffset", 0.0f);
 
         glBindVertexArray(VAO);
         

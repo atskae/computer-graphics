@@ -11,16 +11,21 @@ layout (location = 1) in vec3 aColor;
 // Offset to add to the x-coordinate
 uniform float horizontalOffset;
 
-// The color to send to the fragment shader
+// Values to send to the fragment shader
 out vec4 fragmentShaderColor;
+out vec4 vertexPosition;
 
 void main() {
-// We set the return value to `gl_Position`
-// Here we are converting the 3D input coordinate to a 4D output coordinate
-// The fourth coordinate is used for `perspective division`
-    gl_Position = vec4(aPos.x + horizontalOffset, aPos.y, aPos.z, 1.0f);
-// Set the color as the output to the vertex shader
-// This becomes the input to the fragment shader
-// Color that was recieved from the CPU-side
+    // We set the return value to `gl_Position`
+    // Here we are converting the 3D input coordinate to a 4D output coordinate
+    // The fourth coordinate is used for `perspective division`
+    vec4 position = vec4(aPos.x + horizontalOffset, aPos.y, aPos.z, 1.0f); 
+    gl_Position = position;
+    
+    // Set the color as the output to the vertex shader
+    // This becomes the input to the fragment shader
+    // Color that was recieved from the CPU-side
     fragmentShaderColor = vec4(aColor, 1.0f);
+    
+    vertexPosition = position;
 }
