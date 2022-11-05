@@ -137,3 +137,15 @@ public: // <--- unindented, O...TL
   /// ...
 };
 ```
+
+[There's no offical file extension for a shader file...](https://www.reddit.com/r/opengl/comments/n2q0xn/preferred_file_extensions_for_shaders/)
+
+I'll go with `.glsl` because... source code files are usually `<purpose>.<programming language>`...
+
+[People also suggest `.vert` and `.frag`](https://stackoverflow.com/questions/6432838/what-is-the-correct-file-extension-for-glsl-shaders)... hm.
+
+It compiled on first try whaaaaat.
+
+I got rid of the other triangle:
+
+![The one and only CMY triangle](images/one-cmy-triangle.png)

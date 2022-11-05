@@ -23,6 +23,9 @@ class Shader {
         // Use/activate the shader
         void use();
 
+        // Getters
+        unsigned int getProgramId() const { return this->programId; }
+
         // Setters for uniform variables (global variables in the shader program)
         // Templating these wouldn't help much since the OpenGL functions
         // are not templated
@@ -78,7 +81,6 @@ Shader::Shader(const char* vertexShaderPath, const char* fragmentShaderPath): pr
 
         // Convert the C++ string to a const char* for compilation
         const char* sourceCode = sourceCodeString.c_str();
-
         
         // Create an empty shader object and the unique ID assigned to the shader
         unsigned int shaderId = glCreateShader(shaderTypes[i]);
