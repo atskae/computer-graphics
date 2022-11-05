@@ -252,6 +252,9 @@ int main(int argc, char* argv[]) {
         // Activate the shader program
         shaderProgram.use(); 
 
+        // Add a horizontal offset
+        shaderProgram.setFloat("horizontalOffset", -0.3);
+
         glBindVertexArray(VAO);
         
         // Zeichnen!

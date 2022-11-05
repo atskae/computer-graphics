@@ -158,3 +158,28 @@ Make the triangle upside down in the vertex shader:
 ```
 
 ![Upside down](images/upside-down.png)
+
+Horizontal shift in the render loop:
+```cpp
+// After shaderProgram.use()
+shaderProgram.setFloat("horizontalOffset", 0.3);
+```
+
+Vertex shader, add a uniform variable:
+```glsl
+// Offset to add to the x-coordinate
+uniform float horizontalOffset;
+```
+
+Then add the offset to the returned value:
+```glsl
+void main() {
+    gl_Position = vec4(aPos.x + horizontalOffset, aPos.y, aPos.z, 1.0f);
+//...
+```
+
++0.3:
+![Horizontal shift 0.3](images/horizontal-plus-0.3.png)
+
+-0.3:
+![Horizontal shift -0.3](images/horizontal-minus-0.3.png)
