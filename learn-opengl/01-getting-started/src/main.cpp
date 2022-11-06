@@ -4,6 +4,9 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+// Read in image files
+#include "stb_image.h"
+
 #include "shader.h"
 
 
@@ -118,6 +121,68 @@ int main(int argc, char* argv[]) {
         0.0f, 0.5f, 0.0f,       0.0f, 1.0f, 0.0f, // top
         0.5f, -0.5f, 0.0f,      0.0f, 0.0f, 1.0f, // bottom-right
     };
+
+    /* Textures */
+    
+    // The index of this array tells us which vertex *in the triangle*
+    //  that each texture coordinate in the textureCoordinates array maps to    
+    float textureCoordinates[] = {
+        0.0f, 0.0f, // bottom-left of texture image maps to the first vertex in the triangle above
+        1.0f, 0.0f, // bottom-right
+        0.5f, 1.0f  // top-center
+    };
+
+    // Read in the texture image
+    const char* textureFilename = "textures/container.jpg";
+    int width, height, numColorChannels;
+    // Reads in the image, and computes the width, height, and number of color channels in the image
+    unsigned char* textureImageData = stbi_load(textureFilename, &width, &height, &numColorChannels, 0);
+    if (!textureImageData) {
+        std::cerr << "Failed to load texture image: " << textureFilename << std::endl;
+        return 1;
+    }
+
+    // Create an OpenGL texture object, and get the unique ID assigned to the object
+    unsigned int textureId;
+    glGenTextures(1, &textureId);
+
+    // Bind/activate the texture object so subsequent 2D texure configurations will apply
+    // to the texture object we just created
+    glBindTexture(GL_TEXTURE_2D, textureId);
+
+    // Set the loaded texture image to the OpenGL texture object
+    glTexImage2D(
+        // Texture target
+        GL_TEXTURE_2D,
+        // Mipmap level - level of detail number
+        // n=0 is the original image, n is the nth downsized texture image
+        0,
+        // Image format to store the texture in
+        GL_RGB,
+        // Width and height of the *resulting* texture
+        width,
+        height,
+        // This value always had to be zero, due to legacy...
+        // What if we don't pass in zero...?
+        0,
+        // Format of the loaded texture image data
+        // We loaded a `.jpg` texture image as an unsigned char
+        GL_RGB,
+        GL_UNSIGNED_BYTE,
+        // Actual image data
+        textureImageData
+    );
+    
+    // Generate mipmaps for this texture
+    // Can do the equivalent for each image size by calling `glTexImage2D()`
+    //  for each mipmap level to generate
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    // Since the texture object has its own copy of the texture image data
+    //  we can free the loaded image
+    stbi_image_free(textureImageData);
+
+    /* Textures end */
 
     // Rectangle using an Element Buffer Object (EBO)
     // The z-coordinates are zero to keep it 2D in a 3D space
