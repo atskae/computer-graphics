@@ -122,6 +122,23 @@ int main(int argc, char* argv[]) {
         0.5f, -0.5f, 0.0f,      0.0f, 0.0f, 1.0f, // bottom-right
     };
 
+    // Rectangle using an Element Buffer Object (EBO)
+    // The z-coordinates are zero to keep it 2D in a 3D space
+    float rectangle_vertices[] = {
+        // Positions            // Colors               // Texture coordinates
+        0.5f, 0.5f, 0.0f,       1.0f, 1.0f, 0.0f,       1.0f, 1.0f, // top-right
+        0.5f, -0.5f, 0.0f,      0.0f, 1.0f, 1.0f,       1.0f, 0.0f, // top-right
+        -0.5f, -0.5f, 0.0f,     1.0f, 0.0f, 1.0f,       0.0f, 0.0f, // bottom-left
+        -0.5f, 0.5f, 0.0f,      1.0f, 1.0f, 0.0f,       0.0f, 1.0f  // bottom-right
+    };
+    // A list of triangle's (that make up the rectangle) vertices by index
+    // This create a rectangle split from top-left to bottom-right
+    unsigned int indices[] = {
+        0, 1, 3, // top-half triangle
+        1, 2, 3 // bottom-half-triangle
+    };
+    unsigned int numIndices = 6;
+
     /* Textures */
     
     // The index of this array tells us which vertex *in the triangle*
@@ -150,6 +167,16 @@ int main(int argc, char* argv[]) {
     // to the texture object we just created
     glBindTexture(GL_TEXTURE_2D, textureId);
 
+    // Configure how OpenGL will apply the texture with out-of-bounds coordinates
+    // Texture coordinate labels: (s,t,r)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // When the texture is minimized, linearly interpolate between the two closest minmaps
+    //  and sample the interpolated minmap level with linear interpolation
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    // When magnifying, stay on the same minmap level, and linearly interpolate the color value
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
     // Set the loaded texture image to the OpenGL texture object
     glTexImage2D(
         // Texture target
@@ -162,7 +189,7 @@ int main(int argc, char* argv[]) {
         // Width and height of the *resulting* texture
         width,
         height,
-        // This value always had to be zero, due to legacy...
+        // This value always has to be zero, due to legacy...
         // What if we don't pass in zero...?
         0,
         // Format of the loaded texture image data
@@ -183,23 +210,7 @@ int main(int argc, char* argv[]) {
     stbi_image_free(textureImageData);
 
     /* Textures end */
-
-    // Rectangle using an Element Buffer Object (EBO)
-    // The z-coordinates are zero to keep it 2D in a 3D space
-    float rectangle_vertices[] = {
-        0.5f, 0.5f, 0.0f, // top-right
-        -0.5f, 0.5f, 0.0f, // top-left
-        -0.5f, -0.5f, 0.0f, // bottom-left
-        0.5f, -0.5f, 0.0f // bottom-right
-    };
-    // A list of triangle's (that make up the rectangle) vertices by index
-    // This create a rectangle split from top-left to bottom-right
-    unsigned int indices[] = {
-        0, 1, 3, // top-half triangle
-        1, 2, 3 // bottom-half-triangle
-    };
-    unsigned int numIndices = 6;
-
+    
     // Vertex attribute object
     // Stores the state of glVertexAttribPointer() and related calls
     // Assigns a unique ID to the VAO object (created behind the scenes)
