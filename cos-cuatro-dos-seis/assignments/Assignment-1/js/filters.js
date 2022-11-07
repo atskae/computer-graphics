@@ -454,7 +454,135 @@ Filters.histogramMatchFilter = function(image, refImg) {
     // ----------- STUDENT CODE BEGIN ------------
     // ----------- Our reference solution uses 58 lines of code.
     // ----------- STUDENT CODE END ------------
-    Gui.alertOnce ('histogramMatchFilter is not implemented yet');
+    // Compute the histograms for both images
+    let images = [image, refImg];
+    let histograms = [{}, {}];
+    let min_lightness = [100, 100];
+    for (let i=0; i<2; i++) { // for each image
+        let img = images[i];
+        let histogram = histograms[i];
+        console.log("Image " + i + ": width=" + img.width + ", height=" + img.height);
+        for (let x=0; x<img.width; x++) {
+            for (let y=0; y<img.height; y++) {
+                const pixel_rgb = img.getPixel(x, y);
+                const pixel_hsl = pixel_rgb.rgbToHsl();
+                
+                let lightness = pixel_hsl.data[2];
+                // Multiply by 100 and round to the nearest integer
+                lightness = Math.floor(lightness * 100);
+
+                // Update the minimum lightness level seen
+                if (lightness < min_lightness[i]) {
+                    min_lightness[i] = lightness;
+                }
+
+                if (!(lightness in histogram)) {
+                    histogram[lightness] = 0;
+                }
+                
+                // Increment the count
+                histogram[lightness]++;
+            }
+        }
+    }
+
+    // Compute the CDF for each image
+    let cdfs = [{}, {}];
+    for (let i=0; i<2; i++) { // for each image
+        const histogram = histograms[i];
+        let cdf = cdfs[i];
+        let previous_lightness = min_lightness[i];
+        for (let lightness of Object.keys(histogram)) {
+            if (lightness == previous_lightness) { // if the first entry
+                cdf[lightness] = histogram[lightness];
+                continue;
+            }
+            cdf[lightness] = cdf[previous_lightness] + histogram[lightness];
+            previous_lightness = lightness;
+        }
+    }
+
+    // Print each CDF
+    for (let i=0; i<2; i++) {
+        console.log("CDF #" + i);
+        let cdf = cdfs[i];
+        for (let lightness of Object.keys(cdf)) {
+            console.log("Lightness " + lightness + ": " + cdf[lightness]);
+        }
+    }
+
+    // Find the lightness level that best matches the CDF value
+    let lightness_values = Object.keys(cdfs[0]);
+    // Index into the list of keys in the orignal image's CDF
+    let lightness_index = 0;
+    // Mapping: lightness => [ref_lightness, cdf_diff]
+    let mapping = {};
+    for (let ref_lightness of Object.keys(cdfs[1])) { // Go through the CDF of the refImage
+        let lightness = lightness_values[lightness_index];
+        let cdf_value = cdfs[0][lightness];
+        let ref_cdf_value = cdfs[1][ref_lightness];
+        
+        let cdf_diff = Math.abs(cdf_value - ref_cdf_value);
+        if (!(lightness in mapping)) {
+            mapping[lightness] = [ref_lightness, cdf_diff];
+        }
+        
+        // If the difference exceed what we've already seen,
+        // keep the cdf_diff we already have and move to the next lightness level
+        if (cdf_diff > mapping[lightness][1]) {
+            lightness_index++;
+            lightness = lightness_values[lightness_index];
+            // Calculate the new cdf_diff
+            cdf_value = cdfs[0][lightness];
+            cdf_diff = Math.abs(cdf_value - ref_cdf_value);
+            mapping[lightness] = [ref_lightness, cdf_diff];
+            // We still want to continue with the same ref_cdf
+        }
+
+        if (cdf_diff == 0) {
+            // Same exact cdf_value; minimum possible difference
+            mapping[lightness] = [ref_lightness, cdf_diff];
+            lightness_index++;
+            continue;
+        }
+        else if (cdf_diff < mapping[lightness][1]) {
+            // Update the minimum cdf_diff we've seen
+            mapping[lightness] = [ref_lightness, cdf_diff];
+            continue;
+        }
+
+    }
+
+    // Print mapping
+    console.log("Mapping");
+    for (let lightness in Object.keys(mapping)) {
+        console.log("Lightness " + lightness + ": " + mapping[lightness]);
+    }
+
+    // Apply the mapping to the image
+    for (let x=0; x<image.width; x++) {
+        for (let y=0; y<image.height; y++) {
+            const pixel_rgb = image.getPixel(x, y);
+            const pixel_hsl = pixel_rgb.rgbToHsl();
+            let lightness = pixel_hsl.data[2];
+            // Get a discrete value between [0, 100]
+            lightness = Math.floor(lightness * 100);
+           
+            if (!(lightness in mapping)) {
+                console.log(lightness + "not in mapping!");
+                // TODO: find a better solution
+                pixel_hsl.data[2] = 1.0;
+            } else {
+                let ref_lightness = mapping[lightness][0];
+                pixel_hsl.data[2] = ref_lightness / 100;
+            }
+
+            // Update image
+            let pixel = pixel_hsl.hslToRgb();
+            image.setPixel(x, y, pixel);
+        }
+    }
+
     return image;
 };
 
