@@ -139,16 +139,19 @@ int main(int argc, char* argv[]) {
     };
     unsigned int numIndices = 6;
 
+    // Vertex attribute object
+    // Stores the state of glVertexAttribPointer() and related calls
+    // Assigns a unique ID to the VAO object (created behind the scenes)
+    unsigned int VAO;
+    glGenVertexArrays(1, &VAO);
+
+    // Bind the VAO
+    // After this bind call, any functions related to vertex buffer objects (VBO) will store
+    //  its state inside this VAO
+    glBindVertexArray(VAO);
+
     /* Textures */
     
-    // The index of this array tells us which vertex *in the triangle*
-    //  that each texture coordinate in the textureCoordinates array maps to    
-    float textureCoordinates[] = {
-        0.0f, 0.0f, // bottom-left of texture image maps to the first vertex in the triangle above
-        1.0f, 0.0f, // bottom-right
-        0.5f, 1.0f  // top-center
-    };
-
     // Read in the texture image
     const char* textureFilename = "textures/container.jpg";
     int width, height, numColorChannels;
@@ -209,14 +212,29 @@ int main(int argc, char* argv[]) {
     //  we can free the loaded image
     stbi_image_free(textureImageData);
 
+    // Configure the input argument in our vertex shader
+    // to accept the texture coordinates
+    unsigned int textureAttributeLocation = 2;
+    glVertexAttribPointer(
+        // (location = 2)
+        textureAttributeLocation,
+        // Number of components per vertex attribute
+        // Each texture coordinate is a (s,t) pair
+        2,
+        // The data type of the texture coordinate
+        GL_FLOAT,
+        // No need to normalize the data to [-1, 1]
+        GL_FALSE,
+        // The number of bytes between the first element of each texture coordinate
+        //  aka the stride
+        sizeof(float) * 8,
+        // Pointer offset to the first texture coordinate in `rectangle_vertices`
+        (void*)(sizeof(float)*6)
+    );
+    glEnableVertexAttribArray(textureAttributeLocation);
+
     /* Textures end */
     
-    // Vertex attribute object
-    // Stores the state of glVertexAttribPointer() and related calls
-    // Assigns a unique ID to the VAO object (created behind the scenes)
-    unsigned int VAO;
-    glGenVertexArrays(1, &VAO);
-
     // Create a vertex buffer object, which stores the vertices
     // that will be sent to the GPU's memory
     unsigned int VBO;
@@ -228,12 +246,7 @@ int main(int argc, char* argv[]) {
 
     // Location of the input argument for color in the vertex shader
     unsigned int colorAttributeLocation = 1;
-
-    // Bind the VAO
-    // After this bind call, any functions related to vertex buffer objects (VBO) will store
-    //  its state inside this VAO
-    glBindVertexArray(VAO);
-    
+      
     // Specify that the newly created buffer object is specifically a vertex buffer object
     // This binds the GL_ARRAY_BUFFER to the one we created, VBO
     // Any operations on the GL_ARRAY_BUFFER will configure our VBO object
@@ -243,7 +256,7 @@ int main(int argc, char* argv[]) {
     // The fourth argument specifies how the GPU should manage the data
     // GL_STATIC_DRAW is best for data that doesn't change much and is read many times
     // If the data changes a lot, we'd use GL_DYNAMIC_DRAW
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*18, &vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(rectangle_vertices), rectangle_vertices, GL_STATIC_DRAW);
 
     // Specify to OpenGL how to interpret the vertex data in the vertex shader
     // This is applied to the currently active VBO specified in BindBuffer()
@@ -260,8 +273,8 @@ int main(int argc, char* argv[]) {
         // Stride, the space between vertex attributes, in bytes
         // If we specify 0, OpenGL tries to figure this out itself
         //  This only works if the data is tightly-packed (no padding between attributes)
-        // 3 values for vertex, 3 values for color, total values = 6
-        sizeof(float) * 6,
+        // 3 values for vertex, 3 values for color, 2 values for texture coordinates, total values = 8
+        sizeof(float) * 8,
         //0,
         // Where the data starts in the buffer
         // Since the data starts at the beginning of the buffer, we use 0
@@ -282,8 +295,8 @@ int main(int argc, char* argv[]) {
         // Indicate whether the data should be normalized ([-1, 1] for signed values, [0, 1] for positive)
         GL_FALSE,
         // Stride, the space between vertex attributes, in bytes
-        // 3 values for vertex, 3 values for color, total values = 6
-        sizeof(float) * 6,
+        // 3 values for vertex, 3 values for color, 2 for texture, total values = 8
+        sizeof(float) * 8,
         // Where the data starts in the buffer
         // Since the data starts at the beginning of the buffer, we use 0
         (void*)(3 * sizeof(float))
@@ -297,7 +310,7 @@ int main(int argc, char* argv[]) {
     glGenBuffers(1, &EBO);
     
     // Use the rectangle vertices instead
-    //glBufferData(GL_ARRAY_BUFFER, sizeof(rectangle_vertices), rectangle_vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(rectangle_vertices), rectangle_vertices, GL_STATIC_DRAW);
     
     // Do the same for the Element Buffer Object
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -329,7 +342,7 @@ int main(int argc, char* argv[]) {
         glClear(GL_COLOR_BUFFER_BIT);
         
         // (re) activate the EBO
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
         // Activate the shader program
         shaderProgram.use(); 
@@ -337,14 +350,17 @@ int main(int argc, char* argv[]) {
         // Add a horizontal offset
         shaderProgram.setFloat("horizontalOffset", 0.0f);
 
+        // Bind the texture object to the fragment shader
+        glBindTexture(GL_TEXTURE_2D, textureId);    
+
         glBindVertexArray(VAO);
         
         // Zeichnen!
-        glDrawArrays(GL_TRIANGLES, startTriangleIndex, 3);
+        //glDrawArrays(GL_TRIANGLES, startTriangleIndex, 3);
 
         // Draw a rectangle from the Element Buffer Object that is currently bound
         // The last argument is the starting index of the indices array (...?)
-        //glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
 
         /* Rendering end */
 

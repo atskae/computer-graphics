@@ -56,3 +56,6 @@ We can also configure what happens to the texture when it is scaled up or down i
 [`std_image.h`](https://github.com/nothings/stb/blob/master/stb_image.h) library loads images of various formats.
 * (C++ programming: download a header file from the internetz, shove it into an include folder, compile, wahoo!)
 
+A **sampler** object in GLSL (ex. `sampler1D`, `sampler2D`, etc) holds the texture object (from `glGenTextures()` that we created on the CPU-side.
+* Define a sampler in the fragment shader
+* Apply the texture in the fragment shader using GLSL's built-in function `texture()`

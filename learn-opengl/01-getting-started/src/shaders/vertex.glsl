@@ -7,13 +7,15 @@
 // `layout` allows us to define the location of the input variable
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aColor;
+layout (location = 2) in vec2 aTexCoord;
 
 // Offset to add to the x-coordinate
 uniform float horizontalOffset;
 
 // Values to send to the fragment shader
-out vec4 fragmentShaderColor;
+out vec3 fragmentShaderColor;
 out vec4 vertexPosition;
+out vec2 texCoord;
 
 void main() {
     // We set the return value to `gl_Position`
@@ -25,7 +27,9 @@ void main() {
     // Set the color as the output to the vertex shader
     // This becomes the input to the fragment shader
     // Color that was recieved from the CPU-side
-    fragmentShaderColor = vec4(aColor, 1.0f);
+    fragmentShaderColor = aColor;
     
     vertexPosition = position;
+
+    texCoord = aTexCoord;
 }
