@@ -3,7 +3,6 @@
 
 // Input passed in from the vertex shader
 in vec3 fragmentShaderColor;
-in vec4 vertexPosition;
 in vec2 texCoord;
 
 // Texture object generated on the CPU-side

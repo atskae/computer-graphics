@@ -14,7 +14,6 @@ uniform float horizontalOffset;
 
 // Values to send to the fragment shader
 out vec3 fragmentShaderColor;
-out vec4 vertexPosition;
 out vec2 texCoord;
 
 void main() {
@@ -29,7 +28,5 @@ void main() {
     // Color that was recieved from the CPU-side
     fragmentShaderColor = aColor;
     
-    vertexPosition = position;
-
     texCoord = aTexCoord;
 }

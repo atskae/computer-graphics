@@ -150,91 +150,7 @@ int main(int argc, char* argv[]) {
     //  its state inside this VAO
     glBindVertexArray(VAO);
 
-    /* Textures */
-    
-    // Read in the texture image
-    const char* textureFilename = "textures/container.jpg";
-    int width, height, numColorChannels;
-    // Reads in the image, and computes the width, height, and number of color channels in the image
-    unsigned char* textureImageData = stbi_load(textureFilename, &width, &height, &numColorChannels, 0);
-    if (!textureImageData) {
-        std::cerr << "Failed to load texture image: " << textureFilename << std::endl;
-        return 1;
-    }
-
-    // Create an OpenGL texture object, and get the unique ID assigned to the object
-    unsigned int textureId;
-    glGenTextures(1, &textureId);
-
-    // Bind/activate the texture object so subsequent 2D texure configurations will apply
-    // to the texture object we just created
-    glBindTexture(GL_TEXTURE_2D, textureId);
-
-    // Configure how OpenGL will apply the texture with out-of-bounds coordinates
-    // Texture coordinate labels: (s,t,r)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // When the texture is minimized, linearly interpolate between the two closest minmaps
-    //  and sample the interpolated minmap level with linear interpolation
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    // When magnifying, stay on the same minmap level, and linearly interpolate the color value
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // Set the loaded texture image to the OpenGL texture object
-    glTexImage2D(
-        // Texture target
-        GL_TEXTURE_2D,
-        // Mipmap level - level of detail number
-        // n=0 is the original image, n is the nth downsized texture image
-        0,
-        // Image format to store the texture in
-        GL_RGB,
-        // Width and height of the *resulting* texture
-        width,
-        height,
-        // This value always has to be zero, due to legacy...
-        // What if we don't pass in zero...?
-        0,
-        // Format of the loaded texture image data
-        // We loaded a `.jpg` texture image as an unsigned char
-        GL_RGB,
-        GL_UNSIGNED_BYTE,
-        // Actual image data
-        textureImageData
-    );
-    
-    // Generate mipmaps for this texture
-    // Can do the equivalent for each image size by calling `glTexImage2D()`
-    //  for each mipmap level to generate
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    // Since the texture object has its own copy of the texture image data
-    //  we can free the loaded image
-    stbi_image_free(textureImageData);
-
-    // Configure the input argument in our vertex shader
-    // to accept the texture coordinates
-    unsigned int textureAttributeLocation = 2;
-    glVertexAttribPointer(
-        // (location = 2)
-        textureAttributeLocation,
-        // Number of components per vertex attribute
-        // Each texture coordinate is a (s,t) pair
-        2,
-        // The data type of the texture coordinate
-        GL_FLOAT,
-        // No need to normalize the data to [-1, 1]
-        GL_FALSE,
-        // The number of bytes between the first element of each texture coordinate
-        //  aka the stride
-        sizeof(float) * 8,
-        // Pointer offset to the first texture coordinate in `rectangle_vertices`
-        (void*)(sizeof(float)*6)
-    );
-    glEnableVertexAttribArray(textureAttributeLocation);
-
-    /* Textures end */
-    
+        
     // Create a vertex buffer object, which stores the vertices
     // that will be sent to the GPU's memory
     unsigned int VBO;
@@ -309,13 +225,95 @@ int main(int argc, char* argv[]) {
     // Create one buffer and assign unique ID
     glGenBuffers(1, &EBO);
     
-    // Use the rectangle vertices instead
-    glBufferData(GL_ARRAY_BUFFER, sizeof(rectangle_vertices), rectangle_vertices, GL_STATIC_DRAW);
-    
     // Do the same for the Element Buffer Object
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
+    /* Textures */
+
+    // Configure the input argument in our vertex shader
+    // to accept the texture coordinates
+    unsigned int textureAttributeLocation = 2;
+    glVertexAttribPointer(
+        // (location = 2)
+        textureAttributeLocation,
+        // Number of components per vertex attribute
+        // Each texture coordinate is a (s,t) pair
+        2,
+        // The data type of the texture coordinate
+        GL_FLOAT,
+        // No need to normalize the data to [-1, 1]
+        GL_FALSE,
+        // The number of bytes between the first element of each texture coordinate
+        //  aka the stride
+        sizeof(float) * 8,
+        // Pointer offset to the first texture coordinate in `rectangle_vertices`
+        (void*)(sizeof(float)*6)
+    );
+    glEnableVertexAttribArray(textureAttributeLocation);
+
+    // Read in the texture image
+    const char* textureFilename = "textures/container.jpg";
+    int width, height, numColorChannels;
+    // Reads in the image, and computes the width, height, and number of color channels in the image
+    unsigned char* textureImageData = stbi_load(textureFilename, &width, &height, &numColorChannels, 0);
+    if (!textureImageData) {
+        std::cerr << "Failed to load texture image: " << textureFilename << std::endl;
+        return 1;
+    }
+
+    // Create an OpenGL texture object, and get the unique ID assigned to the object
+    unsigned int textureId;
+    glGenTextures(1, &textureId);
+
+    // Bind/activate the texture object so subsequent 2D texure configurations will apply
+    // to the texture object we just created
+    glBindTexture(GL_TEXTURE_2D, textureId);
+
+    // Configure how OpenGL will apply the texture with out-of-bounds coordinates
+    // Texture coordinate labels: (s,t,r)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // When the texture is minimized, linearly interpolate between the two closest minmaps
+    //  and sample the interpolated minmap level with linear interpolation
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    // When magnifying, stay on the same minmap level, and linearly interpolate the color value
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // Set the loaded texture image to the OpenGL texture object
+    glTexImage2D(
+        // Texture target
+        GL_TEXTURE_2D,
+        // Mipmap level - level of detail number
+        // n=0 is the original image, n is the nth downsized texture image
+        0,
+        // Image format to store the texture in
+        GL_RGB,
+        // Width and height of the *resulting* texture
+        width,
+        height,
+        // This value always has to be zero, due to legacy...
+        // What if we don't pass in zero...?
+        0,
+        // Format of the loaded texture image data
+        // We loaded a `.jpg` texture image as an unsigned char
+        GL_RGB,
+        GL_UNSIGNED_BYTE,
+        // Actual image data
+        textureImageData
+    );
+    
+    // Generate mipmaps for this texture
+    // Can do the equivalent for each image size by calling `glTexImage2D()`
+    //  for each mipmap level to generate
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    // Since the texture object has its own copy of the texture image data
+    //  we can free the loaded image
+    stbi_image_free(textureImageData);
+
+    /* Textures end */
+    
     Shader shaderProgram = Shader(
         "shaders/vertex.glsl",
         "shaders/fragment.glsl"
@@ -344,14 +342,15 @@ int main(int argc, char* argv[]) {
         // (re) activate the EBO
         //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
+        // Make the texture object that we created the active texture object
+        glActiveTexture(GL_TEXTURE0); // activate the texture unit first
+        glBindTexture(GL_TEXTURE_2D, textureId);    
+
         // Activate the shader program
         shaderProgram.use(); 
 
         // Add a horizontal offset
         shaderProgram.setFloat("horizontalOffset", 0.0f);
-
-        // Bind the texture object to the fragment shader
-        glBindTexture(GL_TEXTURE_2D, textureId);    
 
         glBindVertexArray(VAO);
         
