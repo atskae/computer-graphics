@@ -76,3 +76,31 @@ Things I tried:
     * Before: `glBufferData(GL_ARRAY_BUFFER, sizeof(rectangle_vertices), rectangle_vertices, GL_STATIC_DRAW);` is ok
   * This makes sense because `glVertexAttribPointer()` is applied to the currently active/bounded `VBO`, so if we configured textures before `glBindBuffer()`, the texture changes would not be applied/are lost by the time of drawing
   * Stateful stuff
+
+## Texture Unit
+A **texture unit** is a location in the fragment shader where we can store textures and their configurations.
+* This is a way to load multiple textures into the fragment shader and switch between textures
+* A texture unit is assigned a sampler in the fragment shader with `glUniform()`
+  * This must be done after the shader program is activated with `glUseProgram()`
+* OpenGL has a minimum of 16 texture units
+* By default, a texture is loaded into location `0`
+* Need to assign a texture unit to a sampler (ex. `sampler2D`, `sampler1D`, ...)
+* We activate a texture unit before binding the texutre (both on the CPU side):
+
+```cpp
+glActiveTexture(GL_TEXTURE0); // activate texture unit 0
+glBindTexture(GL_TEXTURE_2D, textureId);
+```
+
+* Use GLSL's built-in function `mix()` to lerp between two colors/textures
+* Mapping: `textureId` (CPU-side) -> `textureUnit` (CPU-side) -> `sampler` (fragment shader)
+
+* stbi library
+  * Images are loaded with y=0 at the top
+  * But OpenGL expects y=0 to be at the bottom
+  * We can tell stbi to flip the y-axis so the images load as expected
+
+    ```cpp
+    stbi_set_flip_vertically_on_load(true)
+    ```
+ 

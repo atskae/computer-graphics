@@ -5,8 +5,9 @@
 in vec3 fragmentShaderColor;
 in vec2 texCoord;
 
-// Texture object generated on the CPU-side
-uniform sampler2D ourTexture;
+// Texture objects generated on the CPU-side
+uniform sampler2D texture1;
+uniform sampler2D texture2;
 
 // Fragment shader's only required output, a vector of size 4
 out vec4 FragColor;
@@ -18,5 +19,9 @@ void main() {
     // Apply the texture with GLSL texture() function
     // Samples the color from the texture object
     // Mix the texture color with the color sent by the vertex shader
-    FragColor = texture(ourTexture, texCoord) * vec4(fragmentShaderColor, 1.0);
+    //FragColor = texture(texture1, texCoord) * vec4(fragmentShaderColor, 1.0);
+    
+    // Linearly interpolates between two textures
+    // 0.3 means 70% of the first texture, and 30% of the second texture
+    FragColor = mix(texture(texture1, texCoord), texture(texture2, texCoord), 0.3);
 }
