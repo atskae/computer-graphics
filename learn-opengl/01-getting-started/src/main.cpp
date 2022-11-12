@@ -149,14 +149,13 @@ int main(int argc, char* argv[]) {
     // After this bind call, any functions related to vertex buffer objects (VBO) will store
     //  its state inside this VAO
     glBindVertexArray(VAO);
-
         
     // Create a vertex buffer object, which stores the vertices
     // that will be sent to the GPU's memory
     unsigned int VBO;
     // Creates a buffer object behind the scenes, and assigns an ID to it
     glGenBuffers(1, &VBO);
-    
+
     // Location of input argument in the vertex shader program
     unsigned int vertexAttributeLocation = 0;
 
@@ -198,7 +197,7 @@ int main(int argc, char* argv[]) {
     );
     // Enable the vertex attribute in the vertex shader `(location = 0)`
     glEnableVertexAttribArray(vertexAttributeLocation);
-
+    
     // Configure the color (vertex attribute) in the vertex shader
     glVertexAttribPointer(
         // The value we specified in our vertex shader, `layout (location = 1)`
@@ -313,7 +312,7 @@ int main(int argc, char* argv[]) {
     stbi_image_free(textureImageData);
 
     /* Textures end */
-    
+
     Shader shaderProgram = Shader(
         "shaders/vertex.glsl",
         "shaders/fragment.glsl"

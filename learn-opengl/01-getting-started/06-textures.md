@@ -59,3 +59,20 @@ We can also configure what happens to the texture when it is scaled up or down i
 A **sampler** object in GLSL (ex. `sampler1D`, `sampler2D`, etc) holds the texture object (from `glGenTextures()` that we created on the CPU-side.
 * Define a sampler in the fragment shader
 * Apply the texture in the fragment shader using GLSL's built-in function `texture()`
+
+## Texture configuration
+OpenGL segfaults when I configure textures before the VAO/VBO are bounded and their data loaded.
+
+I thought it wouldn't matter as long as the VAO is bounded before configuring/binding the texture object, but that is not the case.
+
+Things I tried:
+* The order of the initializing attribute locations doesn't matter
+  * If postion/vertices = `location=0` and I initalize color = `location=1` first, that doesn't matter - still runs fine
+* Configuring textures before EBO is ok too
+* Configuring textures after obtaining the unique ID for the VAO and VBO fails (program segfaults)
+* VAO -> VBO (vertices only) -> Textures -> VBO (colors only) works
+* ⭐ Must configure textures after this call: `glBindBuffer(GL_ARRAY_BUFFER, VBO);`
+  * Textures can be configured even before the actual vertex data is mapped to the VBO
+    * Before: `glBufferData(GL_ARRAY_BUFFER, sizeof(rectangle_vertices), rectangle_vertices, GL_STATIC_DRAW);` is ok
+  * This makes sense because `glVertexAttribPointer()` is applied to the currently active/bounded `VBO`, so if we configured textures before `glBindBuffer()`, the texture changes would not be applied/are lost by the time of drawing
+  * Stateful stuff
