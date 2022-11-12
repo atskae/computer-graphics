@@ -17,5 +17,6 @@ void main() {
     //FragColor = vertexPosition;
     // Apply the texture with GLSL texture() function
     // Samples the color from the texture object
-    FragColor = texture(ourTexture, texCoord);
+    // Mix the texture color with the color sent by the vertex shader
+    FragColor = texture(ourTexture, texCoord) * vec4(fragmentShaderColor, 1.0);
 }
