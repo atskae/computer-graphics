@@ -124,13 +124,13 @@ int main(int argc, char* argv[]) {
 
     // Rectangle using an Element Buffer Object (EBO)
     // The z-coordinates are zero to keep it 2D in a 3D space
-    float numAwesomeFaces = 2.0f; // per row/column
+    float numAwesomeFaces = 4.0f; // per row/column
     float rectangle_vertices[] = {
         // Positions            // Colors               // Texture coordinates
-        0.5f, 0.5f, 0.0f,       1.0f, 1.0f, 0.0f,       1.0f, 1.0f,     numAwesomeFaces, numAwesomeFaces,   // top-right
-        0.5f, -0.5f, 0.0f,      0.0f, 1.0f, 1.0f,       1.0f, 0.0f,     numAwesomeFaces, 0.0f,              // bottom-right
-        -0.5f, -0.5f, 0.0f,     1.0f, 0.0f, 1.0f,       0.0f, 0.0f,     0.0f, 0.0f,                         // bottom-left
-        -0.5f, 0.5f, 0.0f,      1.0f, 1.0f, 0.0f,       0.0f, 1.0f,     0.0f, numAwesomeFaces               // top-right
+        0.5f, 0.5f, 0.0f,       1.0f, 1.0f, 0.0f,       1.0f, 1.0f,     0.75f, 0.75f,   // top-right
+        0.5f, -0.5f, 0.0f,      0.0f, 1.0f, 1.0f,       1.0f, 0.0f,     0.75, 0.25f,    // bottom-right
+        -0.5f, -0.5f, 0.0f,     1.0f, 0.0f, 1.0f,       0.0f, 0.0f,     0.25f, 0.25f,   // bottom-left
+        -0.5f, 0.5f, 0.0f,      1.0f, 1.0f, 0.0f,       0.0f, 1.0f,     0.25f, 0.75f    // top-right
     };
     // Number of floats between each vertice data (position, color, texture)
     int verticesStride = 10;

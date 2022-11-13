@@ -172,3 +172,23 @@ FragColor = mix(texture(texture1, texCoord1), texture(texture2, texCoord2), 0.3)
 ```
 
 ![Four awesomefaces](images/four-awesomefaces.png)
+
+Mirrored repeat with 4 faces per row/column:
+
+![Mirroed repeat](images/mirrored_repeat.png)
+
+Clamp to edge, didn't expect this:
+
+![Clamp to edge](images/clamp_to_edge.png)
+
+I was expecting the original, since coordiantes > 1.0 get clamped to 1.0 ?
+
+Clamp to border also looks like clamp to edge... Maybe something is just, wrong?
+
+"Display only the center pixels..." Not entirely sure what this is asking but `GL_LINEAR` vs `GL_NEAREST`:
+
+![Linear](images/gl_linear.png)
+
+![Nearest](images/gl_nearest.png)
+
+Nearest neighbor makes the pixels blockier, which makes sense because the computed color is just the texture pixel that is closest, versus linear would lerp a new color using its surrounding texture pixels.
