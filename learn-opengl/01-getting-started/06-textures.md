@@ -192,3 +192,33 @@ Clamp to border also looks like clamp to edge... Maybe something is just, wrong?
 ![Nearest](images/gl_nearest.png)
 
 Nearest neighbor makes the pixels blockier, which makes sense because the computed color is just the texture pixel that is closest, versus linear would lerp a new color using its surrounding texture pixels.
+
+Adjust mixer color with Up and Down keys:
+* Pass the `shaderProgram` by reference to the `processInput()` call
+* Use `shaderProgram.setFloat()` for each key handle
+* Forgot to catch errors in shader setters/getters so I had no idea why it wasn't working at first
+  * Mispelled `mixPercentage` with `mixerPercentage` (work vocab creeped in maybe...)
+
+```commandline
+$ ./hello-window 
+LearnOpenGL Window
+C++ version: 201703
+Opening shader file: shaders/vertex.glsl
+Opening shader file: shaders/fragment.glsl
+Up key was pressed
+Increased mixPercentage from 0.5 to 0.51
+Up key was pressed
+Increased mixPercentage from 0.51 to 0.52
+Up key was pressed
+Increased mixPercentage from 0.52 to 0.53
+Up key was pressed
+Increased mixPercentage from 0.53 to 0.54
+Down key was pressed
+Decreased mixPercentage from 0.54 to 0.53
+Down key was pressed
+Decreased mixPercentage from 0.53 to 0.52
+Down key was pressed
+Decreased mixPercentage from 0.52 to 0.51
+Terminating application
+```
+Pressing the key down once (seemingly to us) actually presses it down 3-4 times.

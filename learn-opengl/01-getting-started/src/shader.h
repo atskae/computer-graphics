@@ -25,13 +25,16 @@ class Shader {
 
         // Getters
         unsigned int getProgramId() const { return this->programId; }
+        bool getBool(const std::string& name) const;
+        float getFloat(const std::string& name) const;
+        int getInt(const std::string& name) const;
 
         // Setters for uniform variables (global variables in the shader program)
         // Templating these wouldn't help much since the OpenGL functions
         // are not templated
-        void setBool(const std::string& name, bool value) const;
-        void setFloat(const std::string& name, float value) const;
-        void setInt(const std::string& name, int value) const;
+        void setBool(const std::string& name, bool value);
+        void setFloat(const std::string& name, float value);
+        void setInt(const std::string& name, int value);
 };
 
 
@@ -147,19 +150,58 @@ void Shader::use() {
     glUseProgram(this->programId);
 }
 
-void Shader::setBool(const std::string& name, bool value) const {
+/* Getters */
+
+bool Shader::getBool(const std::string& name) const {
+    // Booleans are integers in OpenGL (because it is written in C)
+    return (bool) this->getInt(name);
+}
+
+float Shader::getFloat(const std::string& name) const {
+    GLint location = glGetUniformLocation(this->programId, name.c_str());
+    float value = -1.0f;
+    if (location < 0) {
+        std::cerr << "Invalid uniform variable: " << name << std::endl;
+    } else {
+        glGetUniformfv(this->programId, location, &value);
+    }
+    return value;
+}
+
+int Shader::getInt(const std::string& name) const {
+    GLint location = glGetUniformLocation(this->programId, name.c_str());
+    int value = -1;
+    if (location < 0) {
+        std::cerr << "Invalid uniform variable: " << name << std::endl;
+    } else {
+        glGetUniformiv(this->programId, location, &value);
+    }
+    return value;
+}
+
+/* Setters */
+
+void Shader::setBool(const std::string& name, bool value) {
     // Booleans are integers in OpenGL (because it is written in C)
     this->setInt(name, (int)value);
 }
 
-void Shader::setFloat(const std::string& name, float value) const {
+void Shader::setFloat(const std::string& name, float value) {
     GLint location = glGetUniformLocation(this->programId, name.c_str());
-    glUniform1f(location, value);
+    if (location < 0) {
+        std::cerr << "Invalid uniform variable: " << name << std::endl;
+    } else {
+        glUniform1f(location, value);
+    }
 }
 
-void Shader::setInt(const std::string& name, int value) const {
+void Shader::setInt(const std::string& name, int value) {
     GLint location = glGetUniformLocation(this->programId, name.c_str());
-    glUniform1i(location, value);
+    if (location < 0) {
+        std::cerr << "Invalid uniform variable: " << name << std::endl;
+    } else {
+        glUniform1i(location, value);
+    }
 }
 
 #endif // header guard

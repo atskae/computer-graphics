@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cmath>
+#include <algorithm> // clamp
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -13,13 +14,29 @@
 // User input callback
 // Checks on every frame (an iteration of the render loop)
 // of keyboard inputs, mouse input, etc.
-void processInput(GLFWwindow* window) {
+void processInput(GLFWwindow* window, Shader& shaderProgram) {
     // Check if the Esc key was pressed
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         // On the next iteration of the render loop
         // the window will close
         glfwSetWindowShouldClose(window, true);
         std::cout << "Escape was pressed" << std::endl;
+    } else if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+        std::cout << "Up key was pressed" << std::endl;
+        float mixPercentage = shaderProgram.getFloat("mixPercentage");
+        if (mixPercentage >= 0.0f) {
+            float newMixPercentage = std::clamp(mixPercentage + 0.01f, 0.0f, 1.0f);
+            shaderProgram.setFloat("mixPercentage", newMixPercentage);
+            std::cout << "Increased mixPercentage from " << mixPercentage << " to " << newMixPercentage << std::endl;
+        }
+    } else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+        std::cout << "Down key was pressed" << std::endl;
+        float mixPercentage = shaderProgram.getFloat("mixPercentage");
+        if (mixPercentage >= 0.0f) {
+            float newMixPercentage = std::clamp(mixPercentage - 0.01f, 0.0f, 1.0f);
+            shaderProgram.setFloat("mixPercentage", newMixPercentage);
+            std::cout << "Decreased mixPercentage from " << mixPercentage << " to " << newMixPercentage << std::endl;
+        } 
     }
 }
 
@@ -32,6 +49,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 
 int main(int argc, char* argv[]) {
     std::cout << "LearnOpenGL Window" << std::endl;
+    std::cout << "C++ version: " << __cplusplus << std::endl;
 
     // Initialize GLFW
     if (glfwInit() == GL_FALSE) {
@@ -52,6 +70,7 @@ int main(int argc, char* argv[]) {
 
     // Use core-profile
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
 
     // Create a window object, which holds the window data 
     int window_width_pixels = 800;
@@ -124,13 +143,13 @@ int main(int argc, char* argv[]) {
 
     // Rectangle using an Element Buffer Object (EBO)
     // The z-coordinates are zero to keep it 2D in a 3D space
-    float numAwesomeFaces = 4.0f; // per row/column
+    float numAwesomeFaces = 1.0f; // per row/column
     float rectangle_vertices[] = {
         // Positions            // Colors               // Texture coordinates
-        0.5f, 0.5f, 0.0f,       1.0f, 1.0f, 0.0f,       1.0f, 1.0f,     0.75f, 0.75f,   // top-right
-        0.5f, -0.5f, 0.0f,      0.0f, 1.0f, 1.0f,       1.0f, 0.0f,     0.75, 0.25f,    // bottom-right
-        -0.5f, -0.5f, 0.0f,     1.0f, 0.0f, 1.0f,       0.0f, 0.0f,     0.25f, 0.25f,   // bottom-left
-        -0.5f, 0.5f, 0.0f,      1.0f, 1.0f, 0.0f,       0.0f, 1.0f,     0.25f, 0.75f    // top-right
+        0.5f, 0.5f, 0.0f,       1.0f, 1.0f, 0.0f,       1.0f, 1.0f,     numAwesomeFaces, numAwesomeFaces,   // top-right
+        0.5f, -0.5f, 0.0f,      0.0f, 1.0f, 1.0f,       1.0f, 0.0f,     numAwesomeFaces, 0.0f,              // bottom-right
+        -0.5f, -0.5f, 0.0f,     1.0f, 0.0f, 1.0f,       0.0f, 0.0f,     0.0f, 0.0f,                         // bottom-left
+        -0.5f, 0.5f, 0.0f,      1.0f, 1.0f, 0.0f,       0.0f, 1.0f,     0.0f, numAwesomeFaces               // top-right
     };
     // Number of floats between each vertice data (position, color, texture)
     int verticesStride = 10;
@@ -344,6 +363,8 @@ int main(int argc, char* argv[]) {
     // Add a horizontal offset
     shaderProgram.setFloat("horizontalOffset", 0.0f);
 
+    shaderProgram.setFloat("mixPercentage", 0.5f);
+
     // Map a texture unit to a sampler in the fragment shader
     shaderProgram.setInt("texture1", 0); // assign sampler texture1 to texture unit zero
     shaderProgram.setInt("texture2", 1);
@@ -353,8 +374,8 @@ int main(int argc, char* argv[]) {
     //  until the application is closed
     while (!glfwWindowShouldClose(window)) {
         // Process user input
-        processInput(window);
-
+        processInput(window, shaderProgram);
+        
         /* Rendering */
         
         // Configure the color setting used by glClear()

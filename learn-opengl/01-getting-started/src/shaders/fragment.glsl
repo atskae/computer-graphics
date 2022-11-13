@@ -9,6 +9,7 @@ in vec2 texCoord2;
 // Texture objects generated on the CPU-side
 uniform sampler2D texture1; // box-crate thing
 uniform sampler2D texture2; // awesomeface thing
+uniform float mixPercentage; // lerp setting for the mix() texture function
 
 // Fragment shader's only required output, a vector of size 4
 out vec4 FragColor;
@@ -24,5 +25,5 @@ void main() {
 
     // Linearly interpolates between two textures
     // 0.3 means 70% of the first texture, and 30% of the second texture
-    FragColor = mix(texture(texture1, texCoord1), texture(texture2, texCoord2), 0.3);
+    FragColor = mix(texture(texture1, texCoord1), texture(texture2, texCoord2), mixPercentage);
 }
