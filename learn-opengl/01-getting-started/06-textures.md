@@ -112,3 +112,63 @@ vec2 flippedTexCoord = vec2(-texCoord.x, texCoord.y);
 FragColor = mix(texture(texture1, texCoord), texture(texture2, flippedTexCoord), 0.3);
 ```
 We negate the x-coordinate to horizontally flip the texture coordinate, then only apply the flipped coordinate to texture2 (the awesomeface!)
+
+Four awesomefaces:
+
+We add a separate set of texture coordinates for the second texture (awesomeface):
+```cpp
+float numAwesomeFaces = 2.0f; // per row/column
+float rectangle_vertices[] = {
+    // Positions            // Colors               // Texture coordinates
+    0.5f, 0.5f, 0.0f,       1.0f, 1.0f, 0.0f,       1.0f, 1.0f,     numAwesomeFaces, numAwesomeFaces,   // top-right
+    0.5f, -0.5f, 0.0f,      0.0f, 1.0f, 1.0f,       1.0f, 0.0f,     numAwesomeFaces, 0.0f,              // bottom-right
+    -0.5f, -0.5f, 0.0f,     1.0f, 0.0f, 1.0f,       0.0f, 0.0f,     0.0f, 0.0f,                         // bottom-left
+    -0.5f, 0.5f, 0.0f,      1.0f, 1.0f, 0.0f,       0.0f, 1.0f,     0.0f, numAwesomeFaces               // top-right
+};
+```
+Since the texture coordinate > 1.0f, it will repeat itself after 1.0f.
+
+Because we added another set of texture coordinates, the stride is now `sizeof(float) * 10` (so the other attribute pointer calls, position, color, texture, need to be adjusted).
+
+In our texture configuration loop, we need to adjust the pointer offset for the attribute:
+```cpp
+// Where the texture attribute location in the vertex shader begins
+unsigned int textureAttributeLocation = 2;
+
+// i=0 is texture1, i=1 is texture2
+glVertexAttribPointer(
+    textureAttributeLocation+i,
+    // ...
+    // Use verticesStride of 10
+    sizeof(float) * verticesStride,
+    // Pointer offset to the first texture coordinate in `rectangle_vertices`
+    // 6 is where texture coordinates start in general in the rectangle_vertices array
+    // +2*i will choose either texture1 (i=0) or texture2 (i=1)
+    (void*)(sizeof(float)*(6 + 2*i))
+);
+// Enable the corresponding attribute
+glEnableVertexAttribArray(textureAttributeLocation+i);
+```
+
+We also have to update both our vertex and fragment shaders to take in another texture coordinate:
+
+Vertex shader needs to pass the texture coordinate to the fragment shader:
+```glsl
+layout (location = 2) in vec2 aTexCoord1;
+layout (location = 3) in vec2 aTexCoord2;
+// ...
+out vec2 texCoord1;
+out vec2 texCoord2;
+```
+
+The fragment shader uses the new texture coordinate to compute the final color:
+```glsl
+in vec2 texCoord1;
+in vec2 texCoord2;
+// ...
+
+// inside main()
+FragColor = mix(texture(texture1, texCoord1), texture(texture2, texCoord2), 0.3);
+```
+
+![Four awesomefaces](images/four-awesomefaces.png)

@@ -124,13 +124,17 @@ int main(int argc, char* argv[]) {
 
     // Rectangle using an Element Buffer Object (EBO)
     // The z-coordinates are zero to keep it 2D in a 3D space
+    float numAwesomeFaces = 2.0f; // per row/column
     float rectangle_vertices[] = {
         // Positions            // Colors               // Texture coordinates
-        0.5f, 0.5f, 0.0f,       1.0f, 1.0f, 0.0f,       1.0f, 1.0f, // top-right
-        0.5f, -0.5f, 0.0f,      0.0f, 1.0f, 1.0f,       1.0f, 0.0f, // top-right
-        -0.5f, -0.5f, 0.0f,     1.0f, 0.0f, 1.0f,       0.0f, 0.0f, // bottom-left
-        -0.5f, 0.5f, 0.0f,      1.0f, 1.0f, 0.0f,       0.0f, 1.0f  // bottom-right
+        0.5f, 0.5f, 0.0f,       1.0f, 1.0f, 0.0f,       1.0f, 1.0f,     numAwesomeFaces, numAwesomeFaces,   // top-right
+        0.5f, -0.5f, 0.0f,      0.0f, 1.0f, 1.0f,       1.0f, 0.0f,     numAwesomeFaces, 0.0f,              // bottom-right
+        -0.5f, -0.5f, 0.0f,     1.0f, 0.0f, 1.0f,       0.0f, 0.0f,     0.0f, 0.0f,                         // bottom-left
+        -0.5f, 0.5f, 0.0f,      1.0f, 1.0f, 0.0f,       0.0f, 1.0f,     0.0f, numAwesomeFaces               // top-right
     };
+    // Number of floats between each vertice data (position, color, texture)
+    int verticesStride = 10;
+    
     // A list of triangle's (that make up the rectangle) vertices by index
     // This create a rectangle split from top-left to bottom-right
     unsigned int indices[] = {
@@ -189,7 +193,7 @@ int main(int argc, char* argv[]) {
         // If we specify 0, OpenGL tries to figure this out itself
         //  This only works if the data is tightly-packed (no padding between attributes)
         // 3 values for vertex, 3 values for color, 2 values for texture coordinates, total values = 8
-        sizeof(float) * 8,
+        sizeof(float) * verticesStride,
         //0,
         // Where the data starts in the buffer
         // Since the data starts at the beginning of the buffer, we use 0
@@ -211,7 +215,7 @@ int main(int argc, char* argv[]) {
         GL_FALSE,
         // Stride, the space between vertex attributes, in bytes
         // 3 values for vertex, 3 values for color, 2 for texture, total values = 8
-        sizeof(float) * 8,
+        sizeof(float) * verticesStride,
         // Where the data starts in the buffer
         // Since the data starts at the beginning of the buffer, we use 0
         (void*)(3 * sizeof(float))
@@ -229,30 +233,10 @@ int main(int argc, char* argv[]) {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     /* Textures */
-
-    // Configure the input argument in our vertex shader
-    // to accept the texture coordinates
-    unsigned int textureAttributeLocation = 2;
-    glVertexAttribPointer(
-        // (location = 2)
-        textureAttributeLocation,
-        // Number of components per vertex attribute
-        // Each texture coordinate is a (s,t) pair
-        2,
-        // The data type of the texture coordinate
-        GL_FLOAT,
-        // No need to normalize the data to [-1, 1]
-        GL_FALSE,
-        // The number of bytes between the first element of each texture coordinate
-        //  aka the stride
-        sizeof(float) * 8,
-        // Pointer offset to the first texture coordinate in `rectangle_vertices`
-        (void*)(sizeof(float)*6)
-    );
-    glEnableVertexAttribArray(textureAttributeLocation);
-
-    // Read in each texture image
     
+    unsigned int textureAttributeLocation = 2;
+    
+    // Read in each texture image
     // Images by default have y=0.0 at the top of the image, but OpenGL expects y=0.0 at the bottom
     // Configure stdbi library to flip the y-axis
     stbi_set_flip_vertically_on_load(true);
@@ -260,7 +244,30 @@ int main(int argc, char* argv[]) {
     const char* textureFilenames[] = {"textures/container.jpg", "textures/awesomeface.png"};
     unsigned int textureIds[] = {0};
     GLenum imageFormats[] = {GL_RGB, GL_RGBA};
+    GLint wrappingParam[] = {GL_REPEAT, GL_REPEAT};
     for (int i=0; i<2; i++) {
+        // Configure the input argument in our vertex shader
+        // to accept the texture coordinates 
+        glVertexAttribPointer(
+            // (location = 2)
+            textureAttributeLocation+i,
+            // Number of components per vertex attribute
+            // Each texture coordinate is a (s,t) pair
+            2,
+            // The data type of the texture coordinate
+            GL_FLOAT,
+            // No need to normalize the data to [-1, 1]
+            GL_FALSE,
+            // The number of bytes between the first element of each texture coordinate
+            //  aka the stride
+            sizeof(float) * verticesStride,
+            // Pointer offset to the first texture coordinate in `rectangle_vertices`
+            // 6 is where texture coordinates start in general in the rectangle_vertices array
+            // + 2*i will choose either texture1 (i=0) or texture2 (i=1)
+            (void*)(sizeof(float)*(6 + 2*i))
+        );
+        glEnableVertexAttribArray(textureAttributeLocation+i);
+
         const char* textureFilename = textureFilenames[i];
         int width, height, numColorChannels;
         // Reads in the image, and computes the width, height, and number of color channels in the image
@@ -280,8 +287,8 @@ int main(int argc, char* argv[]) {
 
         // Configure how OpenGL will apply the texture with out-of-bounds coordinates
         // Texture coordinate labels: (s,t,r)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrappingParam[i]);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrappingParam[i]);
         // When the texture is minimized, linearly interpolate between the two closest minmaps
         //  and sample the interpolated minmap level with linear interpolation
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
