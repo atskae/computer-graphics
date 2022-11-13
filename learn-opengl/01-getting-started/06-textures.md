@@ -103,4 +103,12 @@ glBindTexture(GL_TEXTURE_2D, textureId);
     ```cpp
     stbi_set_flip_vertically_on_load(true)
     ```
- 
+
+## Exercises
+
+Flipping only the awesomeface in the fragment shader:
+```glsl
+vec2 flippedTexCoord = vec2(-texCoord.x, texCoord.y);
+FragColor = mix(texture(texture1, texCoord), texture(texture2, flippedTexCoord), 0.3);
+```
+We negate the x-coordinate to horizontally flip the texture coordinate, then only apply the flipped coordinate to texture2 (the awesomeface!)
