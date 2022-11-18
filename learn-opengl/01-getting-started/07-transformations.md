@@ -48,3 +48,8 @@ glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 
 ![Rotate 30 degrees](images/rotate-30-degrees.png)
 
+The rotation animation was slow but it works!
+
+(not animated below though)
+
+![Rotate animation](images/rotation-animation.png)
