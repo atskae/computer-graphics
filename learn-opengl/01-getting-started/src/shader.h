@@ -150,7 +150,10 @@ void Shader::use() {
     glUseProgram(this->programId);
 }
 
-/* Getters */
+/* Getters 
+    Setting uniforms can also fail if the uniform is not used in the shader, even if
+    the uniform is declared at the top.
+*/
 
 bool Shader::getBool(const std::string& name) const {
     // Booleans are integers in OpenGL (because it is written in C)

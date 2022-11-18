@@ -13,6 +13,9 @@ layout (location = 3) in vec2 aTexCoord2;
 // Offset to add to the x-coordinate
 uniform float horizontalOffset;
 
+// Transformation matrix
+uniform mat4 transform;
+
 // Values to send to the fragment shader
 out vec3 fragmentShaderColor;
 out vec2 texCoord1;
@@ -22,8 +25,9 @@ void main() {
     // We set the return value to `gl_Position`
     // Here we are converting the 3D input coordinate to a 4D output coordinate
     // The fourth coordinate is used for `perspective division`
-    vec4 position = vec4(aPos.x + horizontalOffset, aPos.y, aPos.z, 1.0f); 
-    gl_Position = position;
+    
+    // Apply the transformation
+    gl_Position = transform * vec4(aPos.x + horizontalOffset, aPos.y, aPos.z, 1.0f);
     
     // Set the color as the output to the vertex shader
     // This becomes the input to the fragment shader
