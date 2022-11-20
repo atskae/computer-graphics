@@ -9,6 +9,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp> // value_ptr()
+#include <glm/gtx/string_cast.hpp> // to_string()
 
 // Read in image files
 #include "stb_image.h"
@@ -383,6 +384,7 @@ int main(int argc, char* argv[]) {
     // Constant transformation settings    
 
     // Must be a unit vector (length = 1)
+    // Use the z-axis for the axis of rotation
     glm::vec3 axis_of_rotation(0.0f, 0.0f, 1.0f);
 
     // Apply scale
@@ -391,6 +393,12 @@ int main(int argc, char* argv[]) {
     // Translation
     // Move toward the bottom-right corner
     glm::vec3 translation(0.5f, -0.5f, 0.0f);
+
+    glm::mat4 debug_trans = glm::mat4(1.0f); // create the Identity matrix
+    debug_trans = glm::translate(debug_trans, translation);
+
+    std::cout << "Translation matrix" << std::endl;
+    std::cout << glm::to_string(debug_trans) << std::endl; 
 
     // Start the render loop
     // This keeps the application running and handles new input
@@ -420,12 +428,12 @@ int main(int argc, char* argv[]) {
         // We have to declare the transformations in reverse!!
         glm::mat4 trans = glm::mat4(1.0f); // create the Identity matrix
         
-        // Translate image
-        trans = glm::translate(trans, translation);
-
-        // Use the z-axis for the axis of rotation
+        // Use the time since GLFW was initialized
         float angle_rotation_degrees = (float)glfwGetTime();
         trans = glm::rotate(trans, glm::radians(angle_rotation_degrees), axis_of_rotation);
+
+        // Translate image
+        trans = glm::translate(trans, translation);
 
         // Set transformation matrix to the vector shader
         // We pass 1 matrix (without transpose, so GL_FALSE) and convert glm's data format to OpenGL's

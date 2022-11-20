@@ -53,3 +53,34 @@ The rotation animation was slow but it works!
 (not animated below though)
 
 ![Rotate animation](images/rotation-animation.png)
+
+Rotating then translating (in the code) moves the image off its center over time:
+
+![Rotate then translate](images/rotate-then-translate.png)
+
+Rotate -> translate (in the code) = translate -> rotate
+The code expresses the reverse order of the transformation that you want.
+
+The different transformation is due to the fact that matrix multiplication is *not* commutative - order will affect the final transforation matrix.
+
+Last column of the matrix that rotates, then translates:
+```
+[0.5, -0.5, 0, 1]
+```
+
+Last column of the matrix that translates, then rotates:
+```
+[0.5*cos(θ) + 0.5*sin(θ), 0.5*sin(θ) - 0.5cos(θ), 0, 1]
+```
+
+### GLM Debugging
+
+[Print the columns of a matrix](https://gist.github.com/donaldmunro/38841d72c65a1c32f2bf83a4a00a2c9a):
+
+```cpp
+#include <glm/gtx/string_cast.hpp> // to_string()
+
+// create an Identity matrix
+glm::mat4 my_matrix = glm::mat4(1.0f);
+std::cout << glm::to_string(my_matrix) << std::endl; 
+```
