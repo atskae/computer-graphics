@@ -73,6 +73,27 @@ Last column of the matrix that translates, then rotates:
 [0.5*cos(θ) + 0.5*sin(θ), 0.5*sin(θ) - 0.5cos(θ), 0, 1]
 ```
 
+Scaling image:
+
+
+To draw two containers, I created two EBOs (but still having 1 VBO). When drawing each container, you have to activate it's EBO:
+```cpp
+// Create the transformation matrix for this container
+glm::mat4 trans1 = glm::mat4(1.0f); // Identity matrix
+// .. do stuff with the matrix (glm::translate, rotate, scale)
+
+// Update the transformation matrix in the vertex shader
+glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans1));
+
+// Activate the EBO for this container
+glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO[0]);
+
+// Zeichnen!
+glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
+```
+
+![Scaling image](images/scaling.png)
+
 ### GLM Debugging
 
 [Print the columns of a matrix](https://gist.github.com/donaldmunro/38841d72c65a1c32f2bf83a4a00a2c9a):

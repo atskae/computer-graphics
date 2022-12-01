@@ -178,19 +178,20 @@ int main(int argc, char* argv[]) {
     // After this bind call, any functions related to vertex buffer objects (VBO) will store
     //  its state inside this VAO
     glBindVertexArray(VAO);
-        
-    // Create a vertex buffer object, which stores the vertices
-    // that will be sent to the GPU's memory
-    unsigned int VBO;
-    // Creates a buffer object behind the scenes, and assigns an ID to it
-    glGenBuffers(1, &VBO);
 
     // Location of input argument in the vertex shader program
     unsigned int vertexAttributeLocation = 0;
 
     // Location of the input argument for color in the vertex shader
-    unsigned int colorAttributeLocation = 1;
-      
+    unsigned int colorAttributeLocation = 2;
+
+    // Create vertex buffer objects, which stores the vertices
+    // that will be sent to the GPU's memory
+    unsigned int VBO;
+    
+    // Creates a buffer object behind the scenes, and assigns an ID to it
+    glGenBuffers(1, &VBO);
+              
     // Specify that the newly created buffer object is specifically a vertex buffer object
     // This binds the GL_ARRAY_BUFFER to the one we created, VBO
     // Any operations on the GL_ARRAY_BUFFER will configure our VBO object
@@ -247,16 +248,18 @@ int main(int argc, char* argv[]) {
     );
     // Enable the (color) vertex attribute in the vertex shader `(location = 1)`
     glEnableVertexAttribArray(colorAttributeLocation);
-
-    // Element buffer object
-    unsigned int EBO;
-    // Create one buffer and assign unique ID
-    glGenBuffers(1, &EBO);
     
-    // Do the same for the Element Buffer Object
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
+    // Element buffer objects
+    unsigned int EBO[2];
+    for (int i=0; i<2; i++) {
+        // Create one buffer and assign unique ID
+        glGenBuffers(1, &EBO[i]);
+    
+        // Do the same for the Element Buffer Object
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO[i]);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    }
+    
     /* Textures */
     
     unsigned int textureAttributeLocation = 2;
@@ -393,6 +396,7 @@ int main(int argc, char* argv[]) {
     // Translation
     // Move toward the bottom-right corner
     glm::vec3 translation(0.5f, -0.5f, 0.0f);
+    glm::vec3 translation_top_right(0.5f, 0.5f, 0.0f);
 
     glm::mat4 debug_trans = glm::mat4(1.0f); // create the Identity matrix
     debug_trans = glm::translate(debug_trans, translation);
@@ -426,19 +430,19 @@ int main(int argc, char* argv[]) {
         // Define the transformation matrix
         // Operation: rotate image, then translate
         // We have to declare the transformations in reverse!!
-        glm::mat4 trans = glm::mat4(1.0f); // create the Identity matrix
+        glm::mat4 trans0 = glm::mat4(1.0f); // create the Identity matrix
         
         // Use the time since GLFW was initialized
         float angle_rotation_degrees = (float)glfwGetTime();
-        trans = glm::rotate(trans, glm::radians(angle_rotation_degrees), axis_of_rotation);
+        trans0 = glm::rotate(trans0, glm::radians(angle_rotation_degrees), axis_of_rotation);
 
         // Translate image
-        trans = glm::translate(trans, translation);
+        trans0 = glm::translate(trans0, translation);
 
         // Set transformation matrix to the vector shader
         // We pass 1 matrix (without transpose, so GL_FALSE) and convert glm's data format to OpenGL's
         //  with the value_ptr() call
-        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans0));
 
         // Make the texture object that we created the active texture object
         // Bind each texture to its own texture unit in the fragment shader
@@ -455,6 +459,23 @@ int main(int argc, char* argv[]) {
 
         // Draw a rectangle from the Element Buffer Object that is currently bound
         // The last argument is the starting index of the indices array (...?)
+        // Activate the first container
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO[0]);
+        // Zeichnen!
+        glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
+
+        // Try moving the second container
+        glm::mat4 trans1 = glm::mat4(1.0f);
+        trans1 = glm::translate(trans1, translation_top_right);
+        // Apply scaling over time
+        float image_scale = glm::sin((float)glfwGetTime());
+        trans1 = glm::scale(trans1, glm::vec3(image_scale, image_scale, 1.0f));
+        // Set the new matrix to the vertex shader
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans1));
+
+        // Draw the second container!
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO[1]);
+        // Zeichnen!
         glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
 
         /* Rendering end */

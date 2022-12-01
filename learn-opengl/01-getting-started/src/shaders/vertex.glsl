@@ -13,7 +13,7 @@ layout (location = 3) in vec2 aTexCoord2;
 // Offset to add to the x-coordinate
 uniform float horizontalOffset;
 
-// Transformation matrix
+// Transformation matrices
 uniform mat4 transform;
 
 // Values to send to the fragment shader
