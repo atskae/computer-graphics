@@ -76,7 +76,7 @@ Last column of the matrix that translates, then rotates:
 Scaling image:
 
 
-To draw two containers, I created two EBOs (but still having 1 VBO). When drawing each container, you have to activate it's EBO:
+To draw two containers, ~~I created two EBOs (but still having 1 VBO). When drawing each container, you have to activate it's EBO~~ Ok actually you can draw two separate containers with 1 EBO (the two containers use the same vertex data - no need to create a separate EBO per container):
 ```cpp
 // Create the transformation matrix for this container
 glm::mat4 trans1 = glm::mat4(1.0f); // Identity matrix
@@ -85,12 +85,11 @@ glm::mat4 trans1 = glm::mat4(1.0f); // Identity matrix
 // Update the transformation matrix in the vertex shader
 glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans1));
 
-// Activate the EBO for this container
-glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO[0]);
-
 // Zeichnen!
 glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
 ```
+
+The EBO/VBO content are not modified in the transformation, so it is safe to resuse them across different draw calls (makes sense...).
 
 ![Scaling image](images/scaling.png)
 

@@ -249,16 +249,14 @@ int main(int argc, char* argv[]) {
     // Enable the (color) vertex attribute in the vertex shader `(location = 1)`
     glEnableVertexAttribArray(colorAttributeLocation);
     
-    // Element buffer objects
-    unsigned int EBO[2];
-    for (int i=0; i<2; i++) {
-        // Create one buffer and assign unique ID
-        glGenBuffers(1, &EBO[i]);
+    // Element buffer object
+    unsigned int EBO;
+    // Create one buffer and assign unique ID
+    glGenBuffers(1, &EBO);
     
-        // Do the same for the Element Buffer Object
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO[i]);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-    }
+    // Do the same for the Element Buffer Object
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     
     /* Textures */
     
@@ -459,8 +457,6 @@ int main(int argc, char* argv[]) {
 
         // Draw a rectangle from the Element Buffer Object that is currently bound
         // The last argument is the starting index of the indices array (...?)
-        // Activate the first container
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO[0]);
         // Zeichnen!
         glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
 
@@ -473,8 +469,6 @@ int main(int argc, char* argv[]) {
         // Set the new matrix to the vertex shader
         glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans1));
 
-        // Draw the second container!
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO[1]);
         // Zeichnen!
         glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
 
