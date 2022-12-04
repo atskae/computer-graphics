@@ -210,15 +210,15 @@ int main(int argc, char* argv[]) {
         -0.5f, 0.5f, 0.0f,      1.0f, 1.0f, 0.0f,       0.0f, 1.0f,     0.0f, numAwesomeFaces               // top-right
     };
     // Number of floats between each vertice data (position, color, texture)
-    int verticesStride = 10;
+    int verticesStride = 5;
     
-    // A list of triangle's (that make up the rectangle) vertices by index
-    // This create a rectangle split from top-left to bottom-right
-    unsigned int indices[] = {
-        0, 1, 3, // top-half triangle
-        1, 2, 3 // bottom-half-triangle
-    };
-    unsigned int numIndices = 6;
+    //// A list of triangle's (that make up the rectangle) vertices by index
+    //// This create a rectangle split from top-left to bottom-right
+    //unsigned int indices[] = {
+    //    0, 1, 3, // top-half triangle
+    //    1, 2, 3 // bottom-half-triangle
+    //};
+    //unsigned int numIndices = 6;
 
     // Vertex attribute object
     // Stores the state of glVertexAttribPointer() and related calls
@@ -235,7 +235,7 @@ int main(int argc, char* argv[]) {
     unsigned int vertexAttributeLocation = 0;
 
     // Location of the input argument for color in the vertex shader
-    unsigned int colorAttributeLocation = 2;
+    unsigned int colorAttributeLocation = 1;
 
     // Create vertex buffer objects, which stores the vertices
     // that will be sent to the GPU's memory
@@ -271,7 +271,6 @@ int main(int argc, char* argv[]) {
         // Stride, the space between vertex attributes, in bytes
         // If we specify 0, OpenGL tries to figure this out itself
         //  This only works if the data is tightly-packed (no padding between attributes)
-        // 3 values for vertex, 3 values for color, 2 values for texture coordinates, total values = 8
         sizeof(float) * verticesStride,
         //0,
         // Where the data starts in the buffer
@@ -281,26 +280,26 @@ int main(int argc, char* argv[]) {
     // Enable the vertex attribute in the vertex shader `(location = 0)`
     glEnableVertexAttribArray(vertexAttributeLocation);
     
-    // Configure the color (vertex attribute) in the vertex shader
-    glVertexAttribPointer(
-        // The value we specified in our vertex shader, `layout (location = 1)`
-        // Where to find the memory location of the vec3 input to the vertex shader
-        colorAttributeLocation,
-        // The size of the vertex shader's input (vec3 aPos)
-        3,
-        // The type of the value in the input vec3
-        GL_FLOAT,
-        // Indicate whether the data should be normalized ([-1, 1] for signed values, [0, 1] for positive)
-        GL_FALSE,
-        // Stride, the space between vertex attributes, in bytes
-        // 3 values for vertex, 3 values for color, 2 for texture, total values = 8
-        sizeof(float) * verticesStride,
-        // Where the data starts in the buffer
-        // Since the data starts at the beginning of the buffer, we use 0
-        (void*)(3 * sizeof(float))
-    );
-    // Enable the (color) vertex attribute in the vertex shader `(location = 1)`
-    glEnableVertexAttribArray(colorAttributeLocation);
+    //// Configure the color (vertex attribute) in the vertex shader
+    //glVertexAttribPointer(
+    //    // The value we specified in our vertex shader, `layout (location = 1)`
+    //    // Where to find the memory location of the vec3 input to the vertex shader
+    //    colorAttributeLocation,
+    //    // The size of the vertex shader's input (vec3 aPos)
+    //    3,
+    //    // The type of the value in the input vec3
+    //    GL_FLOAT,
+    //    // Indicate whether the data should be normalized ([-1, 1] for signed values, [0, 1] for positive)
+    //    GL_FALSE,
+    //    // Stride, the space between vertex attributes, in bytes
+    //    // 3 values for vertex, 3 values for color, 2 for texture, total values = 8
+    //    sizeof(float) * verticesStride,
+    //    // Where the data starts in the buffer
+    //    // Since the data starts at the beginning of the buffer, we use 0
+    //    (void*)(3 * sizeof(float))
+    //);
+    //// Enable the (color) vertex attribute in the vertex shader `(location = 1)`
+    //glEnableVertexAttribArray(colorAttributeLocation);
     
     //// Element buffer object
     //unsigned int EBO;
@@ -340,10 +339,11 @@ int main(int argc, char* argv[]) {
             // The number of bytes between the first element of each texture coordinate
             //  aka the stride
             sizeof(float) * verticesStride,
-            // Pointer offset to the first texture coordinate in `rectangle_vertices`
+            // Pointer offset to the first texture coordinate in the vertices data
+            (void*)(sizeof(float)*3)
             // 6 is where texture coordinates start in general in the rectangle_vertices array
             // + 2*i will choose either texture1 (i=0) or texture2 (i=1)
-            (void*)(sizeof(float)*(6 + 2*i))
+            //(void*)(sizeof(float)*(6 + 2*i))
         );
         glEnableVertexAttribArray(textureAttributeLocation+i);
 
@@ -431,10 +431,10 @@ int main(int argc, char* argv[]) {
 
     // Define the Model matrix, which converts local coordinates to global coordinates
     glm::mat4 model(1.0f); // Identiy matrix
-    // Rotate around the x-axis
-    glm::vec3 x_axis(1.0f, 0.0f, 0.0f);
     glm::vec3 axis_of_rotation(0.5f, 1.0f, 0.0f);
-    model = glm::rotate(model, glm::radians(-55.0f), x_axis);
+    //// Rotate around the x-axis
+    //glm::vec3 x_axis(1.0f, 0.0f, 0.0f);
+    //model = glm::rotate(model, glm::radians(-55.0f), x_axis);
 
     // Define the View matrix, which captures a scene in the view of the camera
     // We aren't really moving the camera, we are moving the scene relative to a camera at the origin (?)

@@ -190,3 +190,37 @@ In OpenGL, a cube has ~~8~~ 36 vertices:
 * In OpenGL, (mostly?) everything is in terms of triangles
 * Vertices here does not mean *unique* vertices
   * The triangles share vertices, but we still count each triangle's verticies separately/accumulate to the total count
+
+Totally failed with the first attempt... (but amusing animation).
+
+![Failed cube rotation](images/rotate-cube-fail.png)
+
+Ok slightly better...
+
+Change the stride between `vertices[]` data from 10 to 5:
+```cpp
+// Number of floats between each vertice data (position, color, texture)
+int verticesStride = 5;
+```
+
+Still not right...
+
+![Update vertices stride](images/update-vertices-stride.png)
+
+Updated where the index of the texture coordinates start in the `vertices[]` data:
+```cpp
+glVertexAttribPointer(
+  // ...
+  // The number of bytes between the first element of each texture coordinate
+  //  aka the stride
+  sizeof(float) * verticesStride,
+  // Pointer offset to the first texture coordinate in `rectangle_vertices`
+  (void*)(sizeof(float)*3) // <--- updated this line
+);
+```
+
+![Updated pointer offset](images/updated-pointer-offset-texture.png)
+
+Ok, now it's rotating too fast like some maniac:
+
+![Rotating too fast](images/rotating-way-too-fast.png)
