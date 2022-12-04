@@ -430,7 +430,7 @@ int main(int argc, char* argv[]) {
     shaderProgram.setInt("texture2", 1);
 
     // Define the Model matrix, which converts local coordinates to global coordinates
-    glm::mat4 model(1.0f); // Identiy matrix
+    //glm::mat4 model(1.0f); // Identiy matrix
     glm::vec3 axis_of_rotation(0.5f, 1.0f, 0.0f);
     //// Rotate around the x-axis
     //glm::vec3 x_axis(1.0f, 0.0f, 0.0f);
@@ -477,7 +477,8 @@ int main(int argc, char* argv[]) {
         // Set the transformation matrices
         int modelLoc = glGetUniformLocation(shaderProgram.getProgramId(), "model");
         // Update the angle of rotation over time
-        float angle_of_rotation = (float)glfwGetTime() * glm::radians(55.0f);
+        glm::mat4 model(1.0f); // Identity matrix
+        float angle_of_rotation = (float)glfwGetTime() * glm::radians(50.0f);
         model = glm::rotate(model, angle_of_rotation, axis_of_rotation);
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 

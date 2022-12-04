@@ -221,6 +221,19 @@ glVertexAttribPointer(
 
 ![Updated pointer offset](images/updated-pointer-offset-texture.png)
 
-Ok, now it's rotating too fast like some maniac:
+Ok, now it's rotating too fast like some maniac...
 
-![Rotating too fast](images/rotating-way-too-fast.png)
+Fixed!! I had to create a new `model` matrix (starting with the Identity matrix) in the render loop:
+```cpp
+// Inside render loop
+glm::mat4 model(1.0f); // Identity matrix
+float angle_of_rotation = (float)glfwGetTime() * glm::radians(50.0f);
+model = glm::rotate(model, angle_of_rotation, axis_of_rotation);
+glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+```
+
+Before I was creating the `model` matrix once outside the render loop, so the `glm::rotate()` call was applying a rotation to the same matrix (with the rotation already), and the `angle_of_rotation` is always increasing over time.
+
+Now it's not rotating like some kind of maniac :D
+
+![Rotation](images/rotation-at-axis.png)
