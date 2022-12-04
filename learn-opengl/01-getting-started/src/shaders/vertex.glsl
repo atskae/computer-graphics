@@ -15,6 +15,12 @@ uniform float horizontalOffset;
 
 // Transformation matrices
 uniform mat4 transform;
+// Convert local to global
+uniform mat4 model;
+// Converts global to camera/view space
+uniform mat4 view;
+// Applies perspective projection
+uniform mat4 projection;
 
 // Values to send to the fragment shader
 out vec3 fragmentShaderColor;
@@ -26,8 +32,10 @@ void main() {
     // Here we are converting the 3D input coordinate to a 4D output coordinate
     // The fourth coordinate is used for `perspective division`
     
-    // Apply the transformation
-    gl_Position = transform * vec4(aPos.x + horizontalOffset, aPos.y, aPos.z, 1.0f);
+    // Apply the transformations
+    // Read tranformations from right to left
+    // So here, model is applied first, then view, then lastly projection
+    gl_Position = projection * view * model * vec4(aPos.x + horizontalOffset, aPos.y, aPos.z, 1.0f);
     
     // Set the color as the output to the vertex shader
     // This becomes the input to the fragment shader

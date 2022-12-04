@@ -376,31 +376,29 @@ int main(int argc, char* argv[]) {
     shaderProgram.setInt("texture1", 0); // assign sampler texture1 to texture unit zero
     shaderProgram.setInt("texture2", 1);
 
-    // Get the location of the transformation matrix to configure it later
-    int transformLoc = glGetUniformLocation(shaderProgram.getProgramId(), "transform");
-    if (transformLoc < 0) {
-        std::cerr << "Failed to find location transform in shader program" << std::endl;
-    }
+    // Define the Model matrix, which converts local coordinates to global coordinates
+    glm::mat4 model(1.0f); // Identiy matrix
+    // Rotate around the x-axis
+    glm::vec3 x_axis(1.0f, 0.0f, 0.0f);
+    model = glm::rotate(model, glm::radians(-55.0f), x_axis);
 
-    // Constant transformation settings    
+    // Define the View matrix, which captures a scene in the view of the camera
+    // We aren't really moving the camera, we are moving the scene relative to a camera at the origin (?)
+    // So to give the view of the camera that moved away from the scene, we move the scene away from the camera
+    glm::mat4 view(1.0f);
+    // Translate the vertices into the screen (-z axis)
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 
-    // Must be a unit vector (length = 1)
-    // Use the z-axis for the axis of rotation
-    glm::vec3 axis_of_rotation(0.0f, 0.0f, 1.0f);
-
-    // Apply scale
-    //glm::vec3 scale(0.5f, 0.5f, 0.5f);
-
-    // Translation
-    // Move toward the bottom-right corner
-    glm::vec3 translation(0.5f, -0.5f, 0.0f);
-    glm::vec3 translation_top_right(0.5f, 0.5f, 0.0f);
-
-    glm::mat4 debug_trans = glm::mat4(1.0f); // create the Identity matrix
-    debug_trans = glm::translate(debug_trans, translation);
-
-    std::cout << "Translation matrix" << std::endl;
-    std::cout << glm::to_string(debug_trans) << std::endl; 
+    // Define the perspective projection matrix
+    float field_of_view = glm::radians(45.0f);
+    float aspect_ratio = window_width_pixels / window_height_pixels;
+    //glm::mat4 projection = glm::mat4(1.0f);
+    glm::mat4 projection = glm::perspective(
+        field_of_view,
+        aspect_ratio,
+        0.1f, // zmin, where the near plane is
+        100.0f // zmax, where the far plane is
+    );
 
     // Start the render loop
     // This keeps the application running and handles new input
@@ -422,25 +420,15 @@ int main(int argc, char* argv[]) {
         // Apply the color to the window's color buffer
         glClear(GL_COLOR_BUFFER_BIT);
         
-        // (re) activate the EBO
-        //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        // Set the transformation matrices
+        int modelLoc = glGetUniformLocation(shaderProgram.getProgramId(), "model");
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-        // Define the transformation matrix
-        // Operation: rotate image, then translate
-        // We have to declare the transformations in reverse!!
-        glm::mat4 trans0 = glm::mat4(1.0f); // create the Identity matrix
-        
-        // Use the time since GLFW was initialized
-        float angle_rotation_degrees = (float)glfwGetTime();
-        trans0 = glm::rotate(trans0, glm::radians(angle_rotation_degrees), axis_of_rotation);
+        int viewLoc = glGetUniformLocation(shaderProgram.getProgramId(), "view");
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
-        // Translate image
-        trans0 = glm::translate(trans0, translation);
-
-        // Set transformation matrix to the vector shader
-        // We pass 1 matrix (without transpose, so GL_FALSE) and convert glm's data format to OpenGL's
-        //  with the value_ptr() call
-        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans0));
+        int projectionLoc = glGetUniformLocation(shaderProgram.getProgramId(), "projection");
+        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
         // Make the texture object that we created the active texture object
         // Bind each texture to its own texture unit in the fragment shader
@@ -452,23 +440,8 @@ int main(int argc, char* argv[]) {
 
         glBindVertexArray(VAO);
         
-        // Zeichnen!
-        //glDrawArrays(GL_TRIANGLES, startTriangleIndex, 3);
-
         // Draw a rectangle from the Element Buffer Object that is currently bound
         // The last argument is the starting index of the indices array (...?)
-        // Zeichnen!
-        glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
-
-        // Try moving the second container
-        glm::mat4 trans1 = glm::mat4(1.0f);
-        trans1 = glm::translate(trans1, translation_top_right);
-        // Apply scaling over time
-        float image_scale = glm::sin((float)glfwGetTime());
-        trans1 = glm::scale(trans1, glm::vec3(image_scale, image_scale, 1.0f));
-        // Set the new matrix to the vertex shader
-        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans1));
-
         // Zeichnen!
         glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
 

@@ -64,3 +64,116 @@ After converting to clip space, **perspective division** is applied, where each 
 Two types of projection matrices:
 * Orthographic
 * Perspective
+
+## Orthographic Projection
+A **near plane** and **far plane** define the frustum box, where anything inside this box is rendered while anything outside the box is clipped.
+* Box frustum defined by: width, height, near plane, far plane
+
+Defining a [orthographic matrix in GLM](https://knowww.eu/nodes/59b8e93cd54a862e9d7e40e4):
+```cpp
+glm::ortho(
+  0.0f, // xmin - left limit of the near/far plane
+  800f, // xmax - right limit
+  0.0f, // ymin - bottom of plane
+  600f, // ymax - top of plane
+  1.0f, // zmin - depth/distance between near and far plane
+  100.0f, // zmax
+);
+```
+
+The orthographic matrix does not take perspective into account, for that we use perspective projection.
+
+## Perspective Projection
+**Perspective**: objects farther away appear smaller, objects that are closer appear larger.
+* **Perspective projection** tries to mimic this effect
+
+Perspective projection matrix:
+* Maps a given frustum range to to clip space and adjusts the w-coordinate based on whether the object is far/close to the viewer
+  * The farther an object is from the viewer/camera, the larger the value w is
+  * Each vertex coordinate has its own w value
+  * The result are coordinates in range [-w, w]
+    * Anything outside this range is clipped
+* Applies **perspective division**, which creates the perspective effect
+  * Divide each coordinate (x, y, z) with the w coordinate
+  * Also puts the coordinates in range [-1, 1] (normalized device coordinates (NDC))
+
+Create a [perspective projection matrix in GLM](https://knowww.eu/nodes/59b8e93cd54a862e9d7e40e3):
+```cpp
+glm::perspective(
+  fov, // field of view (angle): how large the viewspace is
+  aspect, // aspect ratio = viewport width divided by its height
+  near, // distance between near plane and camera
+  far, // distance between far plane and camera
+);
+```
+
+All vertices between the near and far plane and inside the frustum will be rendered.
+
+### Orthographic vs Perspective Projections
+
+Orthographic projections mainly used for 2D, where we don't want a perspective effect
+* Ex. 2D engineering drawings
+
+## [Mathematics of the orthographic and perspective matrices](http://www.songho.ca/opengl/gl_projectionmatrix.html)
+Clipping (removing objects outside the view) is also called **frustum culling**.
+
+## Going 3D
+
+OpenGL uses a *right-handed coordinate system*.
+* But when converting to NDC, OpenGL uses the left-handed coordinate system
+
+Applying model, view, and projection matrices:
+
+![Applying transformation matrices](images/apply-transformation-matrices.png)
+
+Step by step:
+
+1. Original, no transformations
+
+![No transformations](images/no-transformations.png)
+
+2. Apply -55 degree rotation around the x-axis
+```cpp
+glm::mat4 model(1.0f); // Identiy matrix
+// Rotate around the x-axis
+glm::vec3 x_axis(1.0f, 0.0f, 0.0f);
+model = glm::rotate(model, glm::radians(-55.0f), x_axis);
+```
+
+![After rotation](images/after-rotation.png)
+
+Positive and negative rotations look the same (without perspective?)
+
+![After positive rotation](images/positive-rotation.png)
+
+3. Translate the image back (into the screen, along the -z-axis)
+
+```cpp
+glm::mat4 view(1.0f);
+// Translate the vertices into the screen (-z axis)
+view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+```
+
+Interestingly the screen is blank up to this point without perspective...
+
+4. With perspective
+
+```cpp
+// Define the perspective projection matrix
+float field_of_view = glm::radians(45.0f);
+float aspect_ratio = window_width_pixels / window_height_pixels;
+//glm::mat4 projection = glm::mat4(1.0f);
+glm::mat4 projection = glm::perspective(
+    field_of_view,
+    aspect_ratio,
+    0.1f, // zmin, where the near plane is
+    100.0f // zmax, where the far plane is
+);
+```
+
+![With perspective](images/negative-rotation-with-perspective.png)
+
+Now the positive rotation (along the x-axis) that moves away from the screen makes sense:
+
+![Positive rotation with perspective](images/positive-rotation-with-perspective.png)
+
