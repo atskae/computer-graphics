@@ -177,3 +177,16 @@ Now the positive rotation (along the x-axis) that moves away from the screen mak
 
 ![Positive rotation with perspective](images/positive-rotation-with-perspective.png)
 
+
+### More 3D
+
+In OpenGL, a cube has ~~8~~ 36 vertices:
+* 6 faces on a cube
+* Each face has 2 triangles
+* Each triangle has 3 vertices
+
+`6 * 2 * 3 = 36 vertices`
+
+* In OpenGL, (mostly?) everything is in terms of triangles
+* Vertices here does not mean *unique* vertices
+  * The triangles share vertices, but we still count each triangle's verticies separately/accumulate to the total count

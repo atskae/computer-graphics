@@ -133,19 +133,71 @@ int main(int argc, char* argv[]) {
 
     // 2D triangle
     int startTriangleIndex = 0;
-    
+
+    // 3D cube
+    // 36 vertices in total
+    // 6 faces, 2 triangles per face, 3 vertices per triangle
     float vertices[] = {
-        // CMY triangle
-        //// Positions            // Colors
-        //-0.5f, -0.5f, 0.0f,     1.0f, 1.0f, 0.0f, // bottom-left
-        //0.0f, 0.5f, 0.0f,       0.0f, 1.0f, 1.0f, // top
-        //0.5f, -0.5f, 0.0f,      1.0f, 0.0f, 1.0f, // bottom-right
-        // RGB triangle
-        // Positions            // Colors
-        -0.5f, -0.5f, 0.0f,     1.0f, 0.0f, 0.0f, // bottom-left
-        0.0f, 0.5f, 0.0f,       0.0f, 1.0f, 0.0f, // top
-        0.5f, -0.5f, 0.0f,      0.0f, 0.0f, 1.0f, // bottom-right
-    };
+        // Back face of cube
+        // Triangle
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         // Triangle
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+        // Front face of cube
+        // Triangle
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        // Triangle 
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+        // Left face of cube (facing the negative x-axis)
+        // Triangle
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        // Triangle
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+        // Right-face of cube (facing the positive x-axis)
+        // Triangle
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        // Triangle 
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+        // Bottom face of cube
+        // Triangle
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        // Triangle
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+        // Top face of cube
+        // Triangle
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        // Triangle 
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+    }; 
 
     // Rectangle using an Element Buffer Object (EBO)
     // The z-coordinates are zero to keep it 2D in a 3D space
@@ -201,8 +253,9 @@ int main(int argc, char* argv[]) {
     // The fourth argument specifies how the GPU should manage the data
     // GL_STATIC_DRAW is best for data that doesn't change much and is read many times
     // If the data changes a lot, we'd use GL_DYNAMIC_DRAW
-    glBufferData(GL_ARRAY_BUFFER, sizeof(rectangle_vertices), rectangle_vertices, GL_STATIC_DRAW);
-
+    //glBufferData(GL_ARRAY_BUFFER, sizeof(rectangle_vertices), rectangle_vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    
     // Specify to OpenGL how to interpret the vertex data in the vertex shader
     // This is applied to the currently active VBO specified in BindBuffer()
     glVertexAttribPointer(
@@ -249,14 +302,14 @@ int main(int argc, char* argv[]) {
     // Enable the (color) vertex attribute in the vertex shader `(location = 1)`
     glEnableVertexAttribArray(colorAttributeLocation);
     
-    // Element buffer object
-    unsigned int EBO;
-    // Create one buffer and assign unique ID
-    glGenBuffers(1, &EBO);
+    //// Element buffer object
+    //unsigned int EBO;
+    //// Create one buffer and assign unique ID
+    //glGenBuffers(1, &EBO);
     
-    // Do the same for the Element Buffer Object
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    //// Do the same for the Element Buffer Object
+    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     
     /* Textures */
     
@@ -380,6 +433,7 @@ int main(int argc, char* argv[]) {
     glm::mat4 model(1.0f); // Identiy matrix
     // Rotate around the x-axis
     glm::vec3 x_axis(1.0f, 0.0f, 0.0f);
+    glm::vec3 axis_of_rotation(0.5f, 1.0f, 0.0f);
     model = glm::rotate(model, glm::radians(-55.0f), x_axis);
 
     // Define the View matrix, which captures a scene in the view of the camera
@@ -422,6 +476,9 @@ int main(int argc, char* argv[]) {
         
         // Set the transformation matrices
         int modelLoc = glGetUniformLocation(shaderProgram.getProgramId(), "model");
+        // Update the angle of rotation over time
+        float angle_of_rotation = (float)glfwGetTime() * glm::radians(55.0f);
+        model = glm::rotate(model, angle_of_rotation, axis_of_rotation);
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
         int viewLoc = glGetUniformLocation(shaderProgram.getProgramId(), "view");
@@ -443,7 +500,13 @@ int main(int argc, char* argv[]) {
         // Draw a rectangle from the Element Buffer Object that is currently bound
         // The last argument is the starting index of the indices array (...?)
         // Zeichnen!
-        glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
+        //glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
+
+        // Draw from the VBO
+        glDrawArrays(GL_TRIANGLES,
+            0, // index of the first element
+            36 // number of vertices
+        );
 
         /* Rendering end */
 
