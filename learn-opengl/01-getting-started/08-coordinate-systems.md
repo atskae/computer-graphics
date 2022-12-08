@@ -237,3 +237,22 @@ Before I was creating the `model` matrix once outside the render loop, so the `g
 Now it's not rotating like some kind of maniac :D
 
 ![Rotation](images/rotation-at-axis.png)
+
+## Z-Buffer
+
+OpenGL stores depth information in a **z-buffer**, or **depth-buffer**.
+* A fragment's z-value is its depth.
+* OpenGL compares a fragment's z-value with the value in the z-buffer.
+* **Depth-testing**: remove fragments that are behind other fragments (in terms of depth); done by OpenGL
+  * Disabled by default
+
+To use the depth buffer, we need to:
+* Enable it explicity with `glEnable()`
+* Clear the depth buffer on each iteration of the render loop with `glClear()`
+  * The same way that we clear the color buffer per iteration
+  * This is so we clear the depth information of the previous frame
+  * If you don't do this, nothing gets rendered
+
+Using the depth buffer, cool!
+![Use depth buffer](images/use-depth-buffer.png)
+

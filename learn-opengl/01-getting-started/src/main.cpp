@@ -131,6 +131,9 @@ int main(int argc, char* argv[]) {
         1.0f, // alpha
     };
 
+    // Enable depth testing
+    glEnable(GL_DEPTH_TEST);
+
     // 2D triangle
     int startTriangleIndex = 0;
 
@@ -473,7 +476,10 @@ int main(int argc, char* argv[]) {
 
         // Apply the color to the window's color buffer
         glClear(GL_COLOR_BUFFER_BIT);
-        
+
+        // Clear the previous frames depth buffer information
+        glClear(GL_DEPTH_BUFFER_BIT);
+
         // Set the transformation matrices
         int modelLoc = glGetUniformLocation(shaderProgram.getProgramId(), "model");
         // Update the angle of rotation over time
