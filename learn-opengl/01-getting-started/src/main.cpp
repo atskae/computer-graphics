@@ -202,6 +202,20 @@ int main(int argc, char* argv[]) {
         -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     }; 
 
+    // Positions where we move and place each cube
+    glm::vec3 cubePositions[10] = {
+        glm::vec3( 0.0f,  0.0f,  0.0f), 
+        glm::vec3( 2.0f,  5.0f, -15.0f), 
+        glm::vec3(-1.5f, -2.2f, -2.5f),  
+        glm::vec3(-3.8f, -2.0f, -12.3f),  
+        glm::vec3( 2.4f, -0.4f, -3.5f),  
+        glm::vec3(-1.7f,  3.0f, -7.5f),  
+        glm::vec3( 1.3f, -2.0f, -2.5f),  
+        glm::vec3( 1.5f,  2.0f, -2.5f), 
+        glm::vec3( 1.5f,  0.2f, -1.5f), 
+        glm::vec3(-1.3f,  1.0f, -1.5f)  
+    };
+
     // Rectangle using an Element Buffer Object (EBO)
     // The z-coordinates are zero to keep it 2D in a 3D space
     float numAwesomeFaces = 1.0f; // per row/column
@@ -480,13 +494,13 @@ int main(int argc, char* argv[]) {
         // Clear the previous frames depth buffer information
         glClear(GL_DEPTH_BUFFER_BIT);
 
-        // Set the transformation matrices
+        //// Set the transformation matrices
         int modelLoc = glGetUniformLocation(shaderProgram.getProgramId(), "model");
-        // Update the angle of rotation over time
-        glm::mat4 model(1.0f); // Identity matrix
-        float angle_of_rotation = (float)glfwGetTime() * glm::radians(50.0f);
-        model = glm::rotate(model, angle_of_rotation, axis_of_rotation);
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        //// Update the angle of rotation over time
+        //glm::mat4 model(1.0f); // Identity matrix
+        //float angle_of_rotation = (float)glfwGetTime() * glm::radians(50.0f);
+        //model = glm::rotate(model, angle_of_rotation, axis_of_rotation);
+        //glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
         int viewLoc = glGetUniformLocation(shaderProgram.getProgramId(), "view");
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
@@ -509,11 +523,22 @@ int main(int argc, char* argv[]) {
         // Zeichnen!
         //glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
 
-        // Draw from the VBO
-        glDrawArrays(GL_TRIANGLES,
-            0, // index of the first element
-            36 // number of vertices
-        );
+        //// Draw from the VBO
+        //glDrawArrays(GL_TRIANGLES,
+        //    0, // index of the first element
+        //    36 // number of vertices
+        //);
+
+        // Draw each cube positioned at different locations
+        for (int i=0; i<10; i++) {
+            // Create a transformation matrix for this cube and apply it in the vertex shader
+            glm::mat4 model_matrix(1.0f);
+            model_matrix = glm::translate(model_matrix, cubePositions[i]);
+            model_matrix = glm::rotate(model_matrix, glm::radians(20.f * i), glm::vec3(1.0f, 0.3f, 0.5f));
+            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model_matrix));
+            // Draw the cube!
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
 
         /* Rendering end */
 

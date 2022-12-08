@@ -256,3 +256,22 @@ To use the depth buffer, we need to:
 Using the depth buffer, cool!
 ![Use depth buffer](images/use-depth-buffer.png)
 
+### Many Cubes
+
+We use the same vertex data, but for each cube, update the `model` matrix (apply a different translation and a rotation) and draw each cube separately `glDrawArrays()`.
+
+The main cube in the center is also drawn in this loop (so the original one was removed):
+```cpp
+// Draw each cube positioned at different locations
+for (int i=0; i<10; i++) {
+    // Create a transformation matrix for this cube and apply it in the vertex shader
+    glm::mat4 model_matrix(1.0f);
+    model_matrix = glm::translate(model_matrix, cubePositions[i]);
+    model_matrix = glm::rotate(model_matrix, glm::radians(20.f * i), glm::vec3(1.0f, 0.3f, 0.5f));
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model_matrix));
+    // Draw the cube!
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+}
+```
+
+![Many cubes](images/many-cubes.png)
