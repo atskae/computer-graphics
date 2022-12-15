@@ -336,7 +336,7 @@ int main(int argc, char* argv[]) {
     // Configure stdbi library to flip the y-axis
     stbi_set_flip_vertically_on_load(true);
     
-    const char* textureFilenames[] = {"textures/container.jpg", "textures/awesomeface.png"};
+    const char* textureFilenames[] = {"textures/container.jpg", "textures/linux-penguin-with-outline.png"};
     unsigned int textureIds[] = {0};
     GLenum imageFormats[] = {GL_RGB, GL_RGBA};
     GLint wrappingParam[] = {GL_REPEAT, GL_REPEAT};
@@ -461,7 +461,7 @@ int main(int argc, char* argv[]) {
     view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 
     // Define the perspective projection matrix
-    float field_of_view = glm::radians(45.0f);
+    float field_of_view = glm::radians(45.0f); // converts degrees to radians
     float aspect_ratio = window_width_pixels / window_height_pixels;
     //glm::mat4 projection = glm::mat4(1.0f);
     glm::mat4 projection = glm::perspective(
