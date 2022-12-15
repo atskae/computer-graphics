@@ -275,3 +275,29 @@ for (int i=0; i<10; i++) {
 ```
 
 ![Many cubes](images/many-cubes.png)
+
+## Exercises
+
+### Field of View and Aspect Ratio
+
+Field of view (FOV)
+
+100 degrees
+![100 degrees](images/fov-100.png)
+
+65 degrees
+![65 degrees](images/fov-65.png)
+
+
+45 degrees
+![45 degrees](images/fov-45.png)
+
+25 degrees
+![25 degrees](images/fov-25.png)
+
+5 degrees
+![5 degrees](images/fov-5.png)
+
+💥 *crashes into camera*
+
+Aspect Ratio
