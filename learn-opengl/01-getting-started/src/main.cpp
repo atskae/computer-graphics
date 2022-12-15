@@ -79,8 +79,8 @@ int main(int argc, char* argv[]) {
 
 
     // Create a window object, which holds the window data 
-    int window_width_pixels = 800;
-    int window_height_pixels = 600;
+    int window_width_pixels = 1200;
+    int window_height_pixels = 800;
     GLFWwindow* window = glfwCreateWindow(
         window_width_pixels,
         window_height_pixels,
@@ -462,7 +462,10 @@ int main(int argc, char* argv[]) {
 
     // Define the perspective projection matrix
     float field_of_view = glm::radians(45.0f); // converts degrees to radians
-    float aspect_ratio = window_width_pixels / window_height_pixels;
+    float aspect_ratio = (float)window_width_pixels / (float)window_height_pixels;
+    std::cout << "Window width: " << window_width_pixels << " pixels" << std::endl;
+    std::cout << "Window height: " << window_height_pixels << " pixels" << std::endl;
+    std::cout << "Aspect ratio: " << std::to_string(aspect_ratio) << std::endl;
     //glm::mat4 projection = glm::mat4(1.0f);
     glm::mat4 projection = glm::perspective(
         field_of_view,

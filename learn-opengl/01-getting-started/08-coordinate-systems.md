@@ -301,3 +301,35 @@ Field of view (FOV)
 💥 *crashes into camera*
 
 Aspect Ratio
+
+Change the window's width and height to change the aspect ratio"
+```cpp
+// Create a window object, which holds the window data 
+int window_width_pixels = 800;
+int window_height_pixels = 600;
+GLFWwindow* window = glfwCreateWindow(
+  // ...
+);
+```
+
+The aspect ratio was calculated incorrectly until now... Forgot to cast window dimensions to a `float` OTL
+```cpp
+float aspect_ratio = (float)window_width_pixels / (float)window_height_pixels;
+```
+
+[Common aspect ratios](https://www.adobe.com/uk/creativecloud/photography/discover/standard-photo-sizes.html)
+
+Window: 800x600 pixels
+Aspect ratio = 4:3 ~= 1.3
+
+![Aspect ratio 4:3](images/aspect-ratio-4-3.png)
+
+Window: 800x800 pixels
+Aspect ratio: 1:1 = 1.0
+
+![Aspect ratio 1:1](images/aspect-ratio-1-1.png)
+
+Window: 1200x800 pixels
+Aspect ratio: 3:2 = 1.5
+
+![Aspect ratio 3:2](images/aspect-ratio-3-2.png)
