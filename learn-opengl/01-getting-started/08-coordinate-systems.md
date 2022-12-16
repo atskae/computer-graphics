@@ -338,3 +338,8 @@ Window: 800x450 pixels
 Aspect ratio: 16:9 ~= 1.8
 
 ![Aspect ratio 16:9](images/aspect-ratio-16-9.png)
+
+## Reading
+
+* [Perspective and orthogoal matrices (Scratchapixel)](https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/projection-matrix-introduction)
+
