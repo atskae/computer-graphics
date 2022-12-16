@@ -79,8 +79,8 @@ int main(int argc, char* argv[]) {
 
 
     // Create a window object, which holds the window data 
-    int window_width_pixels = 1200;
-    int window_height_pixels = 800;
+    int window_width_pixels = 800;
+    int window_height_pixels = 450;
     GLFWwindow* window = glfwCreateWindow(
         window_width_pixels,
         window_height_pixels,

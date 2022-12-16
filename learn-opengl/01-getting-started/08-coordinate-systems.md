@@ -333,3 +333,8 @@ Window: 1200x800 pixels
 Aspect ratio: 3:2 = 1.5
 
 ![Aspect ratio 3:2](images/aspect-ratio-3-2.png)
+
+Window: 800x450 pixels
+Aspect ratio: 16:9 ~= 1.8
+
+![Aspect ratio 16:9](images/aspect-ratio-16-9.png)
