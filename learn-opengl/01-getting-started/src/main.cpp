@@ -530,12 +530,7 @@ int main(int argc, char* argv[]) {
 
         //// Set the transformation matrices
         int modelLoc = glGetUniformLocation(shaderProgram.getProgramId(), "model");
-        //// Update the angle of rotation over time
-        //glm::mat4 model(1.0f); // Identity matrix
-        //float angle_of_rotation = (float)glfwGetTime() * glm::radians(50.0f);
-        //model = glm::rotate(model, angle_of_rotation, axis_of_rotation);
-        //glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-
+        
         
         int projectionLoc = glGetUniformLocation(shaderProgram.getProgramId(), "projection");
         glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
@@ -567,8 +562,15 @@ int main(int argc, char* argv[]) {
             glm::mat4 model_matrix(1.0f);
             model_matrix = glm::translate(model_matrix, cubePositions[i]);
             model_matrix = glm::rotate(model_matrix, glm::radians(20.f * i), glm::vec3(1.0f, 0.3f, 0.5f));
-            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model_matrix));
+             
+            if (i%3 == 0) {
+                // Update the angle of rotation over time
+                float angle_of_rotation = (float)glfwGetTime() * glm::radians(50.0f);
+                model_matrix = glm::rotate(model_matrix, angle_of_rotation, axis_of_rotation);
+            }
+            
             // Draw the cube!
+            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model_matrix));
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 

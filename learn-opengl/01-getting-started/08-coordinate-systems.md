@@ -359,6 +359,27 @@ I asked ChatGPT to help me 😄🤯🤖💥
 
 ![ChatGPT](images/chatgpt-help.png)
 
+### Rotate every third
+
+```cpp
+// Draw each cube positioned at different locations
+for (int i=0; i<10; i++) {
+    // Apply the original transformations to all the cubes 
+    glm::mat4 model_matrix(1.0f);
+    model_matrix = glm::translate(model_matrix, cubePositions[i]);
+    model_matrix = glm::rotate(model_matrix, glm::radians(20.f * i), glm::vec3(1.0f, 0.3f, 0.5f));
+     
+    if (i%3 == 0) {
+        // Update the angle of rotation over time
+        float angle_of_rotation = (float)glfwGetTime() * glm::radians(50.0f);
+        model_matrix = glm::rotate(model_matrix, angle_of_rotation, axis_of_rotation);
+    }
+    
+    // Draw the cube!
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model_matrix));
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+}
+```
 
 ## Reading
 
