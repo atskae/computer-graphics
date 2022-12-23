@@ -17,6 +17,19 @@
 #include "shader.h"
 
 
+// Update the view matrix 
+void updateViewMatrix(Shader shaderProgram, unsigned int axis, float delta) {
+    // Get the current matrix from the shader
+    glm::mat4 view = shaderProgram.getMatrix("view");
+    // Get the current translation value
+    // OpenGL matrix is in column-major order, so index matrix[col][row]
+    GLfloat value = view[3][axis];
+    // Update translation value
+    view[3][axis] = value + delta;
+    std::cout << "Updated view matrix " << axis << " axis from " << value << " to " << view[3][axis] << std::endl;
+    shaderProgram.setMatrix("view", view);
+}
+
 // User input callback
 // Checks on every frame (an iteration of the render loop)
 // of keyboard inputs, mouse input, etc.
@@ -44,6 +57,22 @@ void processInput(GLFWwindow* window, Shader& shaderProgram) {
             std::cout << "Decreased mixPercentage from " << mixPercentage << " to " << newMixPercentage << std::endl;
         } 
     }
+    
+    // Configure the view matrix
+    // axis=0=x, axis=1=y, axis=2=z
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        updateViewMatrix(shaderProgram, 0, -0.1);
+    } else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        updateViewMatrix(shaderProgram, 0, 0.1);
+    } else if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS) {
+        updateViewMatrix(shaderProgram, 1, -0.1);
+    } else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        updateViewMatrix(shaderProgram, 1, 0.1);
+    } else if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {
+        updateViewMatrix(shaderProgram, 2, -0.1);
+    } else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+        updateViewMatrix(shaderProgram, 2, 0.1);
+    } 
 }
 
 // Window-resize callback
@@ -459,6 +488,8 @@ int main(int argc, char* argv[]) {
     glm::mat4 view(1.0f);
     // Translate the vertices into the screen (-z axis)
     view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+    int viewLoc = glGetUniformLocation(shaderProgram.getProgramId(), "view");
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
     // Define the perspective projection matrix
     float field_of_view = glm::radians(45.0f); // converts degrees to radians
@@ -505,9 +536,7 @@ int main(int argc, char* argv[]) {
         //model = glm::rotate(model, angle_of_rotation, axis_of_rotation);
         //glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-        int viewLoc = glGetUniformLocation(shaderProgram.getProgramId(), "view");
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-
+        
         int projectionLoc = glGetUniformLocation(shaderProgram.getProgramId(), "projection");
         glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 

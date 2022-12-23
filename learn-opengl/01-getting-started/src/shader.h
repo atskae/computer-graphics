@@ -9,6 +9,8 @@
 // Include all OpenGL headers
 #include <glad/glad.h>
 
+#include <glm/glm.hpp>
+
 
 class Shader {
     private:
@@ -28,13 +30,16 @@ class Shader {
         bool getBool(const std::string& name) const;
         float getFloat(const std::string& name) const;
         int getInt(const std::string& name) const;
-
+        // Set the returned matrix
+        glm::mat4 getMatrix(const std::string& name) const;
+        
         // Setters for uniform variables (global variables in the shader program)
         // Templating these wouldn't help much since the OpenGL functions
         // are not templated
         void setBool(const std::string& name, bool value);
         void setFloat(const std::string& name, float value);
         void setInt(const std::string& name, int value);
+        void setMatrix(const std::string& name, glm::mat4& matrix);
 };
 
 
@@ -182,6 +187,17 @@ int Shader::getInt(const std::string& name) const {
     return value;
 }
 
+glm::mat4 Shader::getMatrix(const std::string& name) const {
+    GLint location = glGetUniformLocation(this->programId, name.c_str());
+    GLfloat value[16] = {-1.0f};
+    if (location < 0) {
+        std::cerr << "Invalid uniform variable: " << name << std::endl;
+    } else {
+        glGetUniformfv(this->programId, location, value);
+    }
+    return glm::make_mat4(value);
+}
+
 /* Setters */
 
 void Shader::setBool(const std::string& name, bool value) {
@@ -204,6 +220,16 @@ void Shader::setInt(const std::string& name, int value) {
         std::cerr << "Invalid uniform variable: " << name << std::endl;
     } else {
         glUniform1i(location, value);
+    }
+}
+
+void Shader::setMatrix(const std::string& name, glm::mat4& matrix) {
+    GLint location = glGetUniformLocation(this->programId, name.c_str());
+    if (location < 0) {
+        std::cerr << "Invalid uniform variable: " << name << std::endl;
+    } else {
+        // glUniformMatrix4fv(location, count, transpose, matrix)
+        glUniformMatrix4fv(location, 1, false, glm::value_ptr(matrix));
     }
 }
 

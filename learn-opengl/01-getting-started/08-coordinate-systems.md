@@ -339,7 +339,27 @@ Aspect ratio: 16:9 ~= 1.8
 
 ![Aspect ratio 16:9](images/aspect-ratio-16-9.png)
 
+### View Matrix
+
+Adjust camera with keyboard:
+* x-axis: A, D
+* y-axis: W, X
+* z-axis: S, Z
+
+```
+...
+Updated view matrix 1 axis from 2 to 1.9
+Updated view matrix 1 axis from 1.9 to 1.8
+Updated view matrix 1 axis from 1.8 to 1.7
+```
+
+![Adjust view camera](images/adjust-view-matrix.png)
+
+I asked ChatGPT to help me 😄🤯🤖💥 
+
+![ChatGPT](images/chatgpt-help.png)
+
+
 ## Reading
 
 * [Perspective and orthogoal matrices (Scratchapixel)](https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/projection-matrix-introduction)
-
