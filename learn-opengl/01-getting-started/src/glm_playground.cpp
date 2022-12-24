@@ -10,6 +10,15 @@ void print_vector(std::string info, glm::vec4 vec) {
     std::cout << info << ": " << "(" << vec.x << "," << vec.y << "," << vec.z << ")" << std::endl;
 }
 
+void print_matrix(std::string info, glm::mat4 matrix) {
+    std::cout << info << std::endl;
+    for (int i=0; i<4; i++) {
+        for (int j=0; j<4; j++) {
+            std::cout << matrix[i][j] << " ";
+        }
+        std::cout << std::endl;
+    }   
+}
 
 int main(int argc, char* argv[]) {
     std::cout << "OpenGL Mathematics library (GLM)" << std::endl;
@@ -32,6 +41,20 @@ int main(int argc, char* argv[]) {
     
     print_vector("Original vector", vec);
     print_vector("Transformed vector", result);
+
+    // Positive z-axis is outside of the screen
+    glm::vec3 cameraPosition(0.0f, 0.0f, 3.0f);
+    glm::vec3 cameraTarget(0.0f, 0.0f, 0.0f);
+    // Positive y-axis
+    glm::vec3 upVector(0.0f, 1.0f, 0.0f);
+
+    glm::mat4 viewMatrix = glm::lookAt(
+        cameraPosition,
+        cameraTarget,
+        upVector
+    );
+
+    print_matrix("viewMatrix", viewMatrix);
 
     return 0;
 }
