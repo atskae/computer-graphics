@@ -29,7 +29,7 @@ The Look At matrix transforms coordinates from world space to camera/view space.
 * The direction vector
 * The camera's position
 
-![ChatGPT negative zero](chatgpt-negative-zero.png)
+![ChatGPT negative zero](images/chatgpt-negative-zero.png)
 
 It said "Sure!"! That was delightful... 🥲
 
