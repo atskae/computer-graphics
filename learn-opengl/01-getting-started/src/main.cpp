@@ -504,7 +504,7 @@ int main(int argc, char* argv[]) {
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
     // Rotation around the origin radius
-    const float rotationRadius = 5.0f;
+    const float rotationRadius = 10.0f;
 
     // Define the perspective projection matrix
     float field_of_view = glm::radians(45.0f); // converts degrees to radians
@@ -546,7 +546,6 @@ int main(int argc, char* argv[]) {
         //// Set the transformation matrices
         int modelLoc = glGetUniformLocation(shaderProgram.getProgramId(), "model");
         
-        
         int projectionLoc = glGetUniformLocation(shaderProgram.getProgramId(), "projection");
         glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
@@ -578,11 +577,11 @@ int main(int argc, char* argv[]) {
             model_matrix = glm::translate(model_matrix, cubePositions[i]);
             model_matrix = glm::rotate(model_matrix, glm::radians(20.f * i), glm::vec3(1.0f, 0.3f, 0.5f));
              
-            if (i%3 == 0) {
-                // Update the angle of rotation over time
-                float angle_of_rotation = (float)glfwGetTime() * glm::radians(50.0f);
-                model_matrix = glm::rotate(model_matrix, angle_of_rotation, axis_of_rotation);
-            }
+            //if (i%3 == 0) {
+            //    // Update the angle of rotation over time
+            //    float angle_of_rotation = (float)glfwGetTime() * glm::radians(50.0f);
+            //    model_matrix = glm::rotate(model_matrix, angle_of_rotation, axis_of_rotation);
+            //}
             // Set the model matrix
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model_matrix));
             
