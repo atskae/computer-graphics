@@ -18,7 +18,7 @@
 
 
 // Update the view matrix 
-void updateViewMatrix(Shader shaderProgram, unsigned int axis, float delta) {
+void updateViewMatrixTranslation(Shader shaderProgram, unsigned int axis, float delta) {
     // Get the current matrix from the shader
     glm::mat4 view = shaderProgram.getMatrix("view");
     // Get the current translation value
@@ -29,6 +29,10 @@ void updateViewMatrix(Shader shaderProgram, unsigned int axis, float delta) {
     std::cout << "Updated view matrix " << axis << " axis from " << value << " to " << view[3][axis] << std::endl;
     shaderProgram.setMatrix("view", view);
 }
+
+// Negative direction = counterclockwise
+// Positive direction = clockwise
+void updateViewMatrixRotation(Shader shaderProgram, int direction) {}
 
 // User input callback
 // Checks on every frame (an iteration of the render loop)
@@ -59,20 +63,28 @@ void processInput(GLFWwindow* window, Shader& shaderProgram) {
     }
     
     // Configure the view matrix
+    // Apply translation
     // axis=0=x, axis=1=y, axis=2=z
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        updateViewMatrix(shaderProgram, 0, -0.1);
+        updateViewMatrixTranslation(shaderProgram, 0, -0.1);
     } else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        updateViewMatrix(shaderProgram, 0, 0.1);
+        updateViewMatrixTranslation(shaderProgram, 0, 0.1);
     } else if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS) {
-        updateViewMatrix(shaderProgram, 1, -0.1);
+        updateViewMatrixTranslation(shaderProgram, 1, -0.1);
     } else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        updateViewMatrix(shaderProgram, 1, 0.1);
+        updateViewMatrixTranslation(shaderProgram, 1, 0.1);
     } else if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {
-        updateViewMatrix(shaderProgram, 2, -0.1);
+        updateViewMatrixTranslation(shaderProgram, 2, -0.1);
     } else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        updateViewMatrix(shaderProgram, 2, 0.1);
-    } 
+        updateViewMatrixTranslation(shaderProgram, 2, 0.1);
+    }
+
+    // Apply rotation around the y-axis
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
+        updateViewMatrixRotation(shaderProgram, -1);
+    } else if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
+        updateViewMatrixRotation(shaderProgram, 1);
+    }
 }
 
 // Window-resize callback
@@ -491,6 +503,9 @@ int main(int argc, char* argv[]) {
     int viewLoc = glGetUniformLocation(shaderProgram.getProgramId(), "view");
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
+    // Rotation around the origin radius
+    const float rotationRadius = 5.0f;
+
     // Define the perspective projection matrix
     float field_of_view = glm::radians(45.0f); // converts degrees to radians
     float aspect_ratio = (float)window_width_pixels / (float)window_height_pixels;
@@ -568,12 +583,25 @@ int main(int argc, char* argv[]) {
                 float angle_of_rotation = (float)glfwGetTime() * glm::radians(50.0f);
                 model_matrix = glm::rotate(model_matrix, angle_of_rotation, axis_of_rotation);
             }
-            
-            // Draw the cube!
+            // Set the model matrix
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model_matrix));
+            
+            // Set the view matrix
+            // Rotate the camera along the y-axis over time
+            float cameraX = cos(glfwGetTime()) * rotationRadius;
+            float cameraZ = -1 * sin(glfwGetTime()) * rotationRadius; // negative 1 for clockwise rotation
+            glm::mat4 viewMatrix = glm::lookAt(
+                glm::vec3(cameraX, 0.0f, cameraZ), // camera position
+                glm::vec3(0.0f, 0.0f, 0.0f), // lookat vector (origin)
+                glm::vec3(0.0f, 1.0f, 0.0f) // up vector
+            );
+            shaderProgram.setMatrix("view", viewMatrix);
+
+            // Draw the cube!
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 
+        
         /* Rendering end */
 
         // SwapBuffer is a 2D buffer with color values for each pixel in the GLFW window

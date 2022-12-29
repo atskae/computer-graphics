@@ -65,3 +65,12 @@ void print_matrix(std::string info, glm::mat4 matrix) {
 }
 
 ```
+
+Rotate radius 10:
+
+![Rotate radius 10](images/rotate-radius-10.png)
+
+Rotate radius 5:
+
+![Rotate radius 5](images/rotate-radius-5.png)
+
