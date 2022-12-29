@@ -40,3 +40,28 @@ It said "Sure!"! That was delightful... 🥲
 Wow, it even apologizes and understands where the confusion might have stemmed from 🤯
 
 ![ChatGPT up vector](images/chatgpt-up-vector-clarification.png)
+
+We normalize the vectors of the coordinate system so that we don't apply any scaling.
+```cpp
+// Positive z-axis is outside of the screen
+glm::vec3 cameraPosition(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraTarget(0.0f, 0.0f, 0.0f);
+glm::vec3 cameraDirection = glm::normalize(
+    cameraPosition - cameraTarget
+);
+```
+
+When you create a `glm::mat`, pass in the vectors in column-major order. The values are stored in column-major order, so to print the martix to the console (so we have to do this by row):
+```cpp
+// Print in column-major order
+void print_matrix(std::string info, glm::mat4 matrix) {
+    std::cout << info << std::endl;
+    for (int i=0; i<4; i++) {
+        for (int j=0; j<4; j++) {
+            std::cout << std::setw(2) << matrix[j][i] << " "; // i and j are swapped
+        }
+        std::cout << std::endl;
+    }   
+}
+
+```
