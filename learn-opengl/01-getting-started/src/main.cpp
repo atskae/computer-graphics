@@ -28,6 +28,7 @@ glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 0.3f);
 // Negative z-coordinate is into the screen
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+glm::vec3 cameraDirection = cameraPosition + cameraFront;
 float cameraSpeed = 0.05f;
 
 // Ensure the same camera movement speed across all devices
@@ -35,6 +36,25 @@ float cameraSpeed = 0.05f;
 float deltaTime = 0.0f;
 // The timestamp of the previous frame
 float previousFrame = 0.0f;
+
+// Position of the previous mouse/cursor positions
+// This is used to calculate the yaw and pitch angles,
+//  which is then used to calculate the camera's direction vector
+// Initial values should be in the center of the window
+float previousCursorPosX = 400.0f;
+float previousCursorPosY = 300.0f;
+
+// Angle around the y-axis
+// Horizontal mouse movement adjusts this value
+// We set the inital angle to point along the negative z-axis (into the screen)
+float yawAngle = 90.0f;
+// Angle around the x-axis
+// Vertical mouse movement adjusts this value
+float pitchAngle = 0.0f;
+
+// We take a fraction of the mouse movement so that
+// the camera does not move too much in a single mouse position change
+const float mouseSensitivity = 0.1f;
 
 // User input callback
 // Checks on every frame (an iteration of the render loop)
@@ -95,6 +115,42 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
+// Capture the mouse positions
+// (xpos, ypos) is the mouse position's x and y values
+void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+    std::cout << "Mouse xpos=" << xpos << ", y=pos=" << ypos << std::endl;
+    
+    float deltaX = xpos - previousCursorPosX;
+    float deltaY = previousCursorPosY - ypos;
+    previousCursorPosX = xpos;
+    previousCursorPosY = ypos;
+
+    // Apply mouse sensitivity
+    deltaX *= mouseSensitivity;
+    deltaY *= mouseSensitivity;
+
+    // Left/right mouse movement adjusts the yaw angle
+    yawAngle += deltaX;
+    
+    // Up/down mouse movement adjusts the pitch angle
+    pitchAngle += deltaY;
+    // Contrain the angle between -89 to 89 degrees
+    // Otherwise we'd flip when the direction vector is parallel to the up vector (positive y-axis)
+    if (pitchAngle > 89.0f) pitchAngle = 89.0f;
+    if (pitchAngle < -89.0f) pitchAngle = -89.0f;
+
+    // Convert angles to radians
+    float yawRadians = glm::radians(yawAngle);
+    float pitchRadians = glm::radians(pitchAngle);
+
+    // Compute the new direction vector
+    glm::vec3 direction;
+    direction.x = cos(yawRadians) * cos(pitchRadians); // Why do we need cos(pitch)?
+    direction.y = sin(pitchRadians);
+    direction.z = sin(yawRadians) * cos(pitchRadians);
+    cameraFront = glm::normalize(direction);
+}
+
 int main(int argc, char* argv[]) {
     std::cout << "LearnOpenGL Window" << std::endl;
     std::cout << "C++ version: " << __cplusplus << std::endl;
@@ -118,7 +174,6 @@ int main(int argc, char* argv[]) {
 
     // Use core-profile
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
 
     // Create a window object, which holds the window data 
     int window_width_pixels = 800;
@@ -163,6 +218,13 @@ int main(int argc, char* argv[]) {
     // When the user resizes the window, framebuffer_size_callback() gets called
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
+    // Register the mouse movement callback
+    // This function is called everytime the cursor moves
+    glfwSetCursorPosCallback(window, mouse_callback);
+    
+    // When the window is active, keep the cursor in the middle (capture) and hide the cursor
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
+    
     /* Render-loop configuration */
     
     // Background color, gray
@@ -595,7 +657,7 @@ int main(int argc, char* argv[]) {
             //float cameraZ = -1 * sin(glfwGetTime()) * rotationRadius; // negative 1 for clockwise rotation
             glm::mat4 viewMatrix = glm::lookAt(
                 cameraPosition,
-                cameraPosition + cameraFront,
+                cameraDirection,
                 cameraUp
             );
             shaderProgram.setMatrix("view", viewMatrix);

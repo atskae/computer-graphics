@@ -120,3 +120,29 @@ Camera speed: 0.0410223
 Camera speed: 0.0418043
 Camera speed: 0.0422931 
 ```
+
+## Look Around
+
+(*look around, how lucky we are to be alive right now* 💃🎶)
+
+**Euler angles** are three angles that can represent any rotation in 3D:
+* **Pitch**: how much we are looking up/down
+  * rotation around the x-axis
+* **Yaw**: how much we are looking left/right
+  * rotation around the y-axis
+* **Roll**: how much we are rolling (like in a space-flight camera)
+  * rotation around the z-axis
+
+In our camera, we only care about the *pitch* and *yaw* values for now.
+* Using the pitch and yaw, we can compute a new 3D direction vector
+
+### Mouse Movement
+
+The greater the difference of the previous mouse position and the current mouse position, the greater the angle change
+* Horizontal mouse movement to change the *yaw* angle (rotating around the y-axis).
+* Vertical mouse movement to change the *pitch* angle (rotating around the x-axis)
+
+**Capturing mouse movement** means to keep the mouse cursor in the center of the window. To hide and capture the mouse in GLFW:
+```cpp
+glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+```
