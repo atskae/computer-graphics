@@ -103,3 +103,20 @@ if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
     cameraPosition -= cameraSpeed * rightVector;
 } 
 ```
+
+### Movement Speed
+
+Depending on the machine, the number of frames/sec that is rendered in the render loop differs.
+So having a constant for `cameraSpeed` will give a different camera movement speed depending on the machine.
+
+`deltaTime` is the time it took to render the current frame. If this value is high, then we increase the velocity of the `cameraSpeed` to make up for the longer render time.
+
+```
+Camera speed: 0.042851
+Camera speed: 0.0396228
+Camera speed: 0.0436187
+Camera speed: 0.043993
+Camera speed: 0.0410223
+Camera speed: 0.0418043
+Camera speed: 0.0422931 
+```

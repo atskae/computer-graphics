@@ -28,7 +28,13 @@ glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 0.3f);
 // Negative z-coordinate is into the screen
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-const float cameraSpeed = 0.05f;
+float cameraSpeed = 0.05f;
+
+// Ensure the same camera movement speed across all devices
+// The time between the previous frame and the current frame
+float deltaTime = 0.0f;
+// The timestamp of the previous frame
+float previousFrame = 0.0f;
 
 // User input callback
 // Checks on every frame (an iteration of the render loop)
@@ -519,6 +525,9 @@ int main(int argc, char* argv[]) {
     // This keeps the application running and handles new input
     //  until the application is closed
     while (!glfwWindowShouldClose(window)) {
+        cameraSpeed = 2.5f * deltaTime;
+        //std::cout << "Camera speed: " << cameraSpeed << std::endl;
+
         // Process user input
         processInput(window, shaderProgram);
         
@@ -605,6 +614,12 @@ int main(int argc, char* argv[]) {
         // Checks for new input (ex. mouse/keyboard input) and updates the state
         // Registered callbacks are executed 
         glfwPollEvents();
+
+        // Compute frame render time for computing the
+        // camera movement speed in the next frame
+        float currentTime = glfwGetTime();
+        deltaTime = currentTime - previousFrame;
+        previousFrame = currentTime;
     }
 
     // Application was closed, clean up all GLFW resources
