@@ -17,22 +17,18 @@
 #include "shader.h"
 
 
-// Update the view matrix 
-void updateViewMatrixTranslation(Shader shaderProgram, unsigned int axis, float delta) {
-    // Get the current matrix from the shader
-    glm::mat4 view = shaderProgram.getMatrix("view");
-    // Get the current translation value
-    // OpenGL matrix is in column-major order, so index matrix[col][row]
-    GLfloat value = view[3][axis];
-    // Update translation value
-    view[3][axis] = value + delta;
-    std::cout << "Updated view matrix " << axis << " axis from " << value << " to " << view[3][axis] << std::endl;
-    shaderProgram.setMatrix("view", view);
-}
+/* 
+    Camera settings, updated with keystrokes
 
-// Negative direction = counterclockwise
-// Positive direction = clockwise
-void updateViewMatrixRotation(Shader shaderProgram, int direction) {}
+    * Coordinate system is a right-handed coordinate system
+        - Into the screen is negative z-axis, right is positive x-axis, up is positive y-axis
+*/
+
+glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 0.3f);
+// Negative z-coordinate is into the screen
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+const float cameraSpeed = 0.05f;
 
 // User input callback
 // Checks on every frame (an iteration of the render loop)
@@ -62,29 +58,28 @@ void processInput(GLFWwindow* window, Shader& shaderProgram) {
         } 
     }
     
-    // Configure the view matrix
-    // Apply translation
-    // axis=0=x, axis=1=y, axis=2=z
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        updateViewMatrixTranslation(shaderProgram, 0, -0.1);
-    } else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        updateViewMatrixTranslation(shaderProgram, 0, 0.1);
-    } else if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS) {
-        updateViewMatrixTranslation(shaderProgram, 1, -0.1);
-    } else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        updateViewMatrixTranslation(shaderProgram, 1, 0.1);
-    } else if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {
-        updateViewMatrixTranslation(shaderProgram, 2, -0.1);
+    // Update camera settings
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        // Goes forward, into the screen
+        // cameraSpeed * cameraFront = negative
+        cameraPosition += cameraSpeed * cameraFront;
     } else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        updateViewMatrixTranslation(shaderProgram, 2, 0.1);
-    }
+        // Goes backwards, away from the screen
+        // cameraSpeed * cameraFront = negative
+        // -= negative is addition, positive z-axis is away from the screen
+        cameraPosition -= cameraSpeed * cameraFront;
+    } else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        // Move left
+        // Get the direction of the positive x-axis
+        // Normalize so that we don't apply a scaling effect while moving camera
+        glm::vec3 rightVector = glm::normalize(glm::cross(cameraUp, cameraFront));
+        cameraPosition += cameraSpeed * rightVector;
+    } else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        // Move right
+        glm::vec3 rightVector = glm::normalize(glm::cross(cameraUp, cameraFront));
+        cameraPosition -= cameraSpeed * rightVector;
+    } 
 
-    // Apply rotation around the y-axis
-    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-        updateViewMatrixRotation(shaderProgram, -1);
-    } else if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
-        updateViewMatrixRotation(shaderProgram, 1);
-    }
 }
 
 // Window-resize callback
@@ -587,12 +582,12 @@ int main(int argc, char* argv[]) {
             
             // Set the view matrix
             // Rotate the camera along the y-axis over time
-            float cameraX = cos(glfwGetTime()) * rotationRadius;
-            float cameraZ = -1 * sin(glfwGetTime()) * rotationRadius; // negative 1 for clockwise rotation
+            //float cameraX = cos(glfwGetTime()) * rotationRadius;
+            //float cameraZ = -1 * sin(glfwGetTime()) * rotationRadius; // negative 1 for clockwise rotation
             glm::mat4 viewMatrix = glm::lookAt(
-                glm::vec3(cameraX, 0.0f, cameraZ), // camera position
-                glm::vec3(0.0f, 0.0f, 0.0f), // lookat vector (origin)
-                glm::vec3(0.0f, 1.0f, 0.0f) // up vector
+                cameraPosition,
+                cameraPosition + cameraFront,
+                cameraUp
             );
             shaderProgram.setMatrix("view", viewMatrix);
 

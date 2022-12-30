@@ -74,3 +74,32 @@ Rotate radius 5:
 
 ![Rotate radius 5](images/rotate-radius-5.png)
 
+## Walk Around
+
+[*Strafe effect*](https://en.wikipedia.org/wiki/Strafing_%28video_games%29) when using the camera: the act of moving sideways in a video game while still looking at a constant target
+* Ex. moving sideways while looking at an enemy
+
+WASD to move the camera:
+
+```cpp
+if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+    // Goes forward, into the screen
+    // cameraSpeed * cameraFront = negative
+    cameraPosition += cameraSpeed * cameraFront;
+} else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+    // Goes backwards, away from the screen
+    // cameraSpeed * cameraFront = negative
+    // -= negative is addition, positive z-axis is away from the screen
+    cameraPosition -= cameraSpeed * cameraFront;
+} else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+    // Move left
+    // Get the direction of the positive x-axis
+    // Normalize so that we don't apply a scaling effect while moving camera
+    glm::vec3 rightVector = glm::normalize(glm::cross(cameraUp, cameraFront));
+    cameraPosition += cameraSpeed * rightVector;
+} else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+    // Move right
+    glm::vec3 rightVector = glm::normalize(glm::cross(cameraUp, cameraFront));
+    cameraPosition -= cameraSpeed * rightVector;
+} 
+```
