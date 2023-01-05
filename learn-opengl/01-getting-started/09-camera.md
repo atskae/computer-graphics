@@ -146,3 +146,9 @@ The greater the difference of the previous mouse position and the current mouse 
 ```cpp
 glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 ```
+
+* `xpos` goes from left to right
+* `ypos` goes from top to bottom
+
+([source](https://www.glfw.org/docs/3.0/group__input.html#ga01d37b6c40133676b9cea60ca1d7c0cc))
+

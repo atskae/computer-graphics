@@ -41,20 +41,24 @@ float previousFrame = 0.0f;
 // This is used to calculate the yaw and pitch angles,
 //  which is then used to calculate the camera's direction vector
 // Initial values should be in the center of the window
+// xpos goes from left to right
+// ypos goes from top to bottom
 float previousCursorPosX = 400.0f;
 float previousCursorPosY = 300.0f;
 
 // Angle around the y-axis
 // Horizontal mouse movement adjusts this value
-// We set the inital angle to point along the negative z-axis (into the screen)
-float yawAngle = 90.0f;
+// The direction vector is pointing in the opposite direction of what the camera faces...
+// So to initially get the camera to look into the screen, we make the direction vector
+//  point outside the screen, which is along the positive z-axis
+float yawAngle = -90.0f;
 // Angle around the x-axis
 // Vertical mouse movement adjusts this value
 float pitchAngle = 0.0f;
 
 // We take a fraction of the mouse movement so that
 // the camera does not move too much in a single mouse position change
-const float mouseSensitivity = 0.1f;
+const float mouseSensitivity = 0.5f;
 
 // User input callback
 // Checks on every frame (an iteration of the render loop)
@@ -119,7 +123,9 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 // (xpos, ypos) is the mouse position's x and y values
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     std::cout << "Mouse xpos=" << xpos << ", y=pos=" << ypos << std::endl;
-    
+
+    // xpos increases from left to right
+    // ypos increases from top to bottom
     float deltaX = xpos - previousCursorPosX;
     float deltaY = previousCursorPosY - ypos;
     previousCursorPosX = xpos;
@@ -655,6 +661,7 @@ int main(int argc, char* argv[]) {
             // Rotate the camera along the y-axis over time
             //float cameraX = cos(glfwGetTime()) * rotationRadius;
             //float cameraZ = -1 * sin(glfwGetTime()) * rotationRadius; // negative 1 for clockwise rotation
+            cameraDirection = cameraPosition + cameraFront;
             glm::mat4 viewMatrix = glm::lookAt(
                 cameraPosition,
                 cameraDirection,
