@@ -60,6 +60,9 @@ float pitchAngle = 0.0f;
 // the camera does not move too much in a single mouse position change
 const float mouseSensitivity = 0.5f;
 
+// Field of view in degrees
+float fieldOfView = 45.0f;
+
 // User input callback
 // Checks on every frame (an iteration of the render loop)
 // of keyboard inputs, mouse input, etc.
@@ -157,6 +160,19 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     cameraFront = glm::normalize(direction);
 }
 
+// The mouse scroll will update the vertical position, y-axis (yoffset)
+// yoffset is 1 if the user is scrolling up
+// yoffset is -1 if the user is scrolling down
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+    // Scrolling up will increase the fov, scrolling down decreases fov
+    fieldOfView -= yoffset;
+    // Ensure fov stays positive and at most 45 degrees
+    if (fieldOfView < 0) fieldOfView = 1.0f;
+    else if (fieldOfView > 45.0f) fieldOfView = 45.0f;
+
+    std::cout << "Mouse scroll yoffset=" << yoffset << ", new fov=" << fieldOfView << std::endl;
+}
+
 int main(int argc, char* argv[]) {
     std::cout << "LearnOpenGL Window" << std::endl;
     std::cout << "C++ version: " << __cplusplus << std::endl;
@@ -227,7 +243,11 @@ int main(int argc, char* argv[]) {
     // Register the mouse movement callback
     // This function is called everytime the cursor moves
     glfwSetCursorPosCallback(window, mouse_callback);
-    
+
+    // Register mouse scroll callback
+    // This function tracks when the user scrolls with wheel or trackpad
+    glfwSetScrollCallback(window, scroll_callback);
+
     // When the window is active, keep the cursor in the middle (capture) and hide the cursor
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
     
@@ -576,18 +596,10 @@ int main(int argc, char* argv[]) {
     const float rotationRadius = 10.0f;
 
     // Define the perspective projection matrix
-    float field_of_view = glm::radians(45.0f); // converts degrees to radians
     float aspect_ratio = (float)window_width_pixels / (float)window_height_pixels;
     std::cout << "Window width: " << window_width_pixels << " pixels" << std::endl;
     std::cout << "Window height: " << window_height_pixels << " pixels" << std::endl;
     std::cout << "Aspect ratio: " << std::to_string(aspect_ratio) << std::endl;
-    //glm::mat4 projection = glm::mat4(1.0f);
-    glm::mat4 projection = glm::perspective(
-        field_of_view,
-        aspect_ratio,
-        0.1f, // zmin, where the near plane is
-        100.0f // zmax, where the far plane is
-    );
 
     // Start the render loop
     // This keeps the application running and handles new input
@@ -617,7 +629,13 @@ int main(int argc, char* argv[]) {
 
         //// Set the transformation matrices
         int modelLoc = glGetUniformLocation(shaderProgram.getProgramId(), "model");
-        
+
+        glm::mat4 projection = glm::perspective(
+            glm::radians(fieldOfView), // convert from degrees to radians
+            aspect_ratio,
+            0.1f, // zmin, where the near plane is
+            100.0f // zmax, where the far plane is
+        );
         int projectionLoc = glGetUniformLocation(shaderProgram.getProgramId(), "projection");
         glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 

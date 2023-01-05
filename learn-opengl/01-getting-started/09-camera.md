@@ -152,3 +152,33 @@ glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 ([source](https://www.glfw.org/docs/3.0/group__input.html#ga01d37b6c40133676b9cea60ca1d7c0cc))
 
+
+#### Pitch Angle
+```cpp
+// Direction vector for camera
+direction.x = cos(yawRadians) * cos(pitchRadians); // Why do we need cos(pitch)?
+```
+
+You need `cos(pitchRadians)` for the camera controls to feel smooth... (without the view spins off a decent amount), but other than that I'm not sure why it works mathematically...
+
+## Zoom
+
+[GLFW read in mouse scroll wheel input](https://www.glfw.org/docs/latest/input_guide.html#scrolling)
+* `yoffset` is negative when scrolling down
+  * Positive when scrolling up
+
+If we decrease the field of view, then we zoom in and see less of the scene.
+* Increasing field of view zooms out to see more of the scene.
+
+```cpp
+fieldOfView -= yoffset;
+```
+A few things going on here:
+* Zoom
+* How much of the scene we can see
+* Field of view angle/value
+
+Clarification:
+* Scrolling down (negative `yoffset`) *increases* the field of view (we do `fielOfView =- yoffset`)
+  * Increasing the field of view zooms *out*
+  * Zoom *out* to see *more*
