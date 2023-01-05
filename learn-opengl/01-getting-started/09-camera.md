@@ -154,14 +154,28 @@ glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 
 #### Pitch Angle
+
+Why does pitch influence the x-coordinate?
+
 ```cpp
 // Direction vector for camera
-direction.x = cos(yawRadians) * cos(pitchRadians); // Why do we need cos(pitch)?
+direction.x = cos(yawRadians) * cos(pitchRadians);
 ```
 
-You need `cos(pitchRadians)` for the camera controls to feel smooth... (without the view spins off a decent amount), but other than that I'm not sure why it works mathematically...
+~~You need `cos(pitchRadians)` for the camera controls to feel smooth... (without the view spins off a decent amount), but other than that I'm not sure why it works mathematically...~~
 
-## Zoom
+The yaw angle (rotation around the y-axis) determines the axis that the pitch angle will rotate around.
+The pitch angle is not constrained to the world coordinate's x-axis.
+
+A helpful picture from the comments!! (TIL read the comments (this ain't YouTube))
+
+![Why pitch afffects x-coordinate](https://uploads.disquscdn.com/images/58fa1f1a3dd8d736a9345b3b168dd55caf0f14d485e9dae7e06b8e185348a42a.png)
+
+`Φ` is the yaw angle, and this rotates *first*.
+`θ` is the pitch angle.
+
+
+### Zoom
 
 [GLFW read in mouse scroll wheel input](https://www.glfw.org/docs/latest/input_guide.html#scrolling)
 * `yoffset` is negative when scrolling down

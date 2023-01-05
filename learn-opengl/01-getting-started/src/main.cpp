@@ -154,7 +154,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 
     // Compute the new direction vector
     glm::vec3 direction;
-    direction.x = cos(yawRadians) * cos(pitchRadians); // Why do we need cos(pitch)?
+    direction.x = cos(yawRadians) * cos(pitchRadians);
     direction.y = sin(pitchRadians);
     direction.z = sin(yawRadians) * cos(pitchRadians);
     cameraFront = glm::normalize(direction);
