@@ -15,53 +15,22 @@
 #include "stb_image.h"
 
 #include "shader.h"
+#include "camera.h"
 
 
-/* 
-    Camera settings, updated with keystrokes
+const int WINDOW_WIDTH = 800;
+const int WINDOW_HEIGHT = 450;
 
-    * Coordinate system is a right-handed coordinate system
-        - Into the screen is negative z-axis, right is positive x-axis, up is positive y-axis
-*/
+Camera camera(WINDOW_WIDTH, WINDOW_HEIGHT);
 
-glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 0.3f);
-// Negative z-coordinate is into the screen
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-glm::vec3 cameraDirection = cameraPosition + cameraFront;
-float cameraSpeed = 0.05f;
+void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+    camera.updateFrontVector(xpos, ypos);
+}
 
-// Ensure the same camera movement speed across all devices
-// The time between the previous frame and the current frame
-float deltaTime = 0.0f;
-// The timestamp of the previous frame
-float previousFrame = 0.0f;
-
-// Position of the previous mouse/cursor positions
-// This is used to calculate the yaw and pitch angles,
-//  which is then used to calculate the camera's direction vector
-// Initial values should be in the center of the window
-// xpos goes from left to right
-// ypos goes from top to bottom
-float previousCursorPosX = 400.0f;
-float previousCursorPosY = 300.0f;
-
-// Angle around the y-axis
-// Horizontal mouse movement adjusts this value
-// The direction vector is pointing in the opposite direction of what the camera faces...
-// So to initially get the camera to look into the screen, we make the direction vector
-//  point outside the screen, which is along the positive z-axis
-float yawAngle = -90.0f;
-// Angle around the x-axis
-// Vertical mouse movement adjusts this value
-float pitchAngle = 0.0f;
-
-// We take a fraction of the mouse movement so that
-// the camera does not move too much in a single mouse position change
-const float mouseSensitivity = 0.5f;
-
-// Field of view in degrees
-float fieldOfView = 45.0f;
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+    // Ignore the xoffset for mouse scroll changes
+    camera.updateFieldOfView(yoffset);
+}
 
 // User input callback
 // Checks on every frame (an iteration of the render loop)
@@ -93,24 +62,13 @@ void processInput(GLFWwindow* window, Shader& shaderProgram) {
     
     // Update camera settings
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        // Goes forward, into the screen
-        // cameraSpeed * cameraFront = negative
-        cameraPosition += cameraSpeed * cameraFront;
+        camera.moveForward();
     } else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        // Goes backwards, away from the screen
-        // cameraSpeed * cameraFront = negative
-        // -= negative is addition, positive z-axis is away from the screen
-        cameraPosition -= cameraSpeed * cameraFront;
+        camera.moveBackwards();
     } else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        // Move left
-        // Get the direction of the positive x-axis
-        // Normalize so that we don't apply a scaling effect while moving camera
-        glm::vec3 rightVector = glm::normalize(glm::cross(cameraUp, cameraFront));
-        cameraPosition += cameraSpeed * rightVector;
+        camera.moveLeft();
     } else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        // Move right
-        glm::vec3 rightVector = glm::normalize(glm::cross(cameraUp, cameraFront));
-        cameraPosition -= cameraSpeed * rightVector;
+        camera.moveRight();
     } 
 
 }
@@ -120,57 +78,6 @@ void processInput(GLFWwindow* window, Shader& shaderProgram) {
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     // Keep the bottom-left corner at (0, 0)
     glViewport(0, 0, width, height);
-}
-
-// Capture the mouse positions
-// (xpos, ypos) is the mouse position's x and y values
-void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
-    std::cout << "Mouse xpos=" << xpos << ", y=pos=" << ypos << std::endl;
-
-    // xpos increases from left to right
-    // ypos increases from top to bottom
-    float deltaX = xpos - previousCursorPosX;
-    float deltaY = previousCursorPosY - ypos;
-    previousCursorPosX = xpos;
-    previousCursorPosY = ypos;
-
-    // Apply mouse sensitivity
-    deltaX *= mouseSensitivity;
-    deltaY *= mouseSensitivity;
-
-    // Left/right mouse movement adjusts the yaw angle
-    yawAngle += deltaX;
-    
-    // Up/down mouse movement adjusts the pitch angle
-    pitchAngle += deltaY;
-    // Contrain the angle between -89 to 89 degrees
-    // Otherwise we'd flip when the direction vector is parallel to the up vector (positive y-axis)
-    if (pitchAngle > 89.0f) pitchAngle = 89.0f;
-    if (pitchAngle < -89.0f) pitchAngle = -89.0f;
-
-    // Convert angles to radians
-    float yawRadians = glm::radians(yawAngle);
-    float pitchRadians = glm::radians(pitchAngle);
-
-    // Compute the new direction vector
-    glm::vec3 direction;
-    direction.x = cos(yawRadians) * cos(pitchRadians);
-    direction.y = sin(pitchRadians);
-    direction.z = sin(yawRadians) * cos(pitchRadians);
-    cameraFront = glm::normalize(direction);
-}
-
-// The mouse scroll will update the vertical position, y-axis (yoffset)
-// yoffset is 1 if the user is scrolling up
-// yoffset is -1 if the user is scrolling down
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-    // Scrolling up will increase the fov, scrolling down decreases fov
-    fieldOfView -= yoffset;
-    // Ensure fov stays positive and at most 45 degrees
-    if (fieldOfView < 0) fieldOfView = 1.0f;
-    else if (fieldOfView > 45.0f) fieldOfView = 45.0f;
-
-    std::cout << "Mouse scroll yoffset=" << yoffset << ", new fov=" << fieldOfView << std::endl;
 }
 
 int main(int argc, char* argv[]) {
@@ -198,11 +105,9 @@ int main(int argc, char* argv[]) {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // Create a window object, which holds the window data 
-    int window_width_pixels = 800;
-    int window_height_pixels = 450;
     GLFWwindow* window = glfwCreateWindow(
-        window_width_pixels,
-        window_height_pixels,
+        WINDOW_WIDTH,
+        WINDOW_HEIGHT,
         "LearnOpenGL",
         NULL,
         NULL
@@ -234,8 +139,9 @@ int main(int argc, char* argv[]) {
     // The bottom y-coordinate of the viewport
     int viewport_y = 0;
     // Create the viewport
-    glViewport(0, 0, window_width_pixels, window_height_pixels);
+    glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
+    
     // Register the window resize callback
     // When the user resizes the window, framebuffer_size_callback() gets called
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -576,13 +482,6 @@ int main(int argc, char* argv[]) {
     shaderProgram.setInt("texture1", 0); // assign sampler texture1 to texture unit zero
     shaderProgram.setInt("texture2", 1);
 
-    // Define the Model matrix, which converts local coordinates to global coordinates
-    //glm::mat4 model(1.0f); // Identiy matrix
-    glm::vec3 axis_of_rotation(0.5f, 1.0f, 0.0f);
-    //// Rotate around the x-axis
-    //glm::vec3 x_axis(1.0f, 0.0f, 0.0f);
-    //model = glm::rotate(model, glm::radians(-55.0f), x_axis);
-
     // Define the View matrix, which captures a scene in the view of the camera
     // We aren't really moving the camera, we are moving the scene relative to a camera at the origin (?)
     // So to give the view of the camera that moved away from the scene, we move the scene away from the camera
@@ -594,19 +493,13 @@ int main(int argc, char* argv[]) {
 
     // Rotation around the origin radius
     const float rotationRadius = 10.0f;
-
-    // Define the perspective projection matrix
-    float aspect_ratio = (float)window_width_pixels / (float)window_height_pixels;
-    std::cout << "Window width: " << window_width_pixels << " pixels" << std::endl;
-    std::cout << "Window height: " << window_height_pixels << " pixels" << std::endl;
-    std::cout << "Aspect ratio: " << std::to_string(aspect_ratio) << std::endl;
-
+    
     // Start the render loop
     // This keeps the application running and handles new input
     //  until the application is closed
     while (!glfwWindowShouldClose(window)) {
-        cameraSpeed = 2.5f * deltaTime;
-        //std::cout << "Camera speed: " << cameraSpeed << std::endl;
+        // Update the camera speed based on this frame's render time
+        camera.updateSpeed();
 
         // Process user input
         processInput(window, shaderProgram);
@@ -627,15 +520,7 @@ int main(int argc, char* argv[]) {
         // Clear the previous frames depth buffer information
         glClear(GL_DEPTH_BUFFER_BIT);
 
-        //// Set the transformation matrices
-        int modelLoc = glGetUniformLocation(shaderProgram.getProgramId(), "model");
-
-        glm::mat4 projection = glm::perspective(
-            glm::radians(fieldOfView), // convert from degrees to radians
-            aspect_ratio,
-            0.1f, // zmin, where the near plane is
-            100.0f // zmax, where the far plane is
-        );
+        glm::mat4 projection = camera.getPerspectiveMatrix();
         int projectionLoc = glGetUniformLocation(shaderProgram.getProgramId(), "projection");
         glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
@@ -661,6 +546,7 @@ int main(int argc, char* argv[]) {
         //);
 
         // Draw each cube positioned at different locations
+        int modelLoc = glGetUniformLocation(shaderProgram.getProgramId(), "model");
         for (int i=0; i<10; i++) {
             // Create a transformation matrix for this cube and apply it in the vertex shader
             glm::mat4 model_matrix(1.0f);
@@ -679,18 +565,12 @@ int main(int argc, char* argv[]) {
             // Rotate the camera along the y-axis over time
             //float cameraX = cos(glfwGetTime()) * rotationRadius;
             //float cameraZ = -1 * sin(glfwGetTime()) * rotationRadius; // negative 1 for clockwise rotation
-            cameraDirection = cameraPosition + cameraFront;
-            glm::mat4 viewMatrix = glm::lookAt(
-                cameraPosition,
-                cameraDirection,
-                cameraUp
-            );
+            glm::mat4 viewMatrix = camera.getLookAtMatrix();
             shaderProgram.setMatrix("view", viewMatrix);
 
             // Draw the cube!
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
-
         
         /* Rendering end */
 
@@ -704,9 +584,7 @@ int main(int argc, char* argv[]) {
 
         // Compute frame render time for computing the
         // camera movement speed in the next frame
-        float currentTime = glfwGetTime();
-        deltaTime = currentTime - previousFrame;
-        previousFrame = currentTime;
+        camera.updateTimestamp(glfwGetTime());
     }
 
     // Application was closed, clean up all GLFW resources
