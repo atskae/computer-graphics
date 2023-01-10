@@ -20,8 +20,9 @@
 
 const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 450;
+const bool IS_FPS = true;
 
-Camera camera(WINDOW_WIDTH, WINDOW_HEIGHT);
+Camera camera(WINDOW_WIDTH, WINDOW_HEIGHT, IS_FPS);
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     camera.updateFrontVector(xpos, ypos);

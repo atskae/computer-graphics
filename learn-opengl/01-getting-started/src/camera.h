@@ -10,6 +10,11 @@
 // A camera in a right-handed coordinate system
 class Camera {
     private:
+        // If true, camera is a first-person shooter camera, which
+        //  restricts the camera movement to the ground
+        // The user may still look up and around though
+        const bool isFPS;
+
         // Where the camera sits
         glm::vec3 position;
         // The front of the camera
@@ -58,7 +63,8 @@ class Camera {
         float fieldOfView;
     
     public:
-        Camera(int window_width, int window_height): 
+        Camera(int window_width, int window_height, bool is_fps): 
+            isFPS(is_fps),
             position(glm::vec3(0.0f, 0.0f, 0.3f)),
             front(glm::vec3(0.0f, 0.0f, -1.0f)),
             up(glm::vec3(0.0f, 1.0f, 0.0f)),
@@ -72,6 +78,7 @@ class Camera {
             pitchDegrees(0.0f),
             fieldOfView(45.0f)
         {
+            std::cout << "isFPS=" << this->isFPS << std::endl;
             this->direction = this->position + this->front;
             this->aspectRatio = (float)window_width / (float)window_height;
             
@@ -86,9 +93,17 @@ class Camera {
         
         // Move forward into the screen
         // Camera's front vector is pointing in the negative z-axis direction
-        void moveForward() { this->position += this->speed * this->front; }
+        void moveForward() {
+            this->position += this->speed * this->front;
+            // If FPS, prevent movement in the y direction
+            if (isFPS) this->position.y = 0;
+        }
         // Move backwards away from the screen 
-        void moveBackwards() { this->position -= this->speed * this->front; }
+        void moveBackwards() {
+            this->position -= this->speed * this->front;
+            // If FPS, prevent movement in the y direction
+            if (isFPS) this->position.y = 0;
+        }
         void moveLeft() {
             // Get the direction of the x-axis
             // The direction (positive x-axis or negative) depends on where the
@@ -99,10 +114,16 @@ class Camera {
             // We normalize the result to avoid applying scaling when we move
             glm::vec3 rightVector = glm::normalize(glm::cross(this->up, this->front));
             this->position += this->speed * rightVector;
+            
+            // If FPS, prevent movement in the y direction
+            if (isFPS) this->position.y = 0;
         }
         void moveRight() {
             glm::vec3 rightVector = glm::normalize(glm::cross(this->up, this->front));
             this->position -= this->speed * rightVector;
+            
+            // If FPS, prevent movement in the y direction
+            if (isFPS) this->position.y = 0;
         }
 
         /*

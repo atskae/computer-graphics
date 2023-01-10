@@ -196,3 +196,14 @@ Clarification:
 * Scrolling down (negative `yoffset`) *increases* the field of view (we do `fielOfView =- yoffset`)
   * Increasing the field of view zooms *out*
   * Zoom *out* to see *more*
+
+## Exercises
+
+### First-person Shooter (FPS) camera
+<sidenote> I tried to look up FPS camera (the word "shooter" is never mentioned in the chapter) and I only got "frame rate per second, camera", so I asked ChatGPT what FPS stood for in this context and it gave me the right answer!!! </sidenote>
+
+To have a first-person shooter camera, we just need to prevent any camera movement in the y direction. The user should still be able to look up and zoom in and out.
+```cpp
+// moveForward(), moveBackwards(), moveLeft(), moveRight()
+if (isFPS) this->position.y = 0; // einfach!
+```
