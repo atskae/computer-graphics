@@ -2,3 +2,6 @@
 
 Part 1
 * General overview of the API layer, user-mode driver, kernel-mode driver, schedulers, how GPU commands get executed
+
+Part 2
+* Memory, synchronization
