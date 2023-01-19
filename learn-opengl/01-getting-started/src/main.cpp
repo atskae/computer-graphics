@@ -156,7 +156,7 @@ int main(int argc, char* argv[]) {
     glfwSetScrollCallback(window, scroll_callback);
 
     // When the window is active, keep the cursor in the middle (capture) and hide the cursor
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
+    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
     
     /* Render-loop configuration */
     

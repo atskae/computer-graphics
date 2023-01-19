@@ -207,3 +207,24 @@ To have a first-person shooter camera, we just need to prevent any camera moveme
 // moveForward(), moveBackwards(), moveLeft(), moveRight()
 if (isFPS) this->position.y = 0; // einfach!
 ```
+
+### LookAt Function
+
+Took forever to debug... had to cheat a bit and I looked at the [`glm::lookAt` source code](https://github.com/g-truc/glm/blob/b3f87720261d623986f164b2a7f6a0a938430271/glm/ext/matrix_transform.inl#L98-L119)
+
+Before moving left and right would curve, and the scroll/looking out would revert its direction at some point, and looking up and down was more limited in range.
+```cpp  
+glm::vec3 directionVector = glm::normalize(this->position - this->front);
+```
+
+This was the fix!
+```cpp
+glm::vec3 center = this->position + this->front;
+glm::vec3 directionVector = glm::normalize(this->position - center);
+```
+
+I'll look into this more later
+```
+Direction vector: vec3(0.297046, 0.275637, -0.914214)
+Direction vector incorrect: vec3(0.139801, 0.129725, 0.981645)
+```

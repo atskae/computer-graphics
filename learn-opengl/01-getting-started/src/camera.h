@@ -65,7 +65,7 @@ class Camera {
     public:
         Camera(int window_width, int window_height, bool is_fps): 
             isFPS(is_fps),
-            position(glm::vec3(0.0f, 0.0f, 0.3f)),
+            position(glm::vec3(0.0f, 0.0f, 3.0f)),
             front(glm::vec3(0.0f, 0.0f, -1.0f)),
             up(glm::vec3(0.0f, 1.0f, 0.0f)),
             mouseSensitivity(0.5f),
@@ -216,12 +216,103 @@ glm::mat4 Camera::getPerspectiveMatrix() {
 }
 
 glm::mat4 Camera::getLookAtMatrix() {
-    this->direction = this->position + this->front;
-    return glm::lookAt(
+    glm::mat4 lookAt = glm::lookAt(
         this->position,
-        this->direction,
+        this->position + this->front, // direction vector
         this->up
     );
+
+    // Compute the direction vector
+    // X - Y = a vector pointing from Y to Z
+    // The "z-axis" in this matrix
+    // This ends up pointing in the opposite direction of where the camera is facing
+    glm::vec3 center = this->position + this->front;
+    glm::vec3 directionVector = glm::normalize(this->position - center);
+    glm::vec3 directionVectorIncorrect = glm::normalize(this->position - this->front);
+
+    std::cout << "Direction vector: " << glm::to_string(directionVector) << std::endl;
+    std::cout << "Direction vector incorrect: " << glm::to_string(directionVectorIncorrect) << std::endl;
+    std::cout << "-----" << std::endl;
+    
+    glm::vec3 rightVectorCross = glm::cross(this->up, directionVector);
+    glm::vec3 rightVector = glm::normalize(rightVectorCross);
+
+    // Already normalized
+    glm::vec3 upVector = glm::cross(directionVector, rightVector);
+
+    std::cout << "Direction vector: " << glm::to_string(directionVector) << std::endl;
+    std::cout << "Right vector: " << glm::to_string(rightVector) << std::endl;
+    std::cout << "Up vector: " << glm::to_string(upVector) << std::endl;
+    std::cout << "-----" << std::endl;
+
+    glm::mat4 positionMatrix = glm::mat4(1.0f);
+    
+    glm::vec4 position(-1.0f * this->position, 1.0f);
+    glm::vec4 dotProductPosition(1.0f);
+    //dotProductPosition[0] = -glm::dot(rightVector, this->position);
+    //dotProductPosition[1] = -glm::dot(upVector, this->position);
+    //dotProductPosition[2] = -glm::dot(directionVector, this->position);
+    
+    positionMatrix[3] = position;
+    //positionMatrix[3] = dotProductPosition;
+    
+    //std::cout << "Translation with dot product: " << glm::to_string(dotProductPosition) << std::endl;
+    std::cout << "Translation: " << glm::to_string(position) << std::endl;
+    std::cout << "-----" << std::endl;
+
+    // mat4 constructor takes in vectors by columns
+    glm::mat4 leftMatrix = glm::mat4(
+        glm::vec4(rightVector, 0.0f),
+        glm::vec4(upVector, 0.0f),
+        glm::vec4(directionVector, 0.0f),
+        glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)
+    );
+    // Apply transpose so that each row is the vectors we used as input
+    glm::mat4 leftMatrixTranspose = glm::transpose(leftMatrix);
+
+    glm::mat4 calculatedLookAt = leftMatrixTranspose * positionMatrix;
+    return  calculatedLookAt;
+    //return lookAt;
+
+    //glm::vec3 center = this->position + this->front;
+    //glm::vec3 zaxis = glm::normalize(center - this->position);
+    //glm::vec3 xaxis = glm::normalize(glm::cross(zaxis, this->up));
+    //glm::vec3 yaxis = glm::cross(xaxis, zaxis);
+
+    //glm::mat4 glmLookAt(1.0f);
+    //glmLookAt[0][0] = xaxis.x;
+    //glmLookAt[1][0] = xaxis.y;
+    //glmLookAt[2][0] = xaxis.z;
+
+    //glmLookAt[0][1] = yaxis.x;
+    //glmLookAt[1][1] = yaxis.y;
+    //glmLookAt[2][1] = yaxis.z;
+    
+    //glmLookAt[0][2] = -zaxis.x;
+    //glmLookAt[1][2] = -zaxis.y;
+    //glmLookAt[2][2] = -zaxis.z;
+
+    //glmLookAt[3][0] = -glm::dot(xaxis, this->position);
+    //glmLookAt[3][1] = -glm::dot(yaxis, this->position);
+    //glmLookAt[3][2] = glm::dot(zaxis, this->position);
+
+    //return glmLookAt;
+
+    //glm::vec4 translation(
+    //    -glm::dot(xaxis, this->position),
+    //    -glm::dot(yaxis, this->position),
+    //    -glm::dot(zaxis, this->position),
+    //    1.0f
+    //);
+
+    //glm::mat4 glmLookAt(
+    //    glm::vec4(xaxis, 0.0f),
+    //    glm::vec4(yaxis, 0.0f),
+    //    -1.0f * glm::vec4(zaxis, 0.0f),
+    //    translation
+    //);
+
+    //return glm::transpose(glmLookAt);
 }
 
 #endif // header guard
