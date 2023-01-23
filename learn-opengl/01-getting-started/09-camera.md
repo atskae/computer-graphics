@@ -219,8 +219,8 @@ glm::vec3 directionVector = glm::normalize(this->position - this->front);
 
 This was the fix!
 ```cpp
-glm::vec3 center = this->position + this->front;
-glm::vec3 directionVector = glm::normalize(this->position - center);
+glm::vec3 cameraTarget = this->position + this->front;
+glm::vec3 directionVector = glm::normalize(this->position - cameraTarget);
 ```
 
 I'll look into this more later
@@ -228,3 +228,47 @@ I'll look into this more later
 Direction vector: vec3(0.297046, 0.275637, -0.914214)
 Direction vector incorrect: vec3(0.139801, 0.129725, 0.981645)
 ```
+
+#### Camera direction vector != target position
+The camera's *direction vector* is the final vector that is used as the camera's z-axis in the lookAt matrix
+
+```cpp
+// Where the camera sits, positive z-coordinate = outside the screen
+glm::vec3 cameraPos(0.0f, 0.0f, 3.0f);
+// What the camera is looking at
+glm::vec3 cameraTarget(0.0f, 0.0f, 0.0f);
+
+// The direction vector that is used to build the lookAt matrix
+// Points in the *opposite* direction of the target position
+// Vector subtraction: X - Y = a vector from Y->X
+// cameraTarget -> cameraPos
+glm::vec3 cameraDirection = glm::normalize(
+  cameraPos - cameraTarget
+);
+```
+
+The second argument to `glm::lookAt()` is the *target position*, not the direction vector. GLM will compute the direction vector for you. The above was just showing you how you'd compute the direction vector yourself.
+
+Later we break up `cameraTarget` so that we can change it as we move around the scene.
+
+The `cameraTarget` is the exact position we are looking at, it does not need to be inverted (like the direction vector).
+
+```cpp
+// Negative z-axis is into the screen
+glm::vec3 cameraFront(0.0f, 0.0f, -1.0f);
+// The camera sits outside the screen: cameraPos(0.0f, 0.0f, 3.0f)
+glm::vec3 cameraTarget = cameraPos + cameraFront;
+glm::lookAt(
+  cameraPos,
+  cameraTarget,
+  upVector
+);
+```
+
+The many confusions:
+* When a `vec3` is used as a vector or a position
+* When to invert the vec3 or not
+* Using `direction vector` to mean different things (camera's *actual* direction vector as a row in the lookAt matrix, or the camera's front vector)
+* The up vector of the world versus the up vector of the camera
+  * Moving left/right maybe it just doesn't matter
+  * For the lookAt, we compute a new up vector

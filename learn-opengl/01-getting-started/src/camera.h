@@ -21,7 +21,7 @@ class Camera {
         // Negative z-axis values look into the screen
         glm::vec3 front;
         // Up vector of the coordinate system
-        glm::vec3 up;
+        const glm::vec3 up;
         // The *opposite* direction of where the camera faces
         glm::vec3 direction;
 
@@ -174,12 +174,12 @@ void Camera::updateFrontVector(double xpos, double ypos) {
     float yawRadians = glm::radians(yawDegrees);
     float pitchRadians = glm::radians(pitchDegrees);
 
-    // Compute the new direction vector
-    glm::vec3 direction;
-    direction.x = cos(yawRadians) * cos(pitchRadians);
-    direction.y = sin(pitchRadians);
-    direction.z = sin(yawRadians) * cos(pitchRadians);
-    this->front = glm::normalize(direction);
+    // Compute the new cameraFront vector
+    glm::vec3 cameraFront;
+    cameraFront.x = cos(yawRadians) * cos(pitchRadians);
+    cameraFront.y = sin(pitchRadians);
+    cameraFront.z = sin(yawRadians) * cos(pitchRadians);
+    this->front = glm::normalize(cameraFront);
 
 }
 
@@ -216,26 +216,29 @@ glm::mat4 Camera::getPerspectiveMatrix() {
 }
 
 glm::mat4 Camera::getLookAtMatrix() {
-    glm::mat4 lookAt = glm::lookAt(
-        this->position,
-        this->position + this->front, // direction vector
-        this->up
-    );
-
-    // Compute the direction vector
+    // Compute the direction vector: the "z-axis" in this matrix
     // X - Y = a vector pointing from Y to Z
-    // The "z-axis" in this matrix
     // This ends up pointing in the opposite direction of where the camera is facing
-    glm::vec3 center = this->position + this->front;
-    glm::vec3 directionVector = glm::normalize(this->position - center);
-    glm::vec3 directionVectorIncorrect = glm::normalize(this->position - this->front);
-
-    std::cout << "Direction vector: " << glm::to_string(directionVector) << std::endl;
-    std::cout << "Direction vector incorrect: " << glm::to_string(directionVectorIncorrect) << std::endl;
-    std::cout << "-----" << std::endl;
+    // The coordinates of where the camera is looking at
+    glm::vec3 cameraTarget = this->position + this->front;
+    glm::vec3 directionVector = glm::normalize(this->position - cameraTarget);
+    //glm::vec3 directionVectorIncorrect = glm::normalize(this->position - this->front);
+    //std::cout << "cameraPosition: " << glm::to_string(this->position) << std::endl;
+    //std::cout << "cameraTarget: " << glm::to_string(cameraTarget) << std::endl;
+    //std::cout << "cameraFront: " << glm::to_string(this->front) << std::endl;
+    //std::cout << "directionVector: " << glm::to_string(directionVector) << std::endl;
+    //std::cout << "directionVectorIncorrect: " << glm::to_string(directionVectorIncorrect) << std::endl;
+    //std::cout << "-----" << std::endl;
     
-    glm::vec3 rightVectorCross = glm::cross(this->up, directionVector);
-    glm::vec3 rightVector = glm::normalize(rightVectorCross);
+    //std::cout << "Direction vector: " << glm::to_string(directionVector) << std::endl;
+    //std::cout << "-----" << std::endl;
+
+    // Get the vector that represents the position x-axis of the camera
+    // The cross product gives us the vector that is orthogonal to the up and direction vector
+    // We normalize the result so we don't have a scaling effect when moving in the x direction
+    glm::vec3 rightVector = glm::normalize(
+        glm::cross(this->up, directionVector)
+    );
 
     // Already normalized
     glm::vec3 upVector = glm::cross(directionVector, rightVector);
@@ -245,74 +248,31 @@ glm::mat4 Camera::getLookAtMatrix() {
     std::cout << "Up vector: " << glm::to_string(upVector) << std::endl;
     std::cout << "-----" << std::endl;
 
-    glm::mat4 positionMatrix = glm::mat4(1.0f);
-    
+    glm::mat4 translationMatrix = glm::mat4(1.0f);
+    // Invert the camera's position since we want things in the scene to move
+    //  in the *opposite* direction of the camera
     glm::vec4 position(-1.0f * this->position, 1.0f);
-    glm::vec4 dotProductPosition(1.0f);
-    //dotProductPosition[0] = -glm::dot(rightVector, this->position);
-    //dotProductPosition[1] = -glm::dot(upVector, this->position);
-    //dotProductPosition[2] = -glm::dot(directionVector, this->position);
+    translationMatrix[3] = position;
     
-    positionMatrix[3] = position;
-    //positionMatrix[3] = dotProductPosition;
-    
-    //std::cout << "Translation with dot product: " << glm::to_string(dotProductPosition) << std::endl;
     std::cout << "Translation: " << glm::to_string(position) << std::endl;
     std::cout << "-----" << std::endl;
 
     // mat4 constructor takes in vectors by columns
-    glm::mat4 leftMatrix = glm::mat4(
-        glm::vec4(rightVector, 0.0f),
-        glm::vec4(upVector, 0.0f),
-        glm::vec4(directionVector, 0.0f),
-        glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)
-    );
+    // glm::mat4 applies each input vector as a column
     // Apply transpose so that each row is the vectors we used as input
-    glm::mat4 leftMatrixTranspose = glm::transpose(leftMatrix);
+    glm::mat4 cameraToWorld = glm::transpose(
+        glm::mat4(
+            glm::vec4(rightVector, 0.0f),
+            glm::vec4(upVector, 0.0f),
+            glm::vec4(directionVector, 0.0f),
+            glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)
+        )
+    );
 
-    glm::mat4 calculatedLookAt = leftMatrixTranspose * positionMatrix;
-    return  calculatedLookAt;
-    //return lookAt;
-
-    //glm::vec3 center = this->position + this->front;
-    //glm::vec3 zaxis = glm::normalize(center - this->position);
-    //glm::vec3 xaxis = glm::normalize(glm::cross(zaxis, this->up));
-    //glm::vec3 yaxis = glm::cross(xaxis, zaxis);
-
-    //glm::mat4 glmLookAt(1.0f);
-    //glmLookAt[0][0] = xaxis.x;
-    //glmLookAt[1][0] = xaxis.y;
-    //glmLookAt[2][0] = xaxis.z;
-
-    //glmLookAt[0][1] = yaxis.x;
-    //glmLookAt[1][1] = yaxis.y;
-    //glmLookAt[2][1] = yaxis.z;
-    
-    //glmLookAt[0][2] = -zaxis.x;
-    //glmLookAt[1][2] = -zaxis.y;
-    //glmLookAt[2][2] = -zaxis.z;
-
-    //glmLookAt[3][0] = -glm::dot(xaxis, this->position);
-    //glmLookAt[3][1] = -glm::dot(yaxis, this->position);
-    //glmLookAt[3][2] = glm::dot(zaxis, this->position);
-
-    //return glmLookAt;
-
-    //glm::vec4 translation(
-    //    -glm::dot(xaxis, this->position),
-    //    -glm::dot(yaxis, this->position),
-    //    -glm::dot(zaxis, this->position),
-    //    1.0f
-    //);
-
-    //glm::mat4 glmLookAt(
-    //    glm::vec4(xaxis, 0.0f),
-    //    glm::vec4(yaxis, 0.0f),
-    //    -1.0f * glm::vec4(zaxis, 0.0f),
-    //    translation
-    //);
-
-    //return glm::transpose(glmLookAt);
+    // Transformations read from right to left
+    // First we translate, then we apply camera -> world
+    glm::mat4 lookAtMatrix = cameraToWorld * translationMatrix;
+    return lookAtMatrix;
 }
 
 #endif // header guard
