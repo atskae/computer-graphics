@@ -20,8 +20,8 @@ class Camera {
         // The front of the camera
         // Negative z-axis values look into the screen
         glm::vec3 front;
-        // Up vector of the coordinate system
-        const glm::vec3 up;
+        // Up vector of the world coordinate system
+        const glm::vec3 worldUp;
         // The *opposite* direction of where the camera faces
         glm::vec3 direction;
 
@@ -67,7 +67,7 @@ class Camera {
             isFPS(is_fps),
             position(glm::vec3(0.0f, 0.0f, 3.0f)),
             front(glm::vec3(0.0f, 0.0f, -1.0f)),
-            up(glm::vec3(0.0f, 1.0f, 0.0f)),
+            worldUp(glm::vec3(0.0f, 1.0f, 0.0f)),
             mouseSensitivity(0.5f),
             nearPlane(0.1f),
             farPlane(100.0f),
@@ -112,14 +112,14 @@ class Camera {
             // The cross product gives us a new vector that is perpendicular to both
             //  the up vector and the front vector
             // We normalize the result to avoid applying scaling when we move
-            glm::vec3 rightVector = glm::normalize(glm::cross(this->up, this->front));
+            glm::vec3 rightVector = glm::normalize(glm::cross(this->worldUp, this->front));
             this->position += this->speed * rightVector;
             
             // If FPS, prevent movement in the y direction
             if (isFPS) this->position.y = 0;
         }
         void moveRight() {
-            glm::vec3 rightVector = glm::normalize(glm::cross(this->up, this->front));
+            glm::vec3 rightVector = glm::normalize(glm::cross(this->worldUp, this->front));
             this->position -= this->speed * rightVector;
             
             // If FPS, prevent movement in the y direction
@@ -222,31 +222,30 @@ glm::mat4 Camera::getLookAtMatrix() {
     // The coordinates of where the camera is looking at
     glm::vec3 cameraTarget = this->position + this->front;
     glm::vec3 directionVector = glm::normalize(this->position - cameraTarget);
-    //glm::vec3 directionVectorIncorrect = glm::normalize(this->position - this->front);
-    //std::cout << "cameraPosition: " << glm::to_string(this->position) << std::endl;
-    //std::cout << "cameraTarget: " << glm::to_string(cameraTarget) << std::endl;
-    //std::cout << "cameraFront: " << glm::to_string(this->front) << std::endl;
-    //std::cout << "directionVector: " << glm::to_string(directionVector) << std::endl;
-    //std::cout << "directionVectorIncorrect: " << glm::to_string(directionVectorIncorrect) << std::endl;
-    //std::cout << "-----" << std::endl;
-    
-    //std::cout << "Direction vector: " << glm::to_string(directionVector) << std::endl;
-    //std::cout << "-----" << std::endl;
 
+    std::cout << "Camera position: " << glm::to_string(this->position) << std::endl;
+    std::cout << "Camera front: " << glm::to_string(this->front) << std::endl;
+    std::cout << "Camera target: " << glm::to_string(cameraTarget) << std::endl;
+    std::cout << "position - front: " << glm::to_string(this->position - this->front) << std::endl;
+    std::cout << "position - target: " << glm::to_string(this->position - cameraTarget) << std::endl;
+    std::cout << "Incorrect z-axis: " << glm::to_string(
+        glm::normalize(this->position - this->front)
+    ) << std::endl;
+    std::cout << "Correct z-axis: " << glm::to_string(directionVector) << std::endl;
+    
     // Get the vector that represents the position x-axis of the camera
     // The cross product gives us the vector that is orthogonal to the up and direction vector
     // We normalize the result so we don't have a scaling effect when moving in the x direction
     glm::vec3 rightVector = glm::normalize(
-        glm::cross(this->up, directionVector)
+        glm::cross(this->worldUp, directionVector)
     );
 
     // Already normalized
     glm::vec3 upVector = glm::cross(directionVector, rightVector);
 
-    std::cout << "Direction vector: " << glm::to_string(directionVector) << std::endl;
-    std::cout << "Right vector: " << glm::to_string(rightVector) << std::endl;
-    std::cout << "Up vector: " << glm::to_string(upVector) << std::endl;
-    std::cout << "-----" << std::endl;
+    std::cout << "Camera x-axis: " << glm::to_string(rightVector) << std::endl;
+    std::cout << "Camera y-axis: " << glm::to_string(upVector) << std::endl;
+    std::cout << "Camera z-axis: " << glm::to_string(directionVector) << std::endl;
 
     glm::mat4 translationMatrix = glm::mat4(1.0f);
     // Invert the camera's position since we want things in the scene to move
@@ -260,7 +259,7 @@ glm::mat4 Camera::getLookAtMatrix() {
     // mat4 constructor takes in vectors by columns
     // glm::mat4 applies each input vector as a column
     // Apply transpose so that each row is the vectors we used as input
-    glm::mat4 cameraToWorld = glm::transpose(
+    glm::mat4 rotationMatrix = glm::transpose(
         glm::mat4(
             glm::vec4(rightVector, 0.0f),
             glm::vec4(upVector, 0.0f),
@@ -271,7 +270,7 @@ glm::mat4 Camera::getLookAtMatrix() {
 
     // Transformations read from right to left
     // First we translate, then we apply camera -> world
-    glm::mat4 lookAtMatrix = cameraToWorld * translationMatrix;
+    glm::mat4 lookAtMatrix = rotationMatrix * translationMatrix;
     return lookAtMatrix;
 }
 
