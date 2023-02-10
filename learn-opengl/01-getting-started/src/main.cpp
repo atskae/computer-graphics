@@ -177,6 +177,7 @@ int main(int argc, char* argv[]) {
     // 3D cube
     // 36 vertices in total
     // 6 faces, 2 triangles per face, 3 vertices per triangle
+    // Each row: x, y, z, texture_x, texture_y
     float vertices[] = {
         // Back face of cube
         // Triangle
@@ -238,6 +239,19 @@ int main(int argc, char* argv[]) {
         -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
         -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     }; 
+
+    // The y-coordinates are on the ground (y=0)
+    float ground_vertices[] = {
+        // Bottom face of cube
+        // Triangle
+        -5.0f, 0.0f, -5.0f,  0.0f, 1.0f,
+         5.0f, 0.0f, -5.0f,  1.0f, 1.0f,
+         5.0f, 0.0f,  5.0f,  1.0f, 0.0f,
+        // Triangle
+         5.0f, 0.0f,  5.0f,  1.0f, 0.0f,
+        -5.0f, 0.0f,  5.0f,  0.0f, 0.0f,
+        -5.0f, 0.0f, -5.0f,  0.0f, 1.0f,
+    };
 
     // Positions where we move and place each cube
     glm::vec3 cubePositions[10] = {
@@ -304,7 +318,7 @@ int main(int argc, char* argv[]) {
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     
     // Copy over the triangle vertices data to the VBO
-    // The fourth argument specifies how the GPU should manage the data
+    // The fourth argument specifies hgow the GPU should manage the data
     // GL_STATIC_DRAW is best for data that doesn't change much and is read many times
     // If the data changes a lot, we'd use GL_DYNAMIC_DRAW
     //glBufferData(GL_ARRAY_BUFFER, sizeof(rectangle_vertices), rectangle_vertices, GL_STATIC_DRAW);
@@ -333,7 +347,13 @@ int main(int argc, char* argv[]) {
     );
     // Enable the vertex attribute in the vertex shader `(location = 0)`
     glEnableVertexAttribArray(vertexAttributeLocation);
-    
+
+    // Save the ground vertices in a separate VBO
+    unsigned int VBO_ground;
+    glGenBuffers(1, &VBO_ground);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_ground);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(ground_vertices), ground_vertices, GL_STATIC_DRAW);
+
     //// Configure the color (vertex attribute) in the vertex shader
     //glVertexAttribPointer(
     //    // The value we specified in our vertex shader, `layout (location = 1)`
@@ -548,6 +568,7 @@ int main(int argc, char* argv[]) {
 
         // Draw each cube positioned at different locations
         int modelLoc = glGetUniformLocation(shaderProgram.getProgramId(), "model");
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
         for (int i=0; i<10; i++) {
             // Create a transformation matrix for this cube and apply it in the vertex shader
             glm::mat4 model_matrix(1.0f);
@@ -572,7 +593,33 @@ int main(int argc, char* argv[]) {
             // Draw the cube!
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
-        
+
+        // Draw the ground (naive way)
+        glBindBuffer(GL_ARRAY_BUFFER, VBO_ground);
+        glDisableVertexAttribArray(vertexAttributeLocation);
+        glVertexAttribPointer(
+            // The value we specified in our vertex shader, `layout (location = 0)`
+            // Where to find the memory location of the vec3 input to the vertex shader
+            vertexAttributeLocation,
+            // The size of the vertex shader's input (vec3 aPos)
+            3,
+            // The type of the value in the input vec3
+            GL_FLOAT,
+            // Indicate whether the data should be normalized ([-1, 1] for signed values, [0, 1] for positive)
+            GL_FALSE,
+            // Stride, the space between vertex attributes, in bytes
+            // If we specify 0, OpenGL tries to figure this out itself
+            //  This only works if the data is tightly-packed (no padding between attributes)
+            sizeof(float) * verticesStride,
+            //0,
+            // Where the data starts in the buffer
+            // Since the data starts at the beginning of the buffer, we use 0
+            (void*)0
+        );
+        // Enable the vertex attribute in the vertex shader `(location = 0)`
+        glEnableVertexAttribArray(vertexAttributeLocation);
+        glDrawArrays(GL_TRIANGLES, 0, 2);
+
         /* Rendering end */
 
         // SwapBuffer is a 2D buffer with color values for each pixel in the GLFW window
