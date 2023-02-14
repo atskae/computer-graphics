@@ -24,6 +24,10 @@ const bool IS_FPS = true;
 
 Camera camera(WINDOW_WIDTH, WINDOW_HEIGHT, IS_FPS);
 
+// Location of the light source in the scene
+// Position in World Space
+const glm::vec3 lightSourcePos(1.2f, 1.0f, 2.0f);
+
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     camera.updateFrontVector(xpos, ypos);
 }
@@ -363,6 +367,7 @@ int main(int argc, char* argv[]) {
     //// Do the same for the Element Buffer Object
     //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
     
     /* Textures */
     
@@ -402,6 +407,7 @@ int main(int argc, char* argv[]) {
         glEnableVertexAttribArray(textureAttributeLocation+i);
 
         const char* textureFilename = textureFilenames[i];
+        std::cout << "Opening texture file: " << textureFilename << std::endl;
         int width, height, numColorChannels;
         // Reads in the image, and computes the width, height, and number of color channels in the image
         unsigned char* textureImageData = stbi_load(textureFilename, &width, &height, &numColorChannels, 0);
@@ -466,14 +472,46 @@ int main(int argc, char* argv[]) {
     
     /* Textures end */
 
+    /* Light source */
+    
+    // Unique integer representing the Vertex Array Object (VAO) for the light source
+    unsigned int lightVAO;
+    // Generates VAO and assigns a unique integer ID
+    glGenVertexArrays(1, &lightVAO);
+    // Binds the current VAO
+    // Subsequent function calls changes the state for this active VAO
+    glBindVertexArray(lightVAO);
+
+    // Bind the same VBO
+    // The VBO contains the data for both the light source and the container object
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+    // Tell OpenGL how to interpret the vertex data
+    // This information is saved in the currently active VAO/VBO
+    // Here the stride includes the texture coordinates, but we don't use them here
+    glVertexAttribPointer(
+        vertexAttributeLocation,
+        3, // size of the input (vec3),
+        GL_FLOAT, // type of the input
+        GL_FALSE, // normalize data,
+        verticesStride * sizeof(float), // stride of the data
+        (void*)0 // offset into the vertex data where this data starts
+    );
+    // Enable a vertex attribute array
+    // This actively connects the vertex data to the attribute in the shader
+    // The above call simply describes how to interpret the data, but not activate it
+    glEnableVertexAttribArray(vertexAttributeLocation);
+    
+    /* Shader programs */
+
+    // Compiles the individual shader programs into one
     Shader shaderProgram = Shader(
         "shaders/vertex.glsl",
         "shaders/fragment.glsl"
     );
 
-    // Activate the shader program
-    shaderProgram.use(); 
-
+    shaderProgram.use();
+    
     // Add a horizontal offset
     shaderProgram.setFloat("horizontalOffset", 0.0f);
 
@@ -482,6 +520,28 @@ int main(int argc, char* argv[]) {
     // Map a texture unit to a sampler in the fragment shader
     shaderProgram.setInt("texture1", 0); // assign sampler texture1 to texture unit zero
     shaderProgram.setInt("texture2", 1);
+
+    // Separate shader for the light source only
+    Shader lightSourceShader(
+        "shaders/01-colors/vertex.glsl",
+        "shaders/01-colors/light_source_fragment.glsl"
+    );
+
+    // This shader is responsible for adding the light's effects     
+    Shader lightingShader(
+        "shaders/01-colors/vertex.glsl",
+        "shaders/01-colors/fragment.glsl"
+    );
+
+    // Activate so setting the values actually applies
+    lightingShader.use();
+
+    // Set the object color and light color
+    glm::vec3 lightColor(1.0f, 1.0f, 1.0f); // white
+    glm::vec3 coralColor(1.0f, 0.5f, 0.3f);
+    
+    lightingShader.setVec3("lightColor", lightColor);
+    lightingShader.setVec3("objectColor", coralColor);
 
     // Define the View matrix, which captures a scene in the view of the camera
     // We aren't really moving the camera, we are moving the scene relative to a camera at the origin (?)
@@ -522,8 +582,7 @@ int main(int argc, char* argv[]) {
         glClear(GL_DEPTH_BUFFER_BIT);
 
         glm::mat4 projection = camera.getPerspectiveMatrix();
-        int projectionLoc = glGetUniformLocation(shaderProgram.getProgramId(), "projection");
-        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+        shaderProgram.setMatrix("projection", projection);
 
         // Make the texture object that we created the active texture object
         // Bind each texture to its own texture unit in the fragment shader
@@ -546,6 +605,16 @@ int main(int argc, char* argv[]) {
         //    36 // number of vertices
         //);
 
+        // Activate the objects shader
+        shaderProgram.use();
+
+        // Set the view matrix
+        // Rotate the camera along the y-axis over time
+        //float cameraX = cos(glfwGetTime()) * rotationRadius;
+        //float cameraZ = -1 * sin(glfwGetTime()) * rotationRadius; // negative 1 for clockwise rotation
+        glm::mat4 viewMatrix = camera.getLookAtMatrix();
+        shaderProgram.setMatrix("view", viewMatrix);
+
         // Draw each cube positioned at different locations
         int modelLoc = glGetUniformLocation(shaderProgram.getProgramId(), "model");
         for (int i=0; i<10; i++) {
@@ -562,17 +631,47 @@ int main(int argc, char* argv[]) {
             // Set the model matrix
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model_matrix));
             
-            // Set the view matrix
-            // Rotate the camera along the y-axis over time
-            //float cameraX = cos(glfwGetTime()) * rotationRadius;
-            //float cameraZ = -1 * sin(glfwGetTime()) * rotationRadius; // negative 1 for clockwise rotation
-            glm::mat4 viewMatrix = camera.getLookAtMatrix();
-            shaderProgram.setMatrix("view", viewMatrix);
-
+            
             // Draw the cube!
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
+
+        // Need to activate so changes apply 
+        glBindVertexArray(lightVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        lightSourceShader.use();
         
+        // Set the model, view, and projection matrices
+        // Model matrix
+        glm::mat4 model(1.0f);
+        model = glm::translate(model, lightSourcePos);
+        model = glm::scale(model, glm::vec3(0.2f)); // scale down
+        lightSourceShader.setMatrix("model", model);
+
+        // View Matrix
+        lightSourceShader.setMatrix("view", viewMatrix);
+
+        // Projection matrix
+        lightSourceShader.setMatrix("projection", projection);
+
+        // Draw
+        // type, starting index, number of *vertices*
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        // Now draw the cube object that is getting hit by the light source
+        glBindVertexArray(VAO);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        lightingShader.use();
+        // Model matrix
+        model = glm::translate(model, cubePositions[0]);
+        lightingShader.setMatrix("model", model);
+        // View Matrix
+        lightingShader.setMatrix("view", viewMatrix);
+        // Projection matrix
+        lightingShader.setMatrix("projection", projection);
+
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
         /* Rendering end */
 
         // SwapBuffer is a 2D buffer with color values for each pixel in the GLFW window

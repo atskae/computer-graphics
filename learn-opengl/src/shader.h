@@ -39,6 +39,7 @@ class Shader {
         void setBool(const std::string& name, bool value);
         void setFloat(const std::string& name, float value);
         void setInt(const std::string& name, int value);
+        void setVec3(const std::string& name, glm::vec3 vec);
         void setMatrix(const std::string& name, glm::mat4& matrix);
 };
 
@@ -220,6 +221,15 @@ void Shader::setInt(const std::string& name, int value) {
         std::cerr << "Invalid uniform variable: " << name << std::endl;
     } else {
         glUniform1i(location, value);
+    }
+}
+
+void Shader::setVec3(const std::string& name, glm::vec3 vec) {
+    GLint location = glGetUniformLocation(this->programId, name.c_str());
+    if (location < 0) {
+        std::cerr << "Invalid uniform variable: " << name << std::endl;
+    } else {
+        glUniform3fv(location, 1, glm::value_ptr(vec));
     }
 }
 

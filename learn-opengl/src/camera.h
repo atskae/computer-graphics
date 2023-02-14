@@ -146,7 +146,7 @@ class Camera {
 
 // Updates the front vector of the camera given new mouse positions
 void Camera::updateFrontVector(double xpos, double ypos) {
-    std::cout << "Mouse xpos=" << xpos << ", y=pos=" << ypos << std::endl;
+    //std::cout << "Mouse xpos=" << xpos << ", y=pos=" << ypos << std::endl;
 
     // xpos increases from left to right
     // ypos increases from top to bottom
@@ -223,15 +223,15 @@ glm::mat4 Camera::getLookAtMatrix() {
     glm::vec3 cameraTarget = this->position + this->front;
     glm::vec3 directionVector = glm::normalize(this->position - cameraTarget);
 
-    std::cout << "Camera position: " << glm::to_string(this->position) << std::endl;
-    std::cout << "Camera front: " << glm::to_string(this->front) << std::endl;
-    std::cout << "Camera target: " << glm::to_string(cameraTarget) << std::endl;
-    std::cout << "position - front: " << glm::to_string(this->position - this->front) << std::endl;
-    std::cout << "position - target: " << glm::to_string(this->position - cameraTarget) << std::endl;
-    std::cout << "Incorrect z-axis: " << glm::to_string(
-        glm::normalize(this->position - this->front)
-    ) << std::endl;
-    std::cout << "Correct z-axis: " << glm::to_string(directionVector) << std::endl;
+    //std::cout << "Camera position: " << glm::to_string(this->position) << std::endl;
+    //std::cout << "Camera front: " << glm::to_string(this->front) << std::endl;
+    //std::cout << "Camera target: " << glm::to_string(cameraTarget) << std::endl;
+    //std::cout << "position - front: " << glm::to_string(this->position - this->front) << std::endl;
+    //std::cout << "position - target: " << glm::to_string(this->position - cameraTarget) << std::endl;
+    //std::cout << "Incorrect z-axis: " << glm::to_string(
+    //    glm::normalize(this->position - this->front)
+    //) << std::endl;
+    //std::cout << "Correct z-axis: " << glm::to_string(directionVector) << std::endl;
     
     // Get the vector that represents the position x-axis of the camera
     // The cross product gives us the vector that is orthogonal to the up and direction vector
@@ -243,9 +243,9 @@ glm::mat4 Camera::getLookAtMatrix() {
     // Already normalized
     glm::vec3 upVector = glm::cross(directionVector, rightVector);
 
-    std::cout << "Camera x-axis: " << glm::to_string(rightVector) << std::endl;
-    std::cout << "Camera y-axis: " << glm::to_string(upVector) << std::endl;
-    std::cout << "Camera z-axis: " << glm::to_string(directionVector) << std::endl;
+    //std::cout << "Camera x-axis: " << glm::to_string(rightVector) << std::endl;
+    //std::cout << "Camera y-axis: " << glm::to_string(upVector) << std::endl;
+    //std::cout << "Camera z-axis: " << glm::to_string(directionVector) << std::endl;
 
     glm::mat4 translationMatrix = glm::mat4(1.0f);
     // Invert the camera's position since we want things in the scene to move
@@ -253,8 +253,8 @@ glm::mat4 Camera::getLookAtMatrix() {
     glm::vec4 position(-1.0f * this->position, 1.0f);
     translationMatrix[3] = position;
     
-    std::cout << "Translation: " << glm::to_string(position) << std::endl;
-    std::cout << "-----" << std::endl;
+    //std::cout << "Translation: " << glm::to_string(position) << std::endl;
+    //std::cout << "-----" << std::endl;
 
     // mat4 constructor takes in vectors by columns
     // glm::mat4 applies each input vector as a column

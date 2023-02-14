@@ -85,3 +85,7 @@ Object coral color:
 Result color:
 
 ![Coral color with olive light](images/coral_color_olive_light.png)
+
+## A Lighting Scene
+
+Create a *separate* Vertex Array Object (VAO) for the light source.
