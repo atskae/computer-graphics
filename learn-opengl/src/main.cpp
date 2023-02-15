@@ -580,10 +580,7 @@ int main(int argc, char* argv[]) {
 
         // Clear the previous frames depth buffer information
         glClear(GL_DEPTH_BUFFER_BIT);
-
-        glm::mat4 projection = camera.getPerspectiveMatrix();
-        shaderProgram.setMatrix("projection", projection);
-
+        
         // Make the texture object that we created the active texture object
         // Bind each texture to its own texture unit in the fragment shader
         glActiveTexture(GL_TEXTURE0); // activate the texture unit first
@@ -593,6 +590,7 @@ int main(int argc, char* argv[]) {
         glBindTexture(GL_TEXTURE_2D, textureIds[1]);    
 
         glBindVertexArray(VAO);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
         
         // Draw a rectangle from the Element Buffer Object that is currently bound
         // The last argument is the starting index of the indices array (...?)
@@ -607,6 +605,9 @@ int main(int argc, char* argv[]) {
 
         // Activate the objects shader
         shaderProgram.use();
+
+        glm::mat4 projection = camera.getPerspectiveMatrix();
+        shaderProgram.setMatrix("projection", projection);
 
         // Set the view matrix
         // Rotate the camera along the y-axis over time
@@ -663,6 +664,7 @@ int main(int argc, char* argv[]) {
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         lightingShader.use();
         // Model matrix
+        model = glm::mat4(1.0f);
         model = glm::translate(model, cubePositions[0]);
         lightingShader.setMatrix("model", model);
         // View Matrix
