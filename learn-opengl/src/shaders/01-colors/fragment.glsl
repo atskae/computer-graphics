@@ -11,5 +11,7 @@ out vec4 FragColor;
 
 void main() {
     // vec4 color: red, green, blue, alpha (transparency)
-    FragColor = vec4(objectColor * lightColor, 1.0f);
+    float ambienceStrength = 0.1f;
+    vec3 ambience = ambienceStrength * lightColor;
+    FragColor = vec4(objectColor * ambience, 1.0f);
 }
