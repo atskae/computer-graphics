@@ -98,3 +98,5 @@ Must do in order (for each shader program!):
 
 If you don't want a shader to draw, just don't call `glUseProgram()`
 * Then the other calls don't do anything... (ex) set uniform variables, draw arrays)
+
+![Light and object cube](images/light_and_object_cube.png)
