@@ -89,3 +89,12 @@ Result color:
 ## A Lighting Scene
 
 Create a *separate* Vertex Array Object (VAO) for the light source.
+
+Must do in order (for each shader program!):
+1. Activate VAO
+2. Activate shader program (`shaderProgram.use()`, which calls `glUseProgram()` under the hood)
+3. Set uniform variables of the shader (ex. model matrix)
+4. Draw! `glDrawArrays(GL_TRIANGLES, start_index, num_vertices)`
+
+If you don't want a shader to draw, just don't call `glUseProgram()`
+* Then the other calls don't do anything... (ex) set uniform variables, draw arrays)

@@ -26,7 +26,7 @@ Camera camera(WINDOW_WIDTH, WINDOW_HEIGHT, IS_FPS);
 
 // Location of the light source in the scene
 // Position in World Space
-const glm::vec3 lightSourcePos(1.2f, 1.0f, 2.0f);
+const glm::vec3 lightSourcePos(0.5, 0.5f, 2.0f);
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     camera.updateFrontVector(xpos, ypos);
@@ -567,13 +567,13 @@ int main(int argc, char* argv[]) {
         
         /* Rendering */
         
-        // Configure the color setting used by glClear()
-        glClearColor(
-            background_color[0],
-            background_color[1],
-            background_color[2],
-            background_color[3]
-        );
+        //// Configure the color setting used by glClear()
+        //glClearColor(
+        //    background_color[0],
+        //    background_color[1],
+        //    background_color[2],
+        //    background_color[3]
+        //);
 
         // Apply the color to the window's color buffer
         glClear(GL_COLOR_BUFFER_BIT);
@@ -590,7 +590,6 @@ int main(int argc, char* argv[]) {
         glBindTexture(GL_TEXTURE_2D, textureIds[1]);    
 
         glBindVertexArray(VAO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
         
         // Draw a rectangle from the Element Buffer Object that is currently bound
         // The last argument is the starting index of the indices array (...?)
@@ -604,7 +603,7 @@ int main(int argc, char* argv[]) {
         //);
 
         // Activate the objects shader
-        shaderProgram.use();
+        //shaderProgram.use();
 
         glm::mat4 projection = camera.getPerspectiveMatrix();
         shaderProgram.setMatrix("projection", projection);
@@ -632,21 +631,19 @@ int main(int argc, char* argv[]) {
             // Set the model matrix
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model_matrix));
             
-            
             // Draw the cube!
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 
         // Need to activate so changes apply 
         glBindVertexArray(lightVAO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
         lightSourceShader.use();
         
         // Set the model, view, and projection matrices
         // Model matrix
         glm::mat4 model(1.0f);
         model = glm::translate(model, lightSourcePos);
-        model = glm::scale(model, glm::vec3(0.2f)); // scale down
+        model = glm::scale(model, glm::vec3(0.3f)); // scale down
         lightSourceShader.setMatrix("model", model);
 
         // View Matrix
@@ -661,11 +658,10 @@ int main(int argc, char* argv[]) {
 
         // Now draw the cube object that is getting hit by the light source
         glBindVertexArray(VAO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
         lightingShader.use();
         // Model matrix
         model = glm::mat4(1.0f);
-        model = glm::translate(model, cubePositions[0]);
+        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
         lightingShader.setMatrix("model", model);
         // View Matrix
         lightingShader.setMatrix("view", viewMatrix);
