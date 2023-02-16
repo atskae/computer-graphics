@@ -38,7 +38,7 @@ vec3 final_object_color = object_color * ambience;
 
 Calculate the angle between the incoming light ray and the **normal vector** (a vector that is perpendicular to the object's surface) on the surface of an object:
 * The *dot product* between two *unit* vectors, with an angle `θ` between the two vectors, is `cos(θ)`
-* If the light is directly above the object, the angle between the object' normal vector and light is 0
+* If the light s perfectly aligned with the object's normal vector, the angle between the normal vector and light is 0
   * `cos(0 degrees) = 1`
   * The object should be brightest when the angle between two vectors is closer to 0
 * If the light and normal vector form a 90 degree angle, the result is `cos(90 degrees) = 0`
@@ -51,3 +51,11 @@ We need the two vectors:
 * The normal vector off the object's surface
 * The light's directional vector
   * Calculate by the difference between the position from the light source and the object
+
+### Normal Vectors
+
+A **normal vector** is a unit vector that is perpendicular to the surface of a vertex.
+* A vertex itself has no surface (it is just a single point)
+* Create a surface with the surrounding vertices
+* Use the cross product to get a vector perpendicular to that surface
+
