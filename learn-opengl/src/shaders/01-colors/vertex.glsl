@@ -6,6 +6,8 @@
 // We name the input variable `aPos`
 // `layout` allows us to define the location of the input variable
 layout (location = 0) in vec3 aPos;
+// Normal vector of the triangle surface
+layout (location = 1) in vec3 aNormal;
 
 // Transformation matrices
 // Convert local to global
@@ -14,6 +16,10 @@ uniform mat4 model;
 uniform mat4 view;
 // Applies perspective projection
 uniform mat4 projection;
+
+// Variables to pass to the fragment shader
+// Normal vector
+out vec3 Normal;
 
 void main() {
     // We set the return value to `gl_Position`
@@ -25,4 +31,6 @@ void main() {
     // So here, model is applied first, then view, then lastly projection
     gl_Position = projection * view * model * vec4(aPos, 1.0f);
 
+    // Pass the normal vector to the fragment shader
+    Normal = aNormal;    
 }

@@ -93,26 +93,89 @@ int main(int argc, char* argv[]) {
 
     std::cout << "m3 == viewMatrix: " << (m3 == viewMatrix) << std::endl;
 
+    // 3D cube
+    // 36 vertices in total
+    // 6 faces, 2 triangles per face, 3 vertices per triangle
+    std::vector<float> triangle_vertices = {
+        // Back face of cube
+        // Triangle
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         // Triangle
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 
-    std::vector<float> triangle_vertices = {    
-        // First triangle
-        -0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f, -0.5f,
-         0.5f,  0.5f, -0.5f, 
-         // Second triangle
-         0.5f,  0.5f, -0.5f,
-        -0.5f,  0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-    };
+        // Front face of cube
+        // Triangle
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        // Triangle 
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+        // Left face of cube (facing the negative x-axis)
+        // Triangle
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        // Triangle
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+        // Right-face of cube (facing the positive x-axis)
+        // Triangle
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        // Triangle 
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+        // Bottom face of cube
+        // Triangle
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        // Triangle
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+        // Top face of cube
+        // Triangle
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        // Triangle 
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+    }; 
+
 
     // For each triangle
-    for (int triangle=0; triangle<triangle_vertices.size(); triangle=triangle+3) {
+    std::cout << "Number of verticies: " << triangle_vertices.size() << std::endl;
+    int elements_per_triangle = 15;
+    int elements_per_row = 5;
+    int num_triangles_seen = 0;
+    for (int triangle=0; triangle<triangle_vertices.size(); triangle=triangle+elements_per_triangle) {
 
         // Compute the starting indices of each point
         // start, middle, end
         int start_indices[3];
         for (int s=0; s<3; s++) {
-            start_indices[s] = triangle + (s*3);
+            int start_index = triangle + (s*elements_per_row);
+            start_indices[s] = start_index;
+            for (int e=0; e<3; e++) {
+                std::cout << triangle_vertices[start_index + e] << " ";
+            }
+            std::cout << std::endl;
         }
         
         // Create two vectors:
@@ -138,7 +201,9 @@ int main(int argc, char* argv[]) {
         glm::vec3 normal_vector = glm::normalize(
             glm::cross(triangle_vectors[0], triangle_vectors[1])
         );
-        std::cout << "Triangle " << triangle << std::endl;
+        
+        num_triangles_seen++;
+        std::cout << "Triangle " << num_triangles_seen << std::endl;
         print_vec3("Normal vector: ", normal_vector);
         std::cout << "---" << std::endl;
 
