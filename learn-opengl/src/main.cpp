@@ -26,7 +26,7 @@ Camera camera(WINDOW_WIDTH, WINDOW_HEIGHT, IS_FPS);
 
 // Location of the light source in the scene
 // Position in World Space
-const glm::vec3 lightSourcePos(0.5, 0.5f, 2.0f);
+const glm::vec3 lightPos(0.5, 0.5f, 2.0f);
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     camera.updateFrontVector(xpos, ypos);
@@ -521,6 +521,7 @@ int main(int argc, char* argv[]) {
 
     // Compiles the individual shader programs into one
     Shader shaderProgram = Shader(
+        "Cubes",
         "shaders/vertex.glsl",
         "shaders/fragment.glsl"
     );
@@ -538,12 +539,14 @@ int main(int argc, char* argv[]) {
 
     // Separate shader for the light source only
     Shader lightSourceShader(
+        "Light source",
         "shaders/01-colors/vertex.glsl",
         "shaders/01-colors/light_source_fragment.glsl"
     );
 
     // This shader is responsible for adding the light's effects     
     Shader lightingShader(
+        "Lighting effects",
         "shaders/01-colors/vertex.glsl",
         "shaders/01-colors/fragment.glsl"
     );
@@ -558,7 +561,7 @@ int main(int argc, char* argv[]) {
     lightingShader.setVec3("lightColor", lightColor);
     lightingShader.setVec3("objectColor", coralColor);
 
-    lightingShader.setVec3("lightSourcePos", lightSourcePos);
+    lightingShader.setVec3("lightPos", lightPos);
 
     // Define the View matrix, which captures a scene in the view of the camera
     // We aren't really moving the camera, we are moving the scene relative to a camera at the origin (?)
@@ -659,7 +662,7 @@ int main(int argc, char* argv[]) {
         // Set the model, view, and projection matrices
         // Model matrix
         glm::mat4 model(1.0f);
-        model = glm::translate(model, lightSourcePos);
+        model = glm::translate(model, lightPos);
         model = glm::scale(model, glm::vec3(0.3f)); // scale down
         lightSourceShader.setMatrix("model", model);
 

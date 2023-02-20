@@ -20,6 +20,9 @@ uniform mat4 projection;
 // Variables to pass to the fragment shader
 // Normal vector
 out vec3 Normal;
+// World-space coordinate of the fragment
+// All the lighting is done in world-space
+out vec3 FragPos;
 
 void main() {
     // We set the return value to `gl_Position`
@@ -32,5 +35,8 @@ void main() {
     gl_Position = projection * view * model * vec4(aPos, 1.0f);
 
     // Pass the normal vector to the fragment shader
-    Normal = aNormal;    
+    Normal = aNormal;
+
+    // Compute the fragment's world coordinates only
+    FragPos = vec3(model * vec4(aPos, 1.0f));
 }

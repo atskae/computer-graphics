@@ -17,10 +17,13 @@ class Shader {
         // The unique ID of the main shader program, with the vertex and fragment
         //  shader linked together and compiled
         unsigned int programId;
+
+        // For debugging
+        std::string programName;
     
     public:
         // Constructor
-        Shader(const char* vertexShaderPath, const char* fragmentShaderPath);
+        Shader(std::string programName, const char* vertexShaderPath, const char* fragmentShaderPath);
 
         // Use/activate the shader
         void use();
@@ -44,7 +47,10 @@ class Shader {
 };
 
 
-Shader::Shader(const char* vertexShaderPath, const char* fragmentShaderPath): programId(0) {
+Shader::Shader(std::string programName, const char* vertexShaderPath, const char* fragmentShaderPath): programId(0) {
+
+    // Save the name for debugging purposes
+    this->programName = programName;
 
     // Place paths in a list so we can apply the same compilation steps
     // for each shader program
@@ -154,6 +160,7 @@ Shader::Shader(const char* vertexShaderPath, const char* fragmentShaderPath): pr
 // Activate the shader program
 void Shader::use() { 
     glUseProgram(this->programId);
+    std::cout << "Using " << this->programName << " with ID: " << this->programId << std::endl;
 }
 
 /* Getters 
@@ -192,7 +199,7 @@ glm::mat4 Shader::getMatrix(const std::string& name) const {
     GLint location = glGetUniformLocation(this->programId, name.c_str());
     GLfloat value[16] = {-1.0f};
     if (location < 0) {
-        std::cerr << "Invalid uniform variable: " << name << std::endl;
+        std::cerr << "Invalid uniform variable for program " << this->programId << ": " << name << std::endl;
     } else {
         glGetUniformfv(this->programId, location, value);
     }
@@ -236,7 +243,7 @@ void Shader::setVec3(const std::string& name, glm::vec3 vec) {
 void Shader::setMatrix(const std::string& name, glm::mat4& matrix) {
     GLint location = glGetUniformLocation(this->programId, name.c_str());
     if (location < 0) {
-        std::cerr << "Invalid uniform variable: " << name << std::endl;
+        std::cerr << "Invalid uniform variable for program " << this->programId << ": " << name << std::endl;
     } else {
         // glUniformMatrix4fv(location, count, transpose, matrix)
         glUniformMatrix4fv(location, 1, false, glm::value_ptr(matrix));
