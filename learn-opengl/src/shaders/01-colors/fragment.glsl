@@ -26,7 +26,7 @@ void main() {
     // causing a brighter affect. When the angle is closer to 90 degrees, the effect is no light
     // The product of two *unit* vectors will give us cos(theta) 
     // We take the max to avoid negative dot product (occurs when the angle > 90)
-    float diffuseStrength = max(dot(normalize(lightDirection), normalize(Normal)));
+    float diffuseStrength = max(dot(normalize(lightDirection), normalize(Normal)), 0.0);
     vec3 diffuse = diffuseStrength * lightColor;
 
     // vec4 color: red, green, blue, alpha (transparency)
@@ -35,6 +35,6 @@ void main() {
     
     // The final light effect is the addition of diffuse and ambience effect
     // The final color is obtained by multiplying the object's color and the final light effect
-    float lightEffect = diffuse + ambience;
+    vec3 lightEffect = diffuse + ambience;
     FragColor = vec4(objectColor * lightEffect, 1.0f);
 }

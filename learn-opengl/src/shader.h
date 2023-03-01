@@ -160,7 +160,7 @@ Shader::Shader(std::string programName, const char* vertexShaderPath, const char
 // Activate the shader program
 void Shader::use() { 
     glUseProgram(this->programId);
-    std::cout << "Using " << this->programName << " with ID: " << this->programId << std::endl;
+    //std::cout << "Using " << this->programName << " with ID: " << this->programId << std::endl;
 }
 
 /* Getters 
