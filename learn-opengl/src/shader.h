@@ -155,6 +155,8 @@ Shader::Shader(std::string programName, const char* vertexShaderPath, const char
     // into the main shader program
     glDeleteShader(shaderIds[0]);
     glDeleteShader(shaderIds[1]);
+
+    std::cout << "Created shader program " << this->programName << " with ID: " << this->programId << std::endl;
 }
 
 // Activate the shader program
@@ -177,7 +179,7 @@ float Shader::getFloat(const std::string& name) const {
     GLint location = glGetUniformLocation(this->programId, name.c_str());
     float value = -1.0f;
     if (location < 0) {
-        std::cerr << "Invalid uniform variable: " << name << std::endl;
+        std::cerr << "Invalid or unused uniform variable: " << name << std::endl;
     } else {
         glGetUniformfv(this->programId, location, &value);
     }
@@ -188,7 +190,7 @@ int Shader::getInt(const std::string& name) const {
     GLint location = glGetUniformLocation(this->programId, name.c_str());
     int value = -1;
     if (location < 0) {
-        std::cerr << "Invalid uniform variable: " << name << std::endl;
+        std::cerr << "Invalid or unused uniform variable: " << name << std::endl;
     } else {
         glGetUniformiv(this->programId, location, &value);
     }
@@ -216,7 +218,7 @@ void Shader::setBool(const std::string& name, bool value) {
 void Shader::setFloat(const std::string& name, float value) {
     GLint location = glGetUniformLocation(this->programId, name.c_str());
     if (location < 0) {
-        std::cerr << "Invalid uniform variable: " << name << std::endl;
+        std::cerr << "Invalid or unused uniform variable: " << name << std::endl;
     } else {
         glUniform1f(location, value);
     }
@@ -225,7 +227,7 @@ void Shader::setFloat(const std::string& name, float value) {
 void Shader::setInt(const std::string& name, int value) {
     GLint location = glGetUniformLocation(this->programId, name.c_str());
     if (location < 0) {
-        std::cerr << "Invalid uniform variable: " << name << std::endl;
+        std::cerr << "Invalid or unused uniform variable: " << name << std::endl;
     } else {
         glUniform1i(location, value);
     }
@@ -234,7 +236,7 @@ void Shader::setInt(const std::string& name, int value) {
 void Shader::setVec3(const std::string& name, glm::vec3 vec) {
     GLint location = glGetUniformLocation(this->programId, name.c_str());
     if (location < 0) {
-        std::cerr << "Invalid uniform variable: " << name << std::endl;
+        std::cerr << "Invalid or unused uniform variable vec3 for program " << this->programId << ": " << name << std::endl;
     } else {
         glUniform3fv(location, 1, glm::value_ptr(vec));
     }
@@ -243,7 +245,7 @@ void Shader::setVec3(const std::string& name, glm::vec3 vec) {
 void Shader::setMatrix(const std::string& name, glm::mat4& matrix) {
     GLint location = glGetUniformLocation(this->programId, name.c_str());
     if (location < 0) {
-        std::cerr << "Invalid uniform variable for program " << this->programId << ": " << name << std::endl;
+        std::cerr << "Invalid or unused uniform variable for program " << this->programId << ": " << name << std::endl;
     } else {
         // glUniformMatrix4fv(location, count, transpose, matrix)
         glUniformMatrix4fv(location, 1, false, glm::value_ptr(matrix));

@@ -338,7 +338,21 @@ int main(int argc, char* argv[]) {
     );
     // Enable the vertex attribute in the vertex shader `(location = 0)`
     glEnableVertexAttribArray(vertexAttributeLocation);
-    
+
+    // Set the normal vectors to the vertex shader
+    glVertexAttribPointer(
+        1,
+        3, // size of the input (vec3),
+        GL_FLOAT, // type of the input
+        GL_FALSE, // normalize data,
+        verticesStride * sizeof(float), // stride of the data
+        (void*) (5 * sizeof(float)) // offset into the vertex data where this data starts
+    );
+    // Enable a vertex attribute array
+    // This actively connects the vertex data to the attribute in the shader
+    // The above call simply describes how to interpret the data, but not activate it
+    glEnableVertexAttribArray(1);
+
     //// Configure the color (vertex attribute) in the vertex shader
     //glVertexAttribPointer(
     //    // The value we specified in our vertex shader, `layout (location = 1)`
@@ -503,19 +517,11 @@ int main(int argc, char* argv[]) {
     // The above call simply describes how to interpret the data, but not activate it
     glEnableVertexAttribArray(vertexAttributeLocation);
 
-    // Set the normal vectors to the vertex shader
-    glVertexAttribPointer(
-        vertexAttributeLocation+1,
-        3, // size of the input (vec3),
-        GL_FLOAT, // type of the input
-        GL_FALSE, // normalize data,
-        verticesStride * sizeof(float), // stride of the data
-        (void*)5 // offset into the vertex data where this data starts
-    );
     // Enable a vertex attribute array
     // This actively connects the vertex data to the attribute in the shader
     // The above call simply describes how to interpret the data, but not activate it
-    glEnableVertexAttribArray(vertexAttributeLocation+1);
+    glEnableVertexAttribArray(1);
+
 
     /* Shader programs */
 
@@ -558,9 +564,8 @@ int main(int argc, char* argv[]) {
     glm::vec3 lightColor(1.0f, 1.0f, 1.0f); // white
     glm::vec3 coralColor(1.0f, 0.5f, 0.3f);
     
-    lightingShader.setVec3("lightColor", lightColor);
     lightingShader.setVec3("objectColor", coralColor);
-
+    lightingShader.setVec3("lightColor", lightColor);
     lightingShader.setVec3("lightPos", lightPos);
 
     // Define the View matrix, which captures a scene in the view of the camera

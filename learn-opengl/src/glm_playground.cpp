@@ -209,5 +209,30 @@ int main(int argc, char* argv[]) {
 
     } // for each triangle ; end
 
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+    print_matrix("model", model);
+
+    glm::vec3 aPos(-0.5f, -0.5f, 0.5f);
+    glm::vec3 aNormal(0.0f, 0.0f, 1.0f);
+    aNormal = glm::normalize(aNormal);
+    glm::vec3 lightPos(0.5f, 0.5f, 2.0f);
+
+    glm::vec3 fragPos = glm::vec3(model * glm::vec4(aPos, 1.0f));
+    glm::vec3 lightDir = glm::normalize(lightPos - fragPos);
+    
+    glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
+
+    print_vec3("aPos", aPos);
+    print_vec3("aNormal", aNormal);
+    print_vec3("lightPos", lightPos);
+    print_vec3("lightDir", lightDir);
+
+    float diffuseStrength = glm::dot(lightDir, aNormal);
+    std::cout << "diffuseStrength: " << diffuseStrength << std::endl;
+
+    glm::vec3 diffuse = diffuseStrength * lightColor;
+    print_vec3("diffuse", diffuse); 
+
     return 0;
 }

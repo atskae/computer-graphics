@@ -59,3 +59,79 @@ A **normal vector** is a unit vector that is perpendicular to the surface of a v
 * Create a surface with the surrounding vertices
 * Use the cross product to get a vector perpendicular to that surface
 
+### Debugging, RenderDoc
+
+After adding the normal vectors I still got the same cube:
+
+![Diffuse bug](images/0-diffuse-bug.png)
+
+I started playing around with `glm` and manually doing some calculations that the fragment shader does:
+```glsl
+vec3 lightDirection = vec3(lightPos - FragPos);
+float diffuseStrength = max(dot(normalize(lightDirection), normalize(Normal)), 0.0);
+vec3 diffuse = diffuseStrength * lightColor;
+```
+I thought this dot product was always negative, which would result in a diffuse strength of 0, but that wasn't the case.
+
+I also tried rendered the diffuse value by setting it as the cube color to see what it was ([visual debugging](https://stackoverflow.com/questions/18169276/how-can-i-debug-a-glsl-shader)):
+```glsl
+FragColor = vec4(diffuse, 1.0f);
+```
+
+OpenGL will error out on `glGetUniformLocation()` if variables are invalid or *unused* (it doesn't distinguish these errors I think). 
+
+Then I gave up on print statement and assumption debugging and looked into some GLSL debuggers.
+
+I downloaded [RenderDoc](https://renderdoc.org/) (there were no installation instructions, so I just moved the extracted folder to `/usr/lib` and made a symlink to the binaries in `/usr/bin`..., tangentially went to this page on [Filesystem Hierarchy Standard](https://www.pathname.com/fhs/pub/fhs-2.3.html#THEUSRHIERARCHY)).
+
+```
+sudo ln -s /usr/lib/renderdoc_1.25/bin/qrenderdoc /usr/bin/qrenderdoc
+sudo ln -s /usr/lib/renderdoc_1.25/bin/renderdoccmd /usr/bin/renderdoccmd
+```
+
+Then to launch RenderDoc, run in the terminal:
+```
+qrenderdoc
+```
+
+First thing I learned was that the normal vectors were never passed into the shader:
+
+![aNormal disabled](images/anormal-disabled.png)
+
+The problem was I was calling `glVertexAttribPointer()` and `glEnableVertexAttribArray()` for the normal vector data *after* enabling data (lightVAO, VBO) for the light source... So these calls silently failed.
+
+So then I moved up the calls for the normal vector right after making those calls for the cube vertex data.
+
+![aNormal enabled](images/anormal-enabled.png)
+
+But the result was still not correct. I looked more in to the data passed into the shaders and the normal vectors looked like garbage:
+
+![Invalid normal vectors](images/invalid-normal-vectors.png)
+
+The first normal vector should have been `(0, 0, -1)`, which was not being sent to the shader.
+
+The problem was the pointer offset argument for the normal vectors:
+```cpp
+    // Set the normal vectors to the vertex shader
+    glVertexAttribPointer(
+        1,
+        3, // size of the input (vec3),
+        GL_FLOAT, // type of the input
+        GL_FALSE, // normalize data,
+        verticesStride * sizeof(float), // stride of the data
+        (void*)5 // <---
+    );
+    glEnableVertexAttribArray(1);
+```
+
+My data format was still: (vec3 vertex data) (vec2 texture coordinates) (vec3 normal vector), so the offset of `5` *items* was correct... but this had to be in terms of bytes.
+
+After changing it to `(void*)(5*sizeof(float))`, it works!
+
+![Fixed lighting](images/fixed-lighting.png)
+
+RenderDoc shows that the normal vectors are now correct:
+
+![Correct normal vector](images/correct-normal-vector-data.png)
+
+Debuggers 🎉
