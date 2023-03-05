@@ -26,7 +26,7 @@ Camera camera(WINDOW_WIDTH, WINDOW_HEIGHT, IS_FPS);
 
 // Location of the light source in the scene
 // Position in World Space
-const glm::vec3 lightPos(0.5, 0.5f, 2.0f);
+const glm::vec3 lightPos(1.5, 1.0f, 2.0f);
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     camera.updateFrontVector(xpos, ypos);
@@ -532,16 +532,16 @@ int main(int argc, char* argv[]) {
         "shaders/fragment.glsl"
     );
 
-    shaderProgram.use();
+    //shaderProgram.use();
     
-    // Add a horizontal offset
-    shaderProgram.setFloat("horizontalOffset", 0.0f);
+    //// Add a horizontal offset
+    //shaderProgram.setFloat("horizontalOffset", 0.0f);
 
-    shaderProgram.setFloat("mixPercentage", 0.5f);
+    //shaderProgram.setFloat("mixPercentage", 0.5f);
 
-    // Map a texture unit to a sampler in the fragment shader
-    shaderProgram.setInt("texture1", 0); // assign sampler texture1 to texture unit zero
-    shaderProgram.setInt("texture2", 1);
+    //// Map a texture unit to a sampler in the fragment shader
+    //shaderProgram.setInt("texture1", 0); // assign sampler texture1 to texture unit zero
+    //shaderProgram.setInt("texture2", 1);
 
     // Separate shader for the light source only
     Shader lightSourceShader(
@@ -568,17 +568,17 @@ int main(int argc, char* argv[]) {
     lightingShader.setVec3("lightColor", lightColor);
     lightingShader.setVec3("lightPos", lightPos);
 
-    // Define the View matrix, which captures a scene in the view of the camera
-    // We aren't really moving the camera, we are moving the scene relative to a camera at the origin (?)
-    // So to give the view of the camera that moved away from the scene, we move the scene away from the camera
-    glm::mat4 view(1.0f);
-    // Translate the vertices into the screen (-z axis)
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-    int viewLoc = glGetUniformLocation(shaderProgram.getProgramId(), "view");
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+    //// Define the View matrix, which captures a scene in the view of the camera
+    //// We aren't really moving the camera, we are moving the scene relative to a camera at the origin (?)
+    //// So to give the view of the camera that moved away from the scene, we move the scene away from the camera
+    //glm::mat4 view(1.0f);
+    //// Translate the vertices into the screen (-z axis)
+    //view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+    //int viewLoc = glGetUniformLocation(shaderProgram.getProgramId(), "view");
+    //glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
-    // Rotation around the origin radius
-    const float rotationRadius = 10.0f;
+    //// Rotation around the origin radius
+    //const float rotationRadius = 10.0f;
     
     // Start the render loop
     // This keeps the application running and handles new input
@@ -631,34 +631,34 @@ int main(int argc, char* argv[]) {
         //shaderProgram.use();
 
         glm::mat4 projection = camera.getPerspectiveMatrix();
-        shaderProgram.setMatrix("projection", projection);
+        //shaderProgram.setMatrix("projection", projection);
 
-        // Set the view matrix
-        // Rotate the camera along the y-axis over time
-        //float cameraX = cos(glfwGetTime()) * rotationRadius;
-        //float cameraZ = -1 * sin(glfwGetTime()) * rotationRadius; // negative 1 for clockwise rotation
+        //// Set the view matrix
+        //// Rotate the camera along the y-axis over time
+        ////float cameraX = cos(glfwGetTime()) * rotationRadius;
+        ////float cameraZ = -1 * sin(glfwGetTime()) * rotationRadius; // negative 1 for clockwise rotation
         glm::mat4 viewMatrix = camera.getLookAtMatrix();
-        shaderProgram.setMatrix("view", viewMatrix);
+        //shaderProgram.setMatrix("view", viewMatrix);
 
-        // Draw each cube positioned at different locations
-        int modelLoc = glGetUniformLocation(shaderProgram.getProgramId(), "model");
-        for (int i=0; i<10; i++) {
-            // Create a transformation matrix for this cube and apply it in the vertex shader
-            glm::mat4 model_matrix(1.0f);
-            model_matrix = glm::translate(model_matrix, cubePositions[i]);
-            model_matrix = glm::rotate(model_matrix, glm::radians(20.f * i), glm::vec3(1.0f, 0.3f, 0.5f));
-             
-            //if (i%3 == 0) {
-            //    // Update the angle of rotation over time
-            //    float angle_of_rotation = (float)glfwGetTime() * glm::radians(50.0f);
-            //    model_matrix = glm::rotate(model_matrix, angle_of_rotation, axis_of_rotation);
-            //}
-            // Set the model matrix
-            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model_matrix));
-            
-            // Draw the cube!
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
+        //// Draw each cube positioned at different locations
+        //int modelLoc = glGetUniformLocation(shaderProgram.getProgramId(), "model");
+        //for (int i=0; i<10; i++) {
+        //    // Create a transformation matrix for this cube and apply it in the vertex shader
+        //    glm::mat4 model_matrix(1.0f);
+        //    model_matrix = glm::translate(model_matrix, cubePositions[i]);
+        //    model_matrix = glm::rotate(model_matrix, glm::radians(20.f * i), glm::vec3(1.0f, 0.3f, 0.5f));
+        //     
+        //    //if (i%3 == 0) {
+        //    //    // Update the angle of rotation over time
+        //    //    float angle_of_rotation = (float)glfwGetTime() * glm::radians(50.0f);
+        //    //    model_matrix = glm::rotate(model_matrix, angle_of_rotation, axis_of_rotation);
+        //    //}
+        //    // Set the model matrix
+        //    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model_matrix));
+        //    
+        //    // Draw the cube!
+        //    glDrawArrays(GL_TRIANGLES, 0, 36);
+        //}
 
         // Need to activate so changes apply 
         glBindVertexArray(lightVAO);
@@ -668,7 +668,7 @@ int main(int argc, char* argv[]) {
         // Model matrix
         glm::mat4 model(1.0f);
         model = glm::translate(model, lightPos);
-        model = glm::scale(model, glm::vec3(0.3f)); // scale down
+        model = glm::scale(model, glm::vec3(0.2f)); // scale down
         lightSourceShader.setMatrix("model", model);
 
         // View Matrix

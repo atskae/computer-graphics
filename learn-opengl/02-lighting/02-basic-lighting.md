@@ -1,3 +1,4 @@
+
 # [Basic lighting](https://learnopengl.com/Lighting/Basic-Lighting)
 
 Many models to approximate the effects of light on a computer.
@@ -135,3 +136,60 @@ RenderDoc shows that the normal vectors are now correct:
 ![Correct normal vector](images/correct-normal-vector-data.png)
 
 Debuggers 🎉
+
+I moved the light position further away, which now gives a less harsh shadow:
+
+![Same light source position](images/use-same-light-source-pos.png)
+
+### One Last Thing (transforming normal vectors)
+
+#### Notes on the [the normal matrix article](http://www.lighthouse3d.com/tutorials/glsl-12-tutorial/the-normal-matrix/)
+
+This slide [transforming normal vectors](https://cseweb.ucsd.edu/classes/wi20/cse167-a/lec3.pdf) made the `G^T * M = I` relationship with the dot product `N' dot T' = 0` more clear.
+
+We have two vectors (`vec3`) associated with a triangle fragment: the tangent vector `T` and the normal vector `N`. We have a 4x4 model-view matrix, where its upper-left 3x3 matrix is `M` that is applied to these vectors on a transformation, resulting in `T'` and `N'`.
+* We can define a vector as a difference of two points
+* If tangent vector `T = b - a`, then the vector after the transformation is: `T' = MT = b' - a'`
+  * Points `a'` and `b'` are still along the triangle, so `T'` is still tangent to the triangle
+* This is not the case with the normal vector after the transformation `N'`
+  * We can use matrix `M` for the tangent vector, but we need to find a different vectot `G` for the normal vector
+  
+```
+// Normal and tangent vector forms a right angle
+N dot T = 0
+
+// we want the vectors after the transformation to remain orthogonal 
+N' dot T' = 0
+
+// M and G are 3x3 model-view matrices
+// N' = GN
+// T' = MT
+GN dot MT = 0
+
+// We can convert a dot product to a matrix multiply using a transpose
+(GN)^T * (MT) = 0
+
+// Split apart the transpose
+(N^T)(G^T) * (MT) = 0
+
+// In the above equation, if this portion: G^T * M  = I (Identity)
+// then N^T * T = N dot T = 0 // convert matrix multiply as a dot product
+// We want N dot T = 0 since we want the transformation to retain their orthogonality
+```
+
+Then we solve for matrix `G`:
+```
+G^T * M = I
+G = (M^-1)^T
+```
+
+When do we not need a special matrix `G` for the normal vector? (and could just use `M`?): When `M` is orthogonal:
+```
+M^-1 = M^T = G = M
+```
+
+* The transpose and inverse is the same for orthogonal matrices
+* An **orthogonal matrix** is a matrix where it's rows and column vectors are unit length, and are orthogonal to each other
+* When vectors are multiplied by an orthogonal matrix, the angle between them and their lengths are preserved
+  * This keeps normal and tangent vectors perpendicular to each other
+* `M` is orthogonal if we limit transformations to *translations* and *rotations* only. If we apply *scale*, `M` is not orthogonal anymore, so in this case we need to apply matrix `G = (M^-1)^T` to the normal vector
