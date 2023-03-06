@@ -193,3 +193,41 @@ M^-1 = M^T = G = M
 * When vectors are multiplied by an orthogonal matrix, the angle between them and their lengths are preserved
   * This keeps normal and tangent vectors perpendicular to each other
 * `M` is orthogonal if we limit transformations to *translations* and *rotations* only. If we apply *scale*, `M` is not orthogonal anymore, so in this case we need to apply matrix `G = (M^-1)^T` to the normal vector
+
+## Specular Lighting
+
+Similar to diffuse lighting in terms of calculation, but now the viewer's direction toward the object matters in the light's effect.
+
+Guess attempt (does not correctly render):
+```glsl
+float specularStrength = 0.5;
+vec3 viewDirection = normalize(FragPos - viewPos);
+vec3 reflectionDirection = lightDirection - 2 * dot(lightDirection, normalVec) * normalVec;
+vec3 specular = acos(dot(viewDirection, reflectionDirection)) * specularStrength * lightColor;
+// ...
+vec3 lightEffect = diffuse + ambience + specular;
+```
+
+![Specular attempt 1](images/specular-attempt-1.png)
+
+Second attempt (super intense lighting...)
+
+```glsl
+float specularStrength = 0.5;
+vec3 viewDirection = normalize(viewPos - FragPos);
+// -1 since the lightDirection is currently fragPos to light, and we want the opposite direction
+// The reflect() function expects direction light-> fragPos
+vec3 reflectionDirection = reflect(-lightDirection, normalVec); 
+// How much the light is properly reflected versus scattered around
+// Higher values, a smaller area will get intense light (highlights)
+// Lower values, light is spread out across the fragment
+float shininess = 32;
+float spec = pow(max(dot(viewDirection, reflectionDirection), 0.0), shininess);
+vec3 specular = specularStrength * spec * lightColor;
+```
+
+![Specular attempt 2](images/specular-attempt-2.png)
+
+Now I tried `specularStrength=0.1` and `shininess=4`:
+
+![Specular attempt 3](images/specular-attempt-3.png)

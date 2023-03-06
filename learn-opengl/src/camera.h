@@ -126,6 +126,8 @@ class Camera {
             if (isFPS) this->position.y = 0;
         }
 
+        glm::vec3 getPosition() { return this->position; }
+
         /*
             Methods for changing camera settings with user input
         */

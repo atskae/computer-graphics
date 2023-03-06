@@ -568,6 +568,8 @@ int main(int argc, char* argv[]) {
     lightingShader.setVec3("lightColor", lightColor);
     lightingShader.setVec3("lightPos", lightPos);
 
+        
+
     //// Define the View matrix, which captures a scene in the view of the camera
     //// We aren't really moving the camera, we are moving the scene relative to a camera at the origin (?)
     //// So to give the view of the camera that moved away from the scene, we move the scene away from the camera
@@ -589,7 +591,8 @@ int main(int argc, char* argv[]) {
 
         // Process user input
         processInput(window, shaderProgram);
-        
+        glm::vec3 viewPos = camera.getPosition();
+
         /* Rendering */
         
         //// Configure the color setting used by glClear()
@@ -684,6 +687,10 @@ int main(int argc, char* argv[]) {
         // Now draw the cube object that is getting hit by the light source
         glBindVertexArray(VAO);
         lightingShader.use();
+        
+        // Update the viewer's position
+        lightingShader.setVec3("viewPos", viewPos);
+        
         // Model matrix
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
