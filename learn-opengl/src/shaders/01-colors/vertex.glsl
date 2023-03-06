@@ -35,7 +35,11 @@ void main() {
     gl_Position = projection * view * model * vec4(aPos, 1.0f);
 
     // Pass the normal vector to the fragment shader
-    Normal = aNormal;
+    // To ensure that the normal vector stays at 90 degrees
+    // to the surface, we the inverse + transpose to the model matrix
+    // model = 4x4 matrix, we take the top-left inner 3x3 matrix of model
+    // aNormal = 1x3 vector
+    Normal = mat3(transpose(inverse(model))) * aNormal;
 
     // Compute the fragment's world coordinates only
     FragPos = vec3(model * vec4(aPos, 1.0f));
