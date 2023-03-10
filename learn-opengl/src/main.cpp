@@ -20,13 +20,13 @@
 
 const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 450;
-const bool IS_FPS = true;
+const bool IS_FPS = false;
 
 Camera camera(WINDOW_WIDTH, WINDOW_HEIGHT, IS_FPS);
 
 // Location of the light source in the scene
 // Position in World Space
-const glm::vec3 lightPos(1.5, 1.0f, 2.0f);
+//const glm::vec3 lightPos(1.5, 1.0f, 2.0f);
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     camera.updateFrontVector(xpos, ypos);
@@ -566,9 +566,7 @@ int main(int argc, char* argv[]) {
     
     lightingShader.setVec3("objectColor", coralColor);
     lightingShader.setVec3("lightColor", lightColor);
-    lightingShader.setVec3("lightPos", lightPos);
-
-        
+    //lightingShader.setVec3("lightPos", lightPos);
 
     //// Define the View matrix, which captures a scene in the view of the camera
     //// We aren't really moving the camera, we are moving the scene relative to a camera at the origin (?)
@@ -579,8 +577,9 @@ int main(int argc, char* argv[]) {
     //int viewLoc = glGetUniformLocation(shaderProgram.getProgramId(), "view");
     //glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
-    //// Rotation around the origin radius
-    //const float rotationRadius = 10.0f;
+    // Rotation around the origin, around the y-axis
+    // for rotating objects such as the camera, light source, ...
+    const float rotationRadius = 2.5f;
     
     // Start the render loop
     // This keeps the application running and handles new input
@@ -670,6 +669,13 @@ int main(int argc, char* argv[]) {
         // Set the model, view, and projection matrices
         // Model matrix
         glm::mat4 model(1.0f);
+        
+        // Rotate the camera around the y-axis over time
+        double timeStamp = glfwGetTime();
+        float lightPosX = cos(timeStamp) * rotationRadius;
+        float lightPosZ = -1 * sin(timeStamp) * rotationRadius; // negative 1 for clockwise rotation
+        glm::vec3 lightPos = glm::vec3(lightPosX, 1.0f, lightPosZ);
+
         model = glm::translate(model, lightPos);
         model = glm::scale(model, glm::vec3(0.2f)); // scale down
         lightSourceShader.setMatrix("model", model);
@@ -687,6 +693,9 @@ int main(int argc, char* argv[]) {
         // Now draw the cube object that is getting hit by the light source
         glBindVertexArray(VAO);
         lightingShader.use();
+
+        // Use the position calculated at this timestamp for the light source 
+        lightingShader.setVec3("lightPos", lightPos);
         
         // Update the viewer's position
         lightingShader.setVec3("viewPos", viewPos);

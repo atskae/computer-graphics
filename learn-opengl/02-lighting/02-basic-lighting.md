@@ -231,3 +231,42 @@ vec3 specular = specularStrength * spec * lightColor;
 Now I tried `specularStrength=0.1` and `shininess=4`:
 
 ![Specular attempt 3](images/specular-attempt-3.png)
+
+## Exercises
+
+1. Move the light source overtime
+
+We set a rotation radius of the light source before the render loop:
+```cpp
+const float rotationRadius = 2.5f;
+```
+
+We update the light source's position over time:
+```cpp
+// Rotate the camera around the y-axis over time
+double timeStamp = glfwGetTime();
+float lightPosX = cos(timeStamp) * rotationRadius;
+float lightPosZ = -1 * sin(timeStamp) * rotationRadius; // negative 1 for clockwise rotation
+glm::vec3 lightPos = glm::vec3(lightPosX, 1.0f, lightPosZ);
+
+model = glm::translate(model, lightPos);
+```
+
+We also have to update the light position lighting shader (must come after `shader.use()`!)
+
+```cpp
+lightingShader.use();
+// Use the position calculated at this timestamp for the light source 
+lightingShader.setVec3("lightPos", lightPos);
+```
+
+I turned of the first-person shooter mode on the camera so I coud fly above the cube ✈️✨
+
+![Rotating light source](images/rotating-light-source.png)
+
+We can easily rotate around the z-axis:
+```cpp
+glm::vec3 lightPos = glm::vec3(lightPosX, lightPosZ, 1.0f);
+```
+
+![Rotating light source around z-axis](images/rotating-light-source-z-axis.png)
