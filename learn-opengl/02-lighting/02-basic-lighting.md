@@ -270,3 +270,10 @@ glm::vec3 lightPos = glm::vec3(lightPosX, lightPosZ, 1.0f);
 ```
 
 ![Rotating light source around z-axis](images/rotating-light-source-z-axis.png)
+
+Light color fun:
+
+![Magenta light](images/magenta-light.png)
+![Green light](images/green-light.png)
+
+Had to update both light source shader and the lighting shader to accept the same light color.

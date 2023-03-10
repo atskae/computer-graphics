@@ -28,6 +28,9 @@ Camera camera(WINDOW_WIDTH, WINDOW_HEIGHT, IS_FPS);
 // Position in World Space
 //const glm::vec3 lightPos(1.5, 1.0f, 2.0f);
 
+// Light source color
+const glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
+
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     camera.updateFrontVector(xpos, ypos);
 }
@@ -557,11 +560,13 @@ int main(int argc, char* argv[]) {
         "shaders/01-colors/fragment.glsl"
     );
 
+    lightSourceShader.use();
+    lightSourceShader.setVec3("lightColor", lightColor);
+
     // Activate so setting the values actually applies
     lightingShader.use();
 
     // Set the object color and light color
-    glm::vec3 lightColor(1.0f, 1.0f, 1.0f); // white
     glm::vec3 coralColor(1.0f, 0.5f, 0.3f);
     
     lightingShader.setVec3("objectColor", coralColor);
