@@ -135,6 +135,8 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
+    
     // Draw in wireframe mode (only draw outlines of primitive shapes, no fill)
     // Draw both front and back of the primitive shape
     //  and only draw the lines of the primitives.
@@ -675,8 +677,9 @@ int main(int argc, char* argv[]) {
         // Model matrix
         glm::mat4 model(1.0f);
         
-        // Rotate the camera around the y-axis over time
-        double timeStamp = glfwGetTime();
+        //// Rotate the camera around the y-axis over time
+        //double timeStamp = glfwGetTime();
+        double timeStamp = 1.0;
         float lightPosX = cos(timeStamp) * rotationRadius;
         float lightPosZ = -1 * sin(timeStamp) * rotationRadius; // negative 1 for clockwise rotation
         glm::vec3 lightPos = glm::vec3(lightPosX, 1.0f, lightPosZ);

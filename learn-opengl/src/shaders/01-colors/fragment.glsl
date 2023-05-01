@@ -24,7 +24,7 @@ void main() {
     vec3 lightDirection = vec3(lightPos - FragPos);
     vec3 normalVec = normalize(Normal);
 
-    // Get the angle betweenthe angle between them the light ray and the normal vector
+    // Get the angle between the light ray and the normal vector
     // The angle determines the brightness of the fragment
     // If the angle is closer to 0, the light ray and the normal is more closely aligned
     // causing a brighter affect. When the angle is closer to 90 degrees, the effect is no light

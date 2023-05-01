@@ -277,3 +277,14 @@ Light color fun:
 ![Green light](images/green-light.png)
 
 Had to update both light source shader and the lighting shader to accept the same light color.
+
+### Imgui UI
+
+2. Play around with ambient, diffuse, and specular strengths
+
+Going to play around with [imgui](https://github.com/ocornut/imgui) UI.
+
+To install it, I cloned the [imgui repository](https://github.com/ocornut/imgui), set `$IMG_GUI` environment variable to the path where I cloned the repo locally, then used the `imgui/examples/example_glfw_opengl3/Makefile` as the base Makefile for my project.
+
+TIL to refer to an environment variable in a Makefile, you have to escape the `$`.
+Zum Beispiel: `IMGUI_DIR = $(shell echo $$IMGUI_DIR)`
