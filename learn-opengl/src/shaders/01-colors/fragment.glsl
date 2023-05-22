@@ -6,22 +6,20 @@
 in vec3 Normal;
 // Fragment's position in world-coordinate
 in vec3 FragPos;
+// Light source's position in view-space
+in vec3 LightPos;
 
 // Uniforms, to be set externally (as opposed to passed in by the vertex shader)
 uniform vec3 objectColor;
 // Color of the light source
 uniform vec3 lightColor;
-// Position of the light source
-uniform vec3 lightPos;
-// Position of the viewer
-uniform vec3 viewPos;
 
 // Fragment shader's only required output, a vector of size 4
 out vec4 FragColor;
 
 void main() {
     // Create a vector of the light ray
-    vec3 lightDirection = vec3(lightPos - FragPos);
+    vec3 lightDirection = vec3(LightPos - FragPos);
     vec3 normalVec = normalize(Normal);
 
     // Get the angle between the light ray and the normal vector
@@ -38,7 +36,10 @@ void main() {
     vec3 ambience = ambienceStrength * lightColor;
 
     float specularStrength = 0.1;
+    // In view space, we compute relative to the viewer (set at 0,0,0)
+    vec3 viewPos = vec3(0,0,0);
     vec3 viewDirection = normalize(viewPos - FragPos);
+    
     // -1 since the lightDirection is currently fragPos to light, and we want the opposite direction
     // The reflect() function expects direction light-> fragPos
     vec3 reflectionDirection = reflect(-lightDirection, normalVec); 

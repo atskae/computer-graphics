@@ -288,3 +288,70 @@ To install it, I cloned the [imgui repository](https://github.com/ocornut/imgui)
 
 TIL to refer to an environment variable in a Makefile, you have to escape the `$`.
 Zum Beispiel: `IMGUI_DIR = $(shell echo $$IMGUI_DIR)`
+
+#### Setup Imgui
+Copied the following headers and `imconfig.h` from the `imgui` repo to the `src/` directory:
+```cpp
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+```
+Then added the above includes only.
+
+Added the following from the `examples` right after loading glad in `main.cpp`:
+```cpp
+    /* Imgui Setup */
+    
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 130");
+
+    // Our state
+    bool show_demo_window = true;
+    bool show_another_window = false;
+    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+```
+I hardcoded the version in `ImGui_ImplOpenGL3_Init("#version 130");`.
+
+(edit May 22 I'll come back to this später... OTL)
+
+## Back to exercises
+
+Doing Phong shading in view space
+
+[Recap](https://learnopengl.com/Getting-started/Coordinate-Systems), calculating coordinates in *view space* means to compute the coordiantes relative to the camera/viewer, so the camera/viewer is placed at the coordinate `(0,0,0)`.
+
+So all the coordinates used for lighting (which are in world-space) have to be multipled by the view matrix to get them in view space.
+
+Position of the light is now calculated in the lighting effects vertex shader:
+```glsl
+LightPos = vec3(view * vec4(lightPos, 1.0f));
+```
+
+We also have to update the normal vector and the fragment position:
+```glsl
+Normal = mat3(transpose(inverse(view * model))) * aNormal;
+FragPos = vec3(view * model * vec4(aPos, 1.0f));
+```
+
+Lastly, we don't need the `viewPos` in the fragment shader anymore since we are already in view space. The coordinates for `viewPos` is `vec3(0,0,0)`.
+
+For specular lighting we update the computation:
+```glsl
+float specularStrength = 0.1;
+// In view space, we compute relative to the viewer (set at 0,0,0)
+vec3 viewPos = vec3(0,0,0);
+vec3 viewDirection = normalize(viewPos - FragPos);
+```
+

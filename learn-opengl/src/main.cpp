@@ -14,6 +14,11 @@
 // Read in image files
 #include "stb_image.h"
 
+// Imgui UI
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
 #include "shader.h"
 #include "camera.h"
 
@@ -30,6 +35,9 @@ Camera camera(WINDOW_WIDTH, WINDOW_HEIGHT, IS_FPS);
 
 // Light source color
 const glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
+
+// Imgui color
+ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     camera.updateFrontVector(xpos, ypos);
@@ -88,6 +96,36 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
+// Renders the Imgui UI onto the screen
+void build_imgui_ui(GLFWwindow* window, ImGuiIO& io) {
+
+    bool show_demo_window = true;
+    ImGui::ShowDemoWindow(&show_demo_window);
+    
+    // Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
+    {
+        static float f = 0.0f;
+        static int counter = 0;
+
+        ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+
+        ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+
+        ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+        ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+
+        if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+            counter++;
+        ImGui::SameLine();
+        ImGui::Text("counter = %d", counter);
+
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+        ImGui::End();
+    }
+
+    
+}
+
 int main(int argc, char* argv[]) {
     std::cout << "LearnOpenGL Window" << std::endl;
     std::cout << "C++ version: " << __cplusplus << std::endl;
@@ -136,7 +174,28 @@ int main(int argc, char* argv[]) {
     }
 
     std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
+
+    /* Imgui Setup */
     
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 130");
+
+    // Our state
+    bool show_demo_window = true;
+    bool show_another_window = false;
+    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
     // Draw in wireframe mode (only draw outlines of primitive shapes, no fill)
     // Draw both front and back of the primitive shape
     //  and only draw the lines of the primitives.
@@ -592,6 +651,15 @@ int main(int argc, char* argv[]) {
     // This keeps the application running and handles new input
     //  until the application is closed
     while (!glfwWindowShouldClose(window)) {
+        
+        //// Start the Dear ImGui frame
+        //ImGui_ImplOpenGL3_NewFrame();
+        //ImGui_ImplGlfw_NewFrame();
+        //ImGui::NewFrame();
+
+        //// Build our custom UI
+        //build_imgui_ui(window, io);
+                
         // Update the camera speed based on this frame's render time
         camera.updateSpeed();
 
@@ -706,7 +774,7 @@ int main(int argc, char* argv[]) {
         lightingShader.setVec3("lightPos", lightPos);
         
         // Update the viewer's position
-        lightingShader.setVec3("viewPos", viewPos);
+        //lightingShader.setVec3("viewPos", viewPos);
         
         // Model matrix
         model = glm::mat4(1.0f);
@@ -721,18 +789,27 @@ int main(int argc, char* argv[]) {
 
         /* Rendering end */
 
-        // SwapBuffer is a 2D buffer with color values for each pixel in the GLFW window
-        // Displays the pixels onto the screen
-        glfwSwapBuffers(window);
-        
+        //// Display UI
+        //ImGui::Render();
+        //ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
         // Checks for new input (ex. mouse/keyboard input) and updates the state
         // Registered callbacks are executed 
         glfwPollEvents();
+
+        // SwapBuffer is a 2D buffer with color values for each pixel in the GLFW window
+        // Displays the pixels onto the screen
+        glfwSwapBuffers(window);
 
         // Compute frame render time for computing the
         // camera movement speed in the next frame
         camera.updateTimestamp(glfwGetTime());
     }
+
+    // Clean up Imgui
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
 
     // Application was closed, clean up all GLFW resources
     std::cout << "Terminating application" << std::endl;

@@ -16,6 +16,8 @@ uniform mat4 model;
 uniform mat4 view;
 // Applies perspective projection
 uniform mat4 projection;
+// Position of the light source, in world-space
+uniform vec3 lightPos;
 
 // Variables to pass to the fragment shader
 // Normal vector
@@ -23,6 +25,8 @@ out vec3 Normal;
 // World-space coordinate of the fragment
 // All the lighting is done in world-space
 out vec3 FragPos;
+// The position of the light source, in view space
+out vec3 LightPos;
 
 void main() {
     // We set the return value to `gl_Position`
@@ -39,8 +43,13 @@ void main() {
     // to the surface, we the inverse + transpose to the model matrix
     // model = 4x4 matrix, we take the top-left inner 3x3 matrix of model
     // aNormal = 1x3 vector
-    Normal = mat3(transpose(inverse(model))) * aNormal;
+    Normal = mat3(transpose(inverse(view * model))) * aNormal;
 
     // Compute the fragment's world coordinates only
-    FragPos = vec3(model * vec4(aPos, 1.0f));
+    //FragPos = vec3(model * vec4(aPos, 1.0f));
+    // Compute the fragment's view coordinates
+    FragPos = vec3(view * model * vec4(aPos, 1.0f));
+
+    // Convert the light source coordinates from world-space to view space
+    LightPos = vec3(view * vec4(lightPos, 1.0f));
 }
