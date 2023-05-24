@@ -355,3 +355,32 @@ vec3 viewPos = vec3(0,0,0);
 vec3 viewDirection = normalize(viewPos - FragPos);
 ```
 
+4. Gouraud shading
+
+[**Gouraud shading**](https://en.wikipedia.org/wiki/Gouraud_shading) is when Phong shading done in the vertex shader instead of the fragment shader.
+
+Recall, a an OpenGL *fragment* is a collection of "potential pixels" (*potential* because some of these pixels might be behind an object, so will not be rendered.).
+
+There are more vertices than fragments, which is why lighting back then was done in the vertex shader.
+
+In Gouraud shading, you compute the color at the triangle's vertices, then these color values get linearly interpolated across the triangle.
+
+I moved the fragment shader contents to the vertex shader, removed the uniforms and only passed in the final color to the fragment shader.
+
+Doesn't look too different...?
+
+![Gouraud shading](images/gouraud_shading1.png)
+
+Depending on the angle and light position maybe
+
+![Gouraud shading another angle](images/gouraud_shading2.png)
+
+I guess it is only *slightly off*.
+
+Here you can see the subtle line from the triangle... (why is this so dark with the light source so close...)
+
+![Gouraud sahding another angle](images/gouraud_shading3.png)
+
+Without Gouraud (normal shading):
+
+![Normal shading](images/without_gouraud.png)

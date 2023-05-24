@@ -610,15 +610,17 @@ int main(int argc, char* argv[]) {
     // Separate shader for the light source only
     Shader lightSourceShader(
         "Light source",
-        "shaders/01-colors/vertex.glsl",
-        "shaders/01-colors/light_source_fragment.glsl"
+        "shaders/02-lighting/vertex.glsl",
+        "shaders/02-lighting/light_source_fragment.glsl"
     );
 
     // This shader is responsible for adding the light's effects     
     Shader lightingShader(
         "Lighting effects",
-        "shaders/01-colors/vertex.glsl",
-        "shaders/01-colors/fragment.glsl"
+        "shaders/02-lighting/vertex.glsl",
+        //"shaders/02-lighting/gouraud_vertex.glsl",
+        "shaders/02-lighting/fragment.glsl"
+        //"shaders/02-lighting/gouraud_fragment.glsl"
     );
 
     lightSourceShader.use();
@@ -750,7 +752,8 @@ int main(int argc, char* argv[]) {
         double timeStamp = 1.0;
         float lightPosX = cos(timeStamp) * rotationRadius;
         float lightPosZ = -1 * sin(timeStamp) * rotationRadius; // negative 1 for clockwise rotation
-        glm::vec3 lightPos = glm::vec3(lightPosX, 1.0f, lightPosZ);
+        //glm::vec3 lightPos = glm::vec3(lightPosX, 1.0f, lightPosZ);
+        glm::vec3 lightPos = glm::vec3(1, 0.5, 1);
 
         model = glm::translate(model, lightPos);
         model = glm::scale(model, glm::vec3(0.2f)); // scale down
