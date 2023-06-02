@@ -1,6 +1,23 @@
 // Fragment shader is responsible for calculating the colors
 #version 460 core
 
+// Properties of a material surface
+struct Material {
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+    float shininess;
+};
+
+// Intensities of the light source
+struct Light {
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+
+    vec3 position;
+};
+
 // Values received from the vertex shader
 // Normal vector of the vertex
 in vec3 Normal;
@@ -13,6 +30,10 @@ in vec3 LightPos;
 uniform vec3 objectColor;
 // Color of the light source
 uniform vec3 lightColor;
+// Material properties of the object
+uniform Material material;
+// Intensities and position of the light source
+uniform Light light;
 
 // Fragment shader's only required output, a vector of size 4
 out vec4 FragColor;
@@ -29,13 +50,11 @@ void main() {
     // The product of two *unit* vectors will give us cos(theta) 
     // We take the max to avoid negative dot product (occurs when the angle > 90)
     float diffuseStrength = max(dot(normalize(lightDirection), normalVec), 0.0);
-    vec3 diffuse = diffuseStrength * lightColor;
+    vec3 diffuse = light.diffuse * material.diffuse * diffuseStrength * lightColor;
 
     // vec4 color: red, green, blue, alpha (transparency)
-    float ambienceStrength = 0.1f;
-    vec3 ambience = ambienceStrength * lightColor;
+    vec3 ambience = light.ambient * material.ambient * lightColor;
 
-    float specularStrength = 0.1;
     // In view space, we compute relative to the viewer (set at 0,0,0)
     vec3 viewPos = vec3(0,0,0);
     vec3 viewDirection = normalize(viewPos - FragPos);
@@ -46,9 +65,8 @@ void main() {
     // How much the light is properly reflected versus scattered around
     // Higher values, a smaller area will get intense light (highlights)
     // Lower values, light is spread out across the fragment
-    float shininess = 4;
-    float spec = pow(max(dot(viewDirection, reflectionDirection), 0.0), shininess);
-    vec3 specular = specularStrength * spec * lightColor;
+    float spec = pow(max(dot(viewDirection, reflectionDirection), 0.0), material.shininess);
+    vec3 specular = light.specular * material.specular * spec * lightColor;
     
     // The final light effect is the addition of diffuse and ambience effect
     // The final color is obtained by multiplying the object's color and the final light effect

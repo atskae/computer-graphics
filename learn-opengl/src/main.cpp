@@ -34,7 +34,7 @@ Camera camera(WINDOW_WIDTH, WINDOW_HEIGHT, IS_FPS);
 //const glm::vec3 lightPos(1.5, 1.0f, 2.0f);
 
 // Light source color
-const glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
+glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
 
 // Imgui color
 ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
@@ -624,7 +624,7 @@ int main(int argc, char* argv[]) {
     );
 
     lightSourceShader.use();
-    lightSourceShader.setVec3("lightColor", lightColor);
+    //lightSourceShader.setVec3("lightColor", lightColor);
 
     // Activate so setting the values actually applies
     lightingShader.use();
@@ -635,6 +635,17 @@ int main(int argc, char* argv[]) {
     lightingShader.setVec3("objectColor", coralColor);
     lightingShader.setVec3("lightColor", lightColor);
     //lightingShader.setVec3("lightPos", lightPos);
+
+    // Set the materials properties
+    lightingShader.setVec3("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
+    lightingShader.setVec3("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
+    lightingShader.setVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+    lightingShader.setFloat("material.shininess", 2.0);
+
+    // Set the light intensities for each component
+    lightingShader.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+    lightingShader.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
+    lightingShader.setVec3("light.specular", glm::vec3(0.5, 0.5, 0.5));
 
     //// Define the View matrix, which captures a scene in the view of the camera
     //// We aren't really moving the camera, we are moving the scene relative to a camera at the origin (?)
@@ -739,6 +750,10 @@ int main(int argc, char* argv[]) {
         //    glDrawArrays(GL_TRIANGLES, 0, 36);
         //}
 
+        lightColor.x = sin(glfwGetTime() * 2.0f);
+        lightColor.y = sin(glfwGetTime() * 0.7f);
+        lightColor.z = sin(glfwGetTime() * 1.3f);
+
         // Need to activate so changes apply 
         glBindVertexArray(lightVAO);
         lightSourceShader.use();
@@ -753,7 +768,7 @@ int main(int argc, char* argv[]) {
         float lightPosX = cos(timeStamp) * rotationRadius;
         float lightPosZ = -1 * sin(timeStamp) * rotationRadius; // negative 1 for clockwise rotation
         //glm::vec3 lightPos = glm::vec3(lightPosX, 1.0f, lightPosZ);
-        glm::vec3 lightPos = glm::vec3(1, 0.5, 1);
+        glm::vec3 lightPos = glm::vec3(1.2, 1.0, 2);
 
         model = glm::translate(model, lightPos);
         model = glm::scale(model, glm::vec3(0.2f)); // scale down
@@ -765,6 +780,9 @@ int main(int argc, char* argv[]) {
         // Projection matrix
         lightSourceShader.setMatrix("projection", projection);
 
+        // Update light color
+        lightSourceShader.setVec3("lightColor", lightColor);
+        
         // Draw
         // type, starting index, number of *vertices*
         glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -775,6 +793,14 @@ int main(int argc, char* argv[]) {
 
         // Use the position calculated at this timestamp for the light source 
         lightingShader.setVec3("lightPos", lightPos);
+
+        // Change the cube's color over time
+        glm::vec3 ambientColor = lightColor * glm::vec3(0.2);
+        glm::vec3 diffuseColor = lightColor * glm::vec3(0.5);
+        lightingShader.setVec3("lightColor", lightColor);
+        lightingShader.setVec3("light.diffuse", diffuseColor);
+        lightingShader.setVec3("light.ambient", ambientColor);
+        lightingShader.setFloat("material.shininess", sin(glfwGetTime()));
         
         // Update the viewer's position
         //lightingShader.setVec3("viewPos", viewPos);
