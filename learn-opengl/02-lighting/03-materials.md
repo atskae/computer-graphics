@@ -53,13 +53,14 @@ Other angles... none of these look right :/
 
 ### Different Light Colors
 
-![Colors over time](images/colors-over-time.mp4)
+![Colors over time](images/colors-over-time.gif)
 
 ChatGPT helped me with the `webm` to `mp4` conversion !
 
 ```
 ffmpeg -i my-recording.webm -vf "scale=788:trunc(ow/a/2)*2"  my-recording.mp4
 ```
+(Can't embed mp4, sometimes gifs turn out not right...)
 
 Some settings over time:
 ```cpp
