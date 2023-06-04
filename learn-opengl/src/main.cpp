@@ -39,6 +39,14 @@ glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
 // Imgui color
 ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+// Equivalent struct in the fragment shader
+struct Material {
+    glm::vec3 ambient;
+    glm::vec3 diffuse;
+    glm::vec3 specular;
+    float shininess;
+};
+
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     camera.updateFrontVector(xpos, ypos);
 }
@@ -632,20 +640,54 @@ int main(int argc, char* argv[]) {
     // Set the object color and light color
     glm::vec3 coralColor(1.0f, 0.5f, 0.3f);
     
-    lightingShader.setVec3("objectColor", coralColor);
-    lightingShader.setVec3("lightColor", lightColor);
+    //lightingShader.setVec3("objectColor", coralColor);
+    //lightingShader.setVec3("lightColor", lightColor);
     //lightingShader.setVec3("lightPos", lightPos);
 
     // Set the materials properties
-    lightingShader.setVec3("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
-    lightingShader.setVec3("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
-    lightingShader.setVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
-    lightingShader.setFloat("material.shininess", 2.0);
+    //lightingShader.setVec3("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
+    //lightingShader.setVec3("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
+    //lightingShader.setVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+    //lightingShader.setFloat("material.shininess", 2.0);
+
+    //// Emerald
+    //Material material = {
+    //    glm::vec3(0.0215, 0.1745, 0.0215), // ambient
+    //    glm::vec3(0.07568, 0.6124, 0.07568), // diffuse
+    //    glm::vec3(0.633, 0.727811, 0.633), // specular
+    //    //0.6 // shininess
+    //    256
+    //};
+
+    // Cyan plastic
+    Material material = {
+        glm::vec3(0, 0.1, 0.06),
+        glm::vec3(0, 0.50980392, 0.50196078),
+        glm::vec3(0.50196078, 0.50196078, 0.50196078),
+        32
+    };
+
+    //// Gold
+    //Material material = {
+    //    glm::vec3(0.24725, 0.1995, 0.0745),
+    //    glm::vec3(0.75164, 0.60648, 0.22648),
+    //    glm::vec3(0.628281, 0.555802, 0.366065),
+    //    128
+    //};
+
+    lightingShader.setVec3("material.ambient", material.ambient);
+    lightingShader.setVec3("material.diffuse", material.diffuse);
+    lightingShader.setVec3("material.specular", material.specular);
+    lightingShader.setFloat("material.shininess", material.shininess);
 
     // Set the light intensities for each component
-    lightingShader.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-    lightingShader.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
-    lightingShader.setVec3("light.specular", glm::vec3(0.5, 0.5, 0.5));
+    //lightingShader.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+    //lightingShader.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
+    //lightingShader.setVec3("light.specular", glm::vec3(0.5, 0.5, 0.5));
+
+    lightingShader.setVec3("light.ambient", glm::vec3(1.0f));
+    lightingShader.setVec3("light.diffuse", glm::vec3(1.0f));
+    lightingShader.setVec3("light.specular", glm::vec3(1.0));
 
     //// Define the View matrix, which captures a scene in the view of the camera
     //// We aren't really moving the camera, we are moving the scene relative to a camera at the origin (?)
@@ -750,9 +792,9 @@ int main(int argc, char* argv[]) {
         //    glDrawArrays(GL_TRIANGLES, 0, 36);
         //}
 
-        lightColor.x = sin(glfwGetTime() * 2.0f);
-        lightColor.y = sin(glfwGetTime() * 0.7f);
-        lightColor.z = sin(glfwGetTime() * 1.3f);
+        //lightColor.x = sin(glfwGetTime() * 2.0f);
+        //lightColor.y = sin(glfwGetTime() * 0.7f);
+        //lightColor.z = sin(glfwGetTime() * 1.3f);
 
         // Need to activate so changes apply 
         glBindVertexArray(lightVAO);
@@ -795,12 +837,16 @@ int main(int argc, char* argv[]) {
         lightingShader.setVec3("lightPos", lightPos);
 
         // Change the cube's color over time
-        glm::vec3 ambientColor = lightColor * glm::vec3(0.2);
-        glm::vec3 diffuseColor = lightColor * glm::vec3(0.5);
-        lightingShader.setVec3("lightColor", lightColor);
-        lightingShader.setVec3("light.diffuse", diffuseColor);
-        lightingShader.setVec3("light.ambient", ambientColor);
-        lightingShader.setFloat("material.shininess", sin(glfwGetTime()));
+        //glm::vec3 ambientColor = lightColor * glm::vec3(0.2);
+        //glm::vec3 diffuseColor = lightColor * glm::vec3(0.5);
+        //lightingShader.setVec3("lightColor", lightColor);
+        //lightingShader.setVec3("light.diffuse", diffuseColor);
+        //lightingShader.setVec3("light.ambient", ambientColor);
+        
+        ////float shininess = sin(glfwGetTime());
+        //float shininess = 2;
+        ////std::cout << "Shininess: " << shininess << std::endl;
+        //lightingShader.setFloat("material.shininess", shininess);
         
         // Update the viewer's position
         //lightingShader.setVec3("viewPos", viewPos);

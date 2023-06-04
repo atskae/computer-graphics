@@ -26,10 +26,8 @@ in vec3 FragPos;
 // Light source's position in view-space
 in vec3 LightPos;
 
-// Uniforms, to be set externally (as opposed to passed in by the vertex shader)
-uniform vec3 objectColor;
-// Color of the light source
-uniform vec3 lightColor;
+//// Color of the light source
+//uniform vec3 lightColor;
 // Material properties of the object
 uniform Material material;
 // Intensities and position of the light source
@@ -50,10 +48,10 @@ void main() {
     // The product of two *unit* vectors will give us cos(theta) 
     // We take the max to avoid negative dot product (occurs when the angle > 90)
     float diffuseStrength = max(dot(normalize(lightDirection), normalVec), 0.0);
-    vec3 diffuse = light.diffuse * material.diffuse * diffuseStrength * lightColor;
+    vec3 diffuse = light.diffuse * material.diffuse * diffuseStrength;
 
     // vec4 color: red, green, blue, alpha (transparency)
-    vec3 ambience = light.ambient * material.ambient * lightColor;
+    vec3 ambience = light.ambient * material.ambient;
 
     // In view space, we compute relative to the viewer (set at 0,0,0)
     vec3 viewPos = vec3(0,0,0);
@@ -61,15 +59,15 @@ void main() {
     
     // -1 since the lightDirection is currently fragPos to light, and we want the opposite direction
     // The reflect() function expects direction light-> fragPos
-    vec3 reflectionDirection = reflect(-lightDirection, normalVec); 
+    vec3 reflectionDirection = reflect(-normalize(lightDirection), normalVec); 
     // How much the light is properly reflected versus scattered around
     // Higher values, a smaller area will get intense light (highlights)
     // Lower values, light is spread out across the fragment
     float spec = pow(max(dot(viewDirection, reflectionDirection), 0.0), material.shininess);
-    vec3 specular = light.specular * material.specular * spec * lightColor;
+    vec3 specular = light.specular * material.specular * spec;
     
     // The final light effect is the addition of diffuse and ambience effect
     // The final color is obtained by multiplying the object's color and the final light effect
     vec3 lightEffect = diffuse + ambience + specular;
-    FragColor = vec4(objectColor * lightEffect, 1.0f);
+    FragColor = vec4(lightEffect, 1.0f);
 }
