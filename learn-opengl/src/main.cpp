@@ -27,6 +27,8 @@ const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 450;
 const bool IS_FPS = false;
 
+bool mouse_pressed = false;
+
 Camera camera(WINDOW_WIDTH, WINDOW_HEIGHT, IS_FPS);
 
 // Location of the light source in the scene
@@ -48,9 +50,21 @@ struct Material {
 };
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
-    camera.updateFrontVector(xpos, ypos);
+    ImGuiIO& io = ImGui::GetIO();
+    if (!io.WantCaptureMouse && mouse_pressed) {
+        camera.updateFrontVector(xpos, ypos);
+    }
 }
 
+// Handler for checking when the mouse is pressed and released
+void mouse_pressed_callback(GLFWwindow* window, int button, int action, int mods) {
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        mouse_pressed = true;
+    } else {
+        mouse_pressed = false;
+    }
+}
+ 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
     // Ignore the xoffset for mouse scroll changes
     camera.updateFieldOfView(yoffset);
@@ -183,22 +197,7 @@ int main(int argc, char* argv[]) {
 
     std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
 
-    /* Imgui Setup */
     
-    // Setup Dear ImGui context
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-
-    // Setup Dear ImGui style
-    ImGui::StyleColorsDark();
-
-    // Setup Platform/Renderer backends
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init("#version 130");
-
     // Our state
     bool show_demo_window = true;
     bool show_another_window = false;
@@ -226,6 +225,9 @@ int main(int argc, char* argv[]) {
     // Register the mouse movement callback
     // This function is called everytime the cursor moves
     glfwSetCursorPosCallback(window, mouse_callback);
+    
+    // Only move the camera if the mouse is pressed down
+    glfwSetMouseButtonCallback(window, mouse_pressed_callback);
 
     // Register mouse scroll callback
     // This function tracks when the user scrolls with wheel or trackpad
@@ -233,7 +235,24 @@ int main(int argc, char* argv[]) {
 
     // When the window is active, keep the cursor in the middle (capture) and hide the cursor
     //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
+
+    /* Imgui Setup */
     
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 460");
+
+
     /* Render-loop configuration */
     
     // Background color, gray
@@ -465,10 +484,10 @@ int main(int argc, char* argv[]) {
     // Configure stdbi library to flip the y-axis
     stbi_set_flip_vertically_on_load(true);
     
-    const char* textureFilenames[] = {"textures/container.jpg", "textures/linux-penguin-with-outline.png"};
+    const char* textureFilenames[] = {"textures/container2.png", "textures/container2_specular.png", "textures/linux-penguin-with-outline.png"};
     unsigned int textureIds[] = {0};
-    GLenum imageFormats[] = {GL_RGB, GL_RGBA};
-    GLint wrappingParam[] = {GL_REPEAT, GL_REPEAT};
+    GLenum imageFormats[] = {GL_RGBA, GL_RGBA, GL_RGBA};
+    GLint wrappingParam[] = {GL_REPEAT, GL_REPEAT, GL_REPEAT};
     for (int i=0; i<2; i++) {
         // Configure the input argument in our vertex shader
         // to accept the texture coordinates 
@@ -675,8 +694,8 @@ int main(int argc, char* argv[]) {
     //    128
     //};
 
-    lightingShader.setVec3("material.ambient", material.ambient);
-    lightingShader.setVec3("material.diffuse", material.diffuse);
+    //lightingShader.setVec3("material.ambient", material.ambient);
+    //lightingShader.setVec3("material.diffuse", material.diffuse);
     lightingShader.setVec3("material.specular", material.specular);
     lightingShader.setFloat("material.shininess", material.shininess);
 
@@ -685,9 +704,9 @@ int main(int argc, char* argv[]) {
     //lightingShader.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
     //lightingShader.setVec3("light.specular", glm::vec3(0.5, 0.5, 0.5));
 
-    lightingShader.setVec3("light.ambient", glm::vec3(1.0f));
-    lightingShader.setVec3("light.diffuse", glm::vec3(1.0f));
-    lightingShader.setVec3("light.specular", glm::vec3(1.0));
+    lightingShader.setVec3("light.ambient", glm::vec3(0.5f));
+    lightingShader.setVec3("light.diffuse", glm::vec3(0.5f));
+    lightingShader.setVec3("light.specular", glm::vec3(0.5f));
 
     //// Define the View matrix, which captures a scene in the view of the camera
     //// We aren't really moving the camera, we are moving the scene relative to a camera at the origin (?)
@@ -701,17 +720,34 @@ int main(int argc, char* argv[]) {
     // Rotation around the origin, around the y-axis
     // for rotating objects such as the camera, light source, ...
     const float rotationRadius = 2.5f;
-    
+
+    // Set the diffuse map to the correct texture unit
+    lightingShader.setInt("material.diffuse", 0);
+    lightingShader.setInt("material.specular", 1);
+
+    // ImGui Controls
+    bool checkbox_state = false;
+
     // Start the render loop
     // This keeps the application running and handles new input
     //  until the application is closed
     while (!glfwWindowShouldClose(window)) {
         
-        //// Start the Dear ImGui frame
-        //ImGui_ImplOpenGL3_NewFrame();
-        //ImGui_ImplGlfw_NewFrame();
-        //ImGui::NewFrame();
+        // Checks for new input (ex. mouse/keyboard input) and updates the state
+        // Registered callbacks are executed 
+        glfwPollEvents();
+        
+        // Apply the color to the window's color buffer
+        glClear(GL_COLOR_BUFFER_BIT);
 
+        // Clear the previous frames depth buffer information
+        glClear(GL_DEPTH_BUFFER_BIT);
+
+        // Start the Dear ImGui frame
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+            
         //// Build our custom UI
         //build_imgui_ui(window, io);
                 
@@ -719,7 +755,9 @@ int main(int argc, char* argv[]) {
         camera.updateSpeed();
 
         // Process user input
-        processInput(window, shaderProgram);
+        if (!io.WantCaptureMouse) {
+            processInput(window, shaderProgram);
+        }
         glm::vec3 viewPos = camera.getPosition();
 
         /* Rendering */
@@ -732,12 +770,7 @@ int main(int argc, char* argv[]) {
         //    background_color[3]
         //);
 
-        // Apply the color to the window's color buffer
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        // Clear the previous frames depth buffer information
-        glClear(GL_DEPTH_BUFFER_BIT);
-        
+                
         // Make the texture object that we created the active texture object
         // Bind each texture to its own texture unit in the fragment shader
         glActiveTexture(GL_TEXTURE0); // activate the texture unit first
@@ -864,14 +897,18 @@ int main(int argc, char* argv[]) {
 
         /* Rendering end */
 
-        //// Display UI
-        //ImGui::Render();
-        //ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        // Display UI
+        
+        ImGui::Begin("ImGui Controls");
+        ImGui::Text("Yay!");
+        ImGui::Checkbox("Click here", &checkbox_state);
+        ImGui::End();
 
-        // Checks for new input (ex. mouse/keyboard input) and updates the state
-        // Registered callbacks are executed 
-        glfwPollEvents();
+        // Update shader variables here...
 
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        
         // SwapBuffer is a 2D buffer with color values for each pixel in the GLFW window
         // Displays the pixels onto the screen
         glfwSwapBuffers(window);
@@ -879,6 +916,8 @@ int main(int argc, char* argv[]) {
         // Compute frame render time for computing the
         // camera movement speed in the next frame
         camera.updateTimestamp(glfwGetTime());
+
+        
     }
 
     // Clean up Imgui

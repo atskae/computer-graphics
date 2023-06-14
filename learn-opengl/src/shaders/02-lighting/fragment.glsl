@@ -3,9 +3,13 @@
 
 // Properties of a material surface
 struct Material {
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
+    //vec3 ambient;
+    //vec3 diffuse;
+    // The texture serves as the ambient and diffuse effects
+    // texture(material.diffuse, textureCoordinates) becomes the color
+    sampler2D diffuse;
+    //vec3 specular;
+    sampler2D specular;
     float shininess;
 };
 
@@ -25,6 +29,8 @@ in vec3 Normal;
 in vec3 FragPos;
 // Light source's position in view-space
 in vec3 LightPos;
+// Texture coordinates
+in vec2 TextureCoordinates;
 
 //// Color of the light source
 //uniform vec3 lightColor;
@@ -48,10 +54,10 @@ void main() {
     // The product of two *unit* vectors will give us cos(theta) 
     // We take the max to avoid negative dot product (occurs when the angle > 90)
     float diffuseStrength = max(dot(normalize(lightDirection), normalVec), 0.0);
-    vec3 diffuse = light.diffuse * material.diffuse * diffuseStrength;
+    vec3 diffuse = light.diffuse * diffuseStrength * vec3(texture(material.diffuse, TextureCoordinates));
 
     // vec4 color: red, green, blue, alpha (transparency)
-    vec3 ambience = light.ambient * material.ambient;
+    vec3 ambience = light.ambient * vec3(texture(material.diffuse, TextureCoordinates));
 
     // In view space, we compute relative to the viewer (set at 0,0,0)
     vec3 viewPos = vec3(0,0,0);
@@ -64,7 +70,7 @@ void main() {
     // Higher values, a smaller area will get intense light (highlights)
     // Lower values, light is spread out across the fragment
     float spec = pow(max(dot(viewDirection, reflectionDirection), 0.0), material.shininess);
-    vec3 specular = light.specular * material.specular * spec;
+    vec3 specular = light.specular * vec3(texture(material.specular, TextureCoordinates)) * spec;
     
     // The final light effect is the addition of diffuse and ambience effect
     // The final color is obtained by multiplying the object's color and the final light effect

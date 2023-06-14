@@ -116,7 +116,7 @@ Shader::Shader(std::string programName, const char* vertexShaderPath, const char
         if (!success) {
             glGetShaderInfoLog(shaderId, 512, NULL, infoLog);
             std::cerr << "Failed to compile shader program " << shaderPath << ": " << infoLog << std::endl;
-            continue;
+            abort();
         }
 
         // Save the shader's Id for linking later

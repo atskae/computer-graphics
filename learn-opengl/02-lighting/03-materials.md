@@ -125,7 +125,7 @@ I forgot to normalize the light direction...
 vec3 reflectionDirection = reflect(-normalize(lightDirection), normalVec); 
 ```
 
-Now it  makes sense....
+Now it  makes sense.... I think the colors were scaled by some factor, all exceeding 255/white.
 
 Shininess at 32:
 

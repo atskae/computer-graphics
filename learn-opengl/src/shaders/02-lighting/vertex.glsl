@@ -8,6 +8,8 @@
 layout (location = 0) in vec3 aPos;
 // Normal vector of the triangle surface
 layout (location = 1) in vec3 aNormal;
+// Texture coordinates
+layout (location = 2) in vec2 aTextureCoordinates;
 
 // Transformation matrices
 // Convert local to global
@@ -27,6 +29,8 @@ out vec3 Normal;
 out vec3 FragPos;
 // The position of the light source, in view space
 out vec3 LightPos;
+// Texture coordinates
+out vec2 TextureCoordinates;
 
 void main() {
     // We set the return value to `gl_Position`
@@ -52,4 +56,7 @@ void main() {
 
     // Convert the light source coordinates from world-space to view space
     LightPos = vec3(view * vec4(lightPos, 1.0f));
+
+    // Pass the texture coordinates to the fragment shader
+    TextureCoordinates = aTextureCoordinates;
 }
