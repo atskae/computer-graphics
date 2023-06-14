@@ -98,3 +98,7 @@ The GLFW callback:
 ```cpp
 glfwSetMouseButtonCallback(window, mouse_pressed_callback);
 ```
+
+Controllable lighting:
+
+![Controllable lighting](images/lighting-controls.gif)

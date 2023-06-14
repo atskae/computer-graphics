@@ -33,7 +33,7 @@ Camera camera(WINDOW_WIDTH, WINDOW_HEIGHT, IS_FPS);
 
 // Location of the light source in the scene
 // Position in World Space
-//const glm::vec3 lightPos(1.5, 1.0f, 2.0f);
+const glm::vec3 lightPos(1.5, 1.0f, 2.0f);
 
 // Light source color
 glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
@@ -47,6 +47,13 @@ struct Material {
     glm::vec3 diffuse;
     glm::vec3 specular;
     float shininess;
+};
+
+struct Light {
+    glm::vec3 ambient;
+    glm::vec3 diffuse;
+    glm::vec3 specular;
+    glm::vec3 position;  
 };
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
@@ -704,9 +711,16 @@ int main(int argc, char* argv[]) {
     //lightingShader.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
     //lightingShader.setVec3("light.specular", glm::vec3(0.5, 0.5, 0.5));
 
-    lightingShader.setVec3("light.ambient", glm::vec3(0.5f));
-    lightingShader.setVec3("light.diffuse", glm::vec3(0.5f));
-    lightingShader.setVec3("light.specular", glm::vec3(0.5f));
+    Light light_settings = {
+        lightColor,
+        glm::vec3(0.5f),
+        glm::vec3(0.5f),
+        lightPos
+    };
+
+    lightingShader.setVec3("light.ambient", light_settings.ambient);
+    lightingShader.setVec3("light.diffuse", light_settings.diffuse);
+    lightingShader.setVec3("light.specular", light_settings.specular);
 
     //// Define the View matrix, which captures a scene in the view of the camera
     //// We aren't really moving the camera, we are moving the scene relative to a camera at the origin (?)
@@ -839,10 +853,10 @@ int main(int argc, char* argv[]) {
         
         //// Rotate the camera around the y-axis over time
         //double timeStamp = glfwGetTime();
-        double timeStamp = 1.0;
-        float lightPosX = cos(timeStamp) * rotationRadius;
-        float lightPosZ = -1 * sin(timeStamp) * rotationRadius; // negative 1 for clockwise rotation
-        //glm::vec3 lightPos = glm::vec3(lightPosX, 1.0f, lightPosZ);
+        //double timeStamp = 1.0;
+        //float lightPosX = cos(timeStamp) * rotationRadius;
+        //float lightPosZ = -1 * sin(timeStamp) * rotationRadius; // negative 1 for clockwise rotation
+        ////glm::vec3 lightPos = glm::vec3(lightPosX, 1.0f, lightPosZ);
         glm::vec3 lightPos = glm::vec3(1.2, 1.0, 2);
 
         model = glm::translate(model, lightPos);
@@ -856,7 +870,7 @@ int main(int argc, char* argv[]) {
         lightSourceShader.setMatrix("projection", projection);
 
         // Update light color
-        lightSourceShader.setVec3("lightColor", lightColor);
+        lightSourceShader.setVec3("lightColor", light_settings.ambient);
         
         // Draw
         // type, starting index, number of *vertices*
@@ -868,6 +882,10 @@ int main(int argc, char* argv[]) {
 
         // Use the position calculated at this timestamp for the light source 
         lightingShader.setVec3("lightPos", lightPos);
+
+        lightingShader.setVec3("light.ambient", light_settings.ambient);
+        lightingShader.setVec3("light.diffuse", light_settings.diffuse);
+        lightingShader.setVec3("light.specular", light_settings.specular);
 
         // Change the cube's color over time
         //glm::vec3 ambientColor = lightColor * glm::vec3(0.2);
@@ -902,6 +920,12 @@ int main(int argc, char* argv[]) {
         ImGui::Begin("ImGui Controls");
         ImGui::Text("Yay!");
         ImGui::Checkbox("Click here", &checkbox_state);
+        
+        ImGui::Text("Light settings");
+        ImGui::ColorEdit3("Ambient", (float*)&light_settings.ambient);
+        ImGui::ColorEdit3("Diffuse", (float*)&light_settings.diffuse);
+        ImGui::ColorEdit3("Specular", (float*)&light_settings.specular);
+        
         ImGui::End();
 
         // Update shader variables here...
