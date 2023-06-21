@@ -491,7 +491,7 @@ int main(int argc, char* argv[]) {
     // Configure stdbi library to flip the y-axis
     stbi_set_flip_vertically_on_load(true);
     
-    const char* textureFilenames[] = {"textures/container2.png", "textures/container2_specular.png", "textures/linux-penguin-with-outline.png"};
+    const char* textureFilenames[] = {"textures/container2.png", "textures/lighting_maps_specular_color.png", "textures/linux-penguin-with-outline.png"};
     unsigned int textureIds[] = {0};
     GLenum imageFormats[] = {GL_RGBA, GL_RGBA, GL_RGBA};
     GLint wrappingParam[] = {GL_REPEAT, GL_REPEAT, GL_REPEAT};
@@ -690,7 +690,7 @@ int main(int argc, char* argv[]) {
         glm::vec3(0, 0.1, 0.06),
         glm::vec3(0, 0.50980392, 0.50196078),
         glm::vec3(0.50196078, 0.50196078, 0.50196078),
-        32
+        256
     };
 
     //// Gold

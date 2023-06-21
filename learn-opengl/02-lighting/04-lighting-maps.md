@@ -102,3 +102,45 @@ glfwSetMouseButtonCallback(window, mouse_pressed_callback);
 Controllable lighting:
 
 ![Controllable lighting](images/lighting-controls.gif)
+
+### Inverted specular map
+
+The naive first guess is to literally invert the values:
+```glsl
+vec3 texture_color = -vec3(texture(material.specular, TextureCoordinates));
+vec3 specular = light.specular * texture_color * spec;
+```
+Red specular lighting turns green (opposite):
+
+![Literally invert specular](images/literally-invert-specular.gif)
+
+Actually inverting the map correctly:
+
+We want white `(1.0, 1.0, 1.0)` to map to black `(0, 0, 0)`, so we just take the difference between the current texture color and the largest possible color `1.0`:
+
+```glsl
+vec3 texture_color = vec3(texture(material.specular, TextureCoordinates));
+// Invert the specular map
+for(int i=0; i<3; i++) {
+    texture_color[i] = abs(texture_color[i]- 1.0);
+}
+vec3 specular = light.specular * texture_color * spec;
+```
+Now the wood is shiny!
+
+![Inverted specular map](images/inverted-specular-map.gif)
+
+
+### Creating a specular map from the diffuse texture
+Simply replaced the current specular map with the colored one:
+```cpp
+const char* textureFilenames[] = {"textures/container2.png", "textures/lighting_maps_specular_color.png", "textures/linux-penguin-with-outline.png"};
+```
+
+Colored map:
+
+<img src="../src/textures/lighting_maps_specular_color.png" alt="colored specular map" width="300"/>
+
+You get the colored highlight:
+
+![Colored specular map](images/colored-specular-map.png)

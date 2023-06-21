@@ -70,7 +70,12 @@ void main() {
     // Higher values, a smaller area will get intense light (highlights)
     // Lower values, light is spread out across the fragment
     float spec = pow(max(dot(viewDirection, reflectionDirection), 0.0), material.shininess);
-    vec3 specular = light.specular * vec3(texture(material.specular, TextureCoordinates)) * spec;
+    vec3 texture_color = vec3(texture(material.specular, TextureCoordinates));
+    //// Invert the specular map
+    //for(int i=0; i<3; i++) {
+    //    texture_color[i] = abs(texture_color[i]- 1.0);
+    //}
+    vec3 specular = light.specular * texture_color * spec;
     
     // The final light effect is the addition of diffuse and ambience effect
     // The final color is obtained by multiplying the object's color and the final light effect
