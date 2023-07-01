@@ -491,11 +491,16 @@ int main(int argc, char* argv[]) {
     // Configure stdbi library to flip the y-axis
     stbi_set_flip_vertically_on_load(true);
     
-    const char* textureFilenames[] = {"textures/container2.png", "textures/lighting_maps_specular_color.png", "textures/linux-penguin-with-outline.png"};
+    const char* textureFilenames[] = {
+        "textures/container2.png",
+        "textures/container2_specular.png",
+        "textures/matrix.jpg",
+        "textures/container2_specular_inverted.png",
+        "textures/linux-penguin-with-outline.png",
+    };
     unsigned int textureIds[] = {0};
-    GLenum imageFormats[] = {GL_RGBA, GL_RGBA, GL_RGBA};
-    GLint wrappingParam[] = {GL_REPEAT, GL_REPEAT, GL_REPEAT};
-    for (int i=0; i<2; i++) {
+    GLenum imageFormats[] = {GL_RGBA, GL_RGBA, GL_RGB, GL_RGBA, GL_RGBA};
+    for (int i=0; i<4; i++) {
         // Configure the input argument in our vertex shader
         // to accept the texture coordinates 
         glVertexAttribPointer(
@@ -539,8 +544,8 @@ int main(int argc, char* argv[]) {
 
         // Configure how OpenGL will apply the texture with out-of-bounds coordinates
         // Texture coordinate labels: (s,t,r)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrappingParam[i]);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrappingParam[i]);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         // When the texture is minimized, linearly interpolate between the two closest minmaps
         //  and sample the interpolated minmap level with linear interpolation
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -712,7 +717,8 @@ int main(int argc, char* argv[]) {
     //lightingShader.setVec3("light.specular", glm::vec3(0.5, 0.5, 0.5));
 
     Light light_settings = {
-        lightColor,
+        //lightColor,
+        glm::vec3(0.5f),
         glm::vec3(0.5f),
         glm::vec3(0.5f),
         lightPos
@@ -738,6 +744,12 @@ int main(int argc, char* argv[]) {
     // Set the diffuse map to the correct texture unit
     lightingShader.setInt("material.diffuse", 0);
     lightingShader.setInt("material.specular", 1);
+    // Use the matrix emission map
+    lightingShader.setInt("material.emission", 2);
+    // Indicate where the emission occurs
+    lightingShader.setInt("material.emission_area", 3);
+    
+    // Indicate where the emission occurs
 
     // ImGui Controls
     bool checkbox_state = false;
@@ -784,7 +796,6 @@ int main(int argc, char* argv[]) {
         //    background_color[3]
         //);
 
-                
         // Make the texture object that we created the active texture object
         // Bind each texture to its own texture unit in the fragment shader
         glActiveTexture(GL_TEXTURE0); // activate the texture unit first
@@ -792,6 +803,14 @@ int main(int argc, char* argv[]) {
 
         glActiveTexture(GL_TEXTURE1); // activate the texture unit first
         glBindTexture(GL_TEXTURE_2D, textureIds[1]);    
+
+        // Matrix emission map    
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, textureIds[2]);    
+
+        // Matrix emission map area
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, textureIds[3]);    
 
         glBindVertexArray(VAO);
         

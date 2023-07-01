@@ -144,3 +144,56 @@ Colored map:
 You get the colored highlight:
 
 ![Colored specular map](images/colored-specular-map.png)
+
+### Emission Map
+
+I inverted the existing specular map to get the inner square's area and make it white:
+
+<img src="../src/textures/container2_specular_inverted.png" alt="colored specular map" width="300"/>
+
+This is to make sure the emission only occurs in the inner square and not the metal borders.
+
+We add two fields in our Materials struct to hold the emission map and the emission area map:
+```glsl
+// Properties of a material surface
+struct Material {
+    // ...
+    sampler2D emission;
+    sampler2D emission_area;
+    // ...
+};
+
+```
+
+We load the textures in our C++ code, and set the texture units to the Materials struct in the fragment shader:
+```c++
+// Use the matrix emission map
+lightingShader.setInt("material.emission", 2);
+// Indicate where the emission occurs
+lightingShader.setInt("material.emission_area", 3);
+
+```
+
+Then we attach these loaded textures to the texture unit in the render loop.
+
+```c++
+// Matrix emission map    
+glActiveTexture(GL_TEXTURE2);
+glBindTexture(GL_TEXTURE_2D, textureIds[2]);    
+
+// Matrix emission map area
+glActiveTexture(GL_TEXTURE3);
+glBindTexture(GL_TEXTURE_2D, textureIds[3]);    
+
+```
+
+In our fragment shader, since we want to emit colors regardless of lighting we add the emission value on top of the final diffuse color:
+
+```glsl
+float diffuseStrength = max(dot(normalize(lightDirection), normalVec), 0.0);
+    vec3 diffuse = light.diffuse * diffuseStrength * vec3(texture(material.diffuse, TextureCoordinates)) +
+        (vec3(texture(material.emission, TextureCoordinates)) * vec3(texture(material.emission_area, TextureCoordinates)));
+
+```
+
+![Emission](images/emission.png)
