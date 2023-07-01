@@ -197,3 +197,9 @@ float diffuseStrength = max(dot(normalize(lightDirection), normalVec), 0.0);
 ```
 
 ![Emission](images/emission.png)
+
+Got it to glow over time =D Just have an emission strength that changes over time using `abs(cos())`.
+
+Gif got super weird, conversion gone wrong-ish I guess...
+
+![Emission over time](images/emission_overtime.gif)

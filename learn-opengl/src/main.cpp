@@ -906,6 +906,10 @@ int main(int argc, char* argv[]) {
         lightingShader.setVec3("light.diffuse", light_settings.diffuse);
         lightingShader.setVec3("light.specular", light_settings.specular);
 
+        // Change the emission over time
+        float emission_strength = abs(cos(glfwGetTime()));
+        lightingShader.setFloat("material.emission_strength", emission_strength);
+        
         // Change the cube's color over time
         //glm::vec3 ambientColor = lightColor * glm::vec3(0.2);
         //glm::vec3 diffuseColor = lightColor * glm::vec3(0.5);

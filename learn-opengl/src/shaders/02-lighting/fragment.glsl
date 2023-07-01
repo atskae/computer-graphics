@@ -12,6 +12,7 @@ struct Material {
     sampler2D specular;
     sampler2D emission;
     sampler2D emission_area;
+    float emission_strength;
     float shininess;
 };
 
@@ -57,7 +58,7 @@ void main() {
     // We take the max to avoid negative dot product (occurs when the angle > 90)
     float diffuseStrength = max(dot(normalize(lightDirection), normalVec), 0.0);
     vec3 diffuse = light.diffuse * diffuseStrength * vec3(texture(material.diffuse, TextureCoordinates)) +
-        (vec3(texture(material.emission, TextureCoordinates)) * vec3(texture(material.emission_area, TextureCoordinates)));
+        (material.emission_strength * vec3(texture(material.emission, TextureCoordinates)) * vec3(texture(material.emission_area, TextureCoordinates)));
 
     // vec4 color: red, green, blue, alpha (transparency)
     //vec3 ambience = light.ambient * vec3(texture(material.emission, TextureCoordinates));
