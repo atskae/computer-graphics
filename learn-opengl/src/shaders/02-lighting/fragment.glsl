@@ -23,6 +23,9 @@ struct Light {
     vec3 specular;
 
     vec3 position;
+    // For directional light, position is irrelevant
+    // Direction from the light source
+    vec3 direction;
 };
 
 // Values received from the vertex shader
@@ -31,7 +34,7 @@ in vec3 Normal;
 // Fragment's position in world-coordinate
 in vec3 FragPos;
 // Light source's position in view-space
-in vec3 LightPos;
+//in vec3 LightPos;
 // Texture coordinates
 in vec2 TextureCoordinates;
 
@@ -47,7 +50,12 @@ out vec4 FragColor;
 
 void main() {
     // Create a vector of the light ray
-    vec3 lightDirection = vec3(LightPos - FragPos);
+    //vec3 lightDirection = vec3(LightPos - FragPos);
+    // Directional light, light position is irrelevant
+    // We negate the light direction since it was set to the vector
+    //  pointing away from the light source
+    // In our calculation we want the vector pointing toward our light source
+    vec3 lightDirection = normalize(-light.direction);
     vec3 normalVec = normalize(Normal);
 
     // Get the angle between the light ray and the normal vector

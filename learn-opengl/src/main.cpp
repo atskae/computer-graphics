@@ -629,11 +629,11 @@ int main(int argc, char* argv[]) {
     /* Shader programs */
 
     // Compiles the individual shader programs into one
-    Shader shaderProgram = Shader(
-        "Cubes",
-        "shaders/vertex.glsl",
-        "shaders/fragment.glsl"
-    );
+    //Shader shaderProgram = Shader(
+    //    "Cubes",
+    //    "shaders/vertex.glsl",
+    //    "shaders/fragment.glsl"
+    //);
 
     //shaderProgram.use();
     
@@ -719,7 +719,7 @@ int main(int argc, char* argv[]) {
     Light light_settings = {
         //lightColor,
         glm::vec3(0.5f),
-        glm::vec3(0.5f),
+        glm::vec3(1.0f),
         glm::vec3(0.5f),
         lightPos
     };
@@ -748,8 +748,10 @@ int main(int argc, char* argv[]) {
     lightingShader.setInt("material.emission", 2);
     // Indicate where the emission occurs
     lightingShader.setInt("material.emission_area", 3);
-    
-    // Indicate where the emission occurs
+
+    // Set global directional light source
+    // This vector points away from the light source
+    lightingShader.setVec3("light.direction", glm::vec3(-0.2, 1.0, -0.3));
 
     // ImGui Controls
     bool checkbox_state = false;
@@ -782,7 +784,7 @@ int main(int argc, char* argv[]) {
 
         // Process user input
         if (!io.WantCaptureMouse) {
-            processInput(window, shaderProgram);
+            processInput(window, lightingShader);
         }
         glm::vec3 viewPos = camera.getPosition();
 
@@ -827,8 +829,10 @@ int main(int argc, char* argv[]) {
 
         // Activate the objects shader
         //shaderProgram.use();
-
+        lightingShader.use();
+        
         glm::mat4 projection = camera.getPerspectiveMatrix();
+        lightingShader.setMatrix("projection", projection);
         //shaderProgram.setMatrix("projection", projection);
 
         //// Set the view matrix
@@ -836,80 +840,82 @@ int main(int argc, char* argv[]) {
         ////float cameraX = cos(glfwGetTime()) * rotationRadius;
         ////float cameraZ = -1 * sin(glfwGetTime()) * rotationRadius; // negative 1 for clockwise rotation
         glm::mat4 viewMatrix = camera.getLookAtMatrix();
+        lightingShader.setMatrix("view", viewMatrix);
         //shaderProgram.setMatrix("view", viewMatrix);
 
-        //// Draw each cube positioned at different locations
-        //int modelLoc = glGetUniformLocation(shaderProgram.getProgramId(), "model");
-        //for (int i=0; i<10; i++) {
-        //    // Create a transformation matrix for this cube and apply it in the vertex shader
-        //    glm::mat4 model_matrix(1.0f);
-        //    model_matrix = glm::translate(model_matrix, cubePositions[i]);
-        //    model_matrix = glm::rotate(model_matrix, glm::radians(20.f * i), glm::vec3(1.0f, 0.3f, 0.5f));
-        //     
-        //    //if (i%3 == 0) {
-        //    //    // Update the angle of rotation over time
-        //    //    float angle_of_rotation = (float)glfwGetTime() * glm::radians(50.0f);
-        //    //    model_matrix = glm::rotate(model_matrix, angle_of_rotation, axis_of_rotation);
-        //    //}
-        //    // Set the model matrix
-        //    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model_matrix));
-        //    
-        //    // Draw the cube!
-        //    glDrawArrays(GL_TRIANGLES, 0, 36);
-        //}
+        // Now draw the cube object that is getting hit by the light source
+        glBindVertexArray(VAO);
+
+        // Use the position calculated at this timestamp for the light source 
+        //lightingShader.setVec3("lightPos", lightPos);
+
+        // Update lighting if ImGUI settings were updated
+        lightingShader.setVec3("light.ambient", light_settings.ambient);
+        lightingShader.setVec3("light.diffuse", light_settings.diffuse);
+        lightingShader.setVec3("light.specular", light_settings.specular);
+        
+        // Draw each cube positioned at different locations
+        for (int i=0; i<10; i++) {
+            // Create a transformation matrix for this cube and apply it in the vertex shader
+            glm::mat4 model_matrix(1.0f);
+            model_matrix = glm::translate(model_matrix, cubePositions[i]);
+            model_matrix = glm::rotate(model_matrix, glm::radians(20.f * i), glm::vec3(1.0f, 0.3f, 0.5f));
+             
+            //if (i%3 == 0) {
+            //    // Update the angle of rotation over time
+            //    float angle_of_rotation = (float)glfwGetTime() * glm::radians(50.0f);
+            //    model_matrix = glm::rotate(model_matrix, angle_of_rotation, axis_of_rotation);
+            //}
+            // Set the model matrix
+            lightingShader.setMatrix("model", model_matrix);
+
+            //// Change the emission over time
+            //float emission_strength = abs(cos(glfwGetTime() + i));
+            //float emission_strength = 1.0f;
+            //lightingShader.setFloat("material.emission_strength", emission_strength);
+
+            // Draw the cube!
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
 
         //lightColor.x = sin(glfwGetTime() * 2.0f);
         //lightColor.y = sin(glfwGetTime() * 0.7f);
         //lightColor.z = sin(glfwGetTime() * 1.3f);
 
-        // Need to activate so changes apply 
-        glBindVertexArray(lightVAO);
-        lightSourceShader.use();
+        //// Need to activate so changes apply 
+        //glBindVertexArray(lightVAO);
+        //lightSourceShader.use();
         
-        // Set the model, view, and projection matrices
-        // Model matrix
-        glm::mat4 model(1.0f);
+        //// Set the model, view, and projection matrices
+        //// Model matrix
+        //glm::mat4 model(1.0f);
         
-        //// Rotate the camera around the y-axis over time
-        //double timeStamp = glfwGetTime();
-        //double timeStamp = 1.0;
-        //float lightPosX = cos(timeStamp) * rotationRadius;
-        //float lightPosZ = -1 * sin(timeStamp) * rotationRadius; // negative 1 for clockwise rotation
-        ////glm::vec3 lightPos = glm::vec3(lightPosX, 1.0f, lightPosZ);
-        glm::vec3 lightPos = glm::vec3(1.2, 1.0, 2);
+        ////// Rotate the camera around the y-axis over time
+        ////double timeStamp = glfwGetTime();
+        ////double timeStamp = 1.0;
+        ////float lightPosX = cos(timeStamp) * rotationRadius;
+        ////float lightPosZ = -1 * sin(timeStamp) * rotationRadius; // negative 1 for clockwise rotation
+        //////glm::vec3 lightPos = glm::vec3(lightPosX, 1.0f, lightPosZ);
+        //glm::vec3 lightPos = glm::vec3(1.2, 1.0, 2);
 
-        model = glm::translate(model, lightPos);
-        model = glm::scale(model, glm::vec3(0.2f)); // scale down
-        lightSourceShader.setMatrix("model", model);
+        //model = glm::translate(model, lightPos);
+        //model = glm::scale(model, glm::vec3(0.2f)); // scale down
+        //lightSourceShader.setMatrix("model", model);
 
-        // View Matrix
-        lightSourceShader.setMatrix("view", viewMatrix);
+        //// View Matrix
+        //lightSourceShader.setMatrix("view", viewMatrix);
 
-        // Projection matrix
-        lightSourceShader.setMatrix("projection", projection);
+        //// Projection matrix
+        //lightSourceShader.setMatrix("projection", projection);
 
-        // Update light color
-        lightSourceShader.setVec3("lightColor", light_settings.ambient);
+        //// Update light color
+        //lightSourceShader.setVec3("lightColor", light_settings.ambient);
         
-        // Draw
-        // type, starting index, number of *vertices*
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        //// Draw
+        //// type, starting index, number of *vertices*
+        //glDrawArrays(GL_TRIANGLES, 0, 36);
 
-        // Now draw the cube object that is getting hit by the light source
-        glBindVertexArray(VAO);
-        lightingShader.use();
-
-        // Use the position calculated at this timestamp for the light source 
-        lightingShader.setVec3("lightPos", lightPos);
-
-        lightingShader.setVec3("light.ambient", light_settings.ambient);
-        lightingShader.setVec3("light.diffuse", light_settings.diffuse);
-        lightingShader.setVec3("light.specular", light_settings.specular);
-
-        // Change the emission over time
-        float emission_strength = abs(cos(glfwGetTime()));
-        lightingShader.setFloat("material.emission_strength", emission_strength);
-        
+                
         // Change the cube's color over time
         //glm::vec3 ambientColor = lightColor * glm::vec3(0.2);
         //glm::vec3 diffuseColor = lightColor * glm::vec3(0.5);
@@ -926,15 +932,15 @@ int main(int argc, char* argv[]) {
         //lightingShader.setVec3("viewPos", viewPos);
         
         // Model matrix
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-        lightingShader.setMatrix("model", model);
-        // View Matrix
-        lightingShader.setMatrix("view", viewMatrix);
-        // Projection matrix
-        lightingShader.setMatrix("projection", projection);
+        //model = glm::mat4(1.0f);
+        //model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+        //lightingShader.setMatrix("model", model);
+        //// View Matrix
+        //lightingShader.setMatrix("view", viewMatrix);
+        //// Projection matrix
+        //lightingShader.setMatrix("projection", projection);
 
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        //glDrawArrays(GL_TRIANGLES, 0, 36);
 
         /* Rendering end */
 
@@ -963,8 +969,6 @@ int main(int argc, char* argv[]) {
         // Compute frame render time for computing the
         // camera movement speed in the next frame
         camera.updateTimestamp(glfwGetTime());
-
-        
     }
 
     // Clean up Imgui
