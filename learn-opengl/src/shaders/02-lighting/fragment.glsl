@@ -26,15 +26,25 @@ struct Light {
     // For directional light, position is irrelevant
     // Direction from the light source
     vec3 direction;
+
+    // Attenuation terms (for point lights)
+    // attenuation = 1 / (constant + linear*d + quadratic*d)
+    //  where `d` is the distance from the point light
+    // to the fragment
+    // We then multiply this attenuation value to the light's
+    // intensity value of each component (ambient, diffuse, and specular)
+    float constant;
+    float linear;
+    float quadratic;
 };
 
 // Values received from the vertex shader
 // Normal vector of the vertex
 in vec3 Normal;
-// Fragment's position in world-coordinate
+// Fragment's position in view-space
 in vec3 FragPos;
 // Light source's position in view-space
-//in vec3 LightPos;
+in vec3 LightPos;
 // Texture coordinates
 in vec2 TextureCoordinates;
 
@@ -50,12 +60,14 @@ out vec4 FragColor;
 
 void main() {
     // Create a vector of the light ray
-    //vec3 lightDirection = vec3(LightPos - FragPos);
-    // Directional light, light position is irrelevant
-    // We negate the light direction since it was set to the vector
-    //  pointing away from the light source
-    // In our calculation we want the vector pointing toward our light source
-    vec3 lightDirection = normalize(-light.direction);
+    vec3 lightDirection = vec3(LightPos - FragPos);
+    
+    //// Directional light, light position is irrelevant
+    //// We negate the light direction since it was set to the vector
+    ////  pointing away from the light source
+    //// In our calculation we want the vector pointing toward our light source
+    //vec3 lightDirection = normalize(-light.direction);
+    
     vec3 normalVec = normalize(Normal);
 
     // Get the angle between the light ray and the normal vector
@@ -85,7 +97,15 @@ void main() {
     float spec = pow(max(dot(viewDirection, reflectionDirection), 0.0), material.shininess);
     vec3 texture_color = vec3(texture(material.specular, TextureCoordinates));
     vec3 specular = light.specular * texture_color * spec;
-    
+
+    // Apply attenuation to each light component
+    // Distance from the point light and the fragment
+    float dist = length(LightPos - FragPos);
+    float attenuation = 1 / (light.constant + light.linear * dist + light.quadratic * dist * dist);
+    ambience *= attenuation;
+    diffuse *= attenuation;
+    specular *= attenuation;
+
     // The final light effect is the addition of diffuse and ambience effect
     // The final color is obtained by multiplying the object's color and the final light effect
     vec3 lightEffect = diffuse + ambience + specular;

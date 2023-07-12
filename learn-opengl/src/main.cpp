@@ -728,6 +728,12 @@ int main(int argc, char* argv[]) {
     lightingShader.setVec3("light.diffuse", light_settings.diffuse);
     lightingShader.setVec3("light.specular", light_settings.specular);
 
+    // Values for different distances: https://wiki.ogre3d.org/tiki-index.php?page=-Point+Light+Attenuation
+    // Here we chose settings for distance of up to 50
+    lightingShader.setFloat("light.constant", 1.0);
+    lightingShader.setFloat("light.linear", 0.09);
+    lightingShader.setFloat("light.quadratic", 0.032);
+
     //// Define the View matrix, which captures a scene in the view of the camera
     //// We aren't really moving the camera, we are moving the scene relative to a camera at the origin (?)
     //// So to give the view of the camera that moved away from the scene, we move the scene away from the camera
@@ -846,8 +852,8 @@ int main(int argc, char* argv[]) {
         // Now draw the cube object that is getting hit by the light source
         glBindVertexArray(VAO);
 
-        // Use the position calculated at this timestamp for the light source 
-        //lightingShader.setVec3("lightPos", lightPos);
+        // Set the position of the light source
+        lightingShader.setVec3("lightPos", lightPos);
 
         // Update lighting if ImGUI settings were updated
         lightingShader.setVec3("light.ambient", light_settings.ambient);
@@ -883,12 +889,12 @@ int main(int argc, char* argv[]) {
         //lightColor.z = sin(glfwGetTime() * 1.3f);
 
         //// Need to activate so changes apply 
-        //glBindVertexArray(lightVAO);
-        //lightSourceShader.use();
+        glBindVertexArray(lightVAO);
+        lightSourceShader.use();
         
-        //// Set the model, view, and projection matrices
-        //// Model matrix
-        //glm::mat4 model(1.0f);
+        // Set the model, view, and projection matrices
+        // Model matrix
+        glm::mat4 model(1.0f);
         
         ////// Rotate the camera around the y-axis over time
         ////double timeStamp = glfwGetTime();
@@ -898,22 +904,22 @@ int main(int argc, char* argv[]) {
         //////glm::vec3 lightPos = glm::vec3(lightPosX, 1.0f, lightPosZ);
         //glm::vec3 lightPos = glm::vec3(1.2, 1.0, 2);
 
-        //model = glm::translate(model, lightPos);
-        //model = glm::scale(model, glm::vec3(0.2f)); // scale down
-        //lightSourceShader.setMatrix("model", model);
+        model = glm::translate(model, lightPos);
+        model = glm::scale(model, glm::vec3(0.2f)); // scale down
+        lightSourceShader.setMatrix("model", model);
 
-        //// View Matrix
-        //lightSourceShader.setMatrix("view", viewMatrix);
+        // View Matrix
+        lightSourceShader.setMatrix("view", viewMatrix);
 
-        //// Projection matrix
-        //lightSourceShader.setMatrix("projection", projection);
+        // Projection matrix
+        lightSourceShader.setMatrix("projection", projection);
 
-        //// Update light color
-        //lightSourceShader.setVec3("lightColor", light_settings.ambient);
+        // Update light color
+        lightSourceShader.setVec3("lightColor", light_settings.ambient);
         
-        //// Draw
-        //// type, starting index, number of *vertices*
-        //glDrawArrays(GL_TRIANGLES, 0, 36);
+        // Draw
+        // type, starting index, number of *vertices*
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
                 
         // Change the cube's color over time

@@ -54,8 +54,10 @@ void main() {
     // Compute the fragment's view coordinates
     FragPos = vec3(view * model * vec4(aPos, 1.0f));
 
-    // Convert the light source coordinates from world-space to view space
-    LightPos = vec3(view * vec4(lightPos, 1.0f));
+    // Convert to view coordinates
+    LightPos = vec3(view * model * vec4(lightPos, 1.0f));
+    //// Convert the light source coordinates from world-space to view space
+    //LightPos = vec3(view * vec4(lightPos, 1.0f));
 
     // Pass the texture coordinates to the fragment shader
     TextureCoordinates = aTextureCoordinates;
