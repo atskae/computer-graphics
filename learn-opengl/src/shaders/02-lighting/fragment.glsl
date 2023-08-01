@@ -60,8 +60,10 @@ out vec4 FragColor;
 
 void main() {
     // Create a vector of the light ray
+    // A vector from FragPos to LightPos
     vec3 lightDirection = vec3(LightPos - FragPos);
-    
+    lightDirection = normalize(lightDirection);
+
     //// Directional light, light position is irrelevant
     //// We negate the light direction since it was set to the vector
     ////  pointing away from the light source
@@ -76,7 +78,7 @@ void main() {
     // causing a brighter affect. When the angle is closer to 90 degrees, the effect is no light
     // The product of two *unit* vectors will give us cos(theta) 
     // We take the max to avoid negative dot product (occurs when the angle > 90)
-    float diffuseStrength = max(dot(normalize(lightDirection), normalVec), 0.0);
+    float diffuseStrength = max(dot(lightDirection, normalVec), 0.0);
     vec3 diffuse = light.diffuse * diffuseStrength * vec3(texture(material.diffuse, TextureCoordinates)) +
         (material.emission_strength * vec3(texture(material.emission, TextureCoordinates)) * vec3(texture(material.emission_area, TextureCoordinates)));
 
@@ -90,7 +92,7 @@ void main() {
     
     // -1 since the lightDirection is currently fragPos to light, and we want the opposite direction
     // The reflect() function expects direction light-> fragPos
-    vec3 reflectionDirection = reflect(-normalize(lightDirection), normalVec); 
+    vec3 reflectionDirection = reflect(-lightDirection, normalVec); 
     // How much the light is properly reflected versus scattered around
     // Higher values, a smaller area will get intense light (highlights)
     // Lower values, light is spread out across the fragment

@@ -915,7 +915,7 @@ int main(int argc, char* argv[]) {
         lightSourceShader.setMatrix("projection", projection);
 
         // Update light color
-        lightSourceShader.setVec3("lightColor", light_settings.ambient);
+        lightSourceShader.setVec3("lightColor", light_settings.diffuse);
         
         // Draw
         // type, starting index, number of *vertices*

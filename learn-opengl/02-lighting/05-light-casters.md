@@ -43,6 +43,23 @@ float dist = length(light.position - FragPos);
 ```
 
 Though now everything seems lit:
-Er, it seems light the light is comming from the bottom...
+Er, it seems light the light is coming from the bottom...
 
 ![Incorrect point light 2](images/incorrect-point-light-2.png)
+
+This was the bug, in the vertex shader:
+```glsl
+LightPos = vec3(view * model * vec4(lightPos, 1.0f));
+```
+`lightPos` is already in world-space, so we don't have to multiply it with the `model` matrix like the other coordinates here (normal vector, fragPos).
+
+So the fix is:
+```glsl
+LightPos = vec3(view * vec4(lightPos, 1.0f));
+```
+
+Fixed!!
+
+![Fixed point light](point-light-fixed.png)
+
+![Fixed point light](point-light-fixed.gif)
