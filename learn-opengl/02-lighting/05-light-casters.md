@@ -60,6 +60,40 @@ LightPos = vec3(view * vec4(lightPos, 1.0f));
 
 Fixed!!
 
-![Fixed point light](point-light-fixed.png)
+![Fixed point light](images/point-light-fixed.png)
 
-![Fixed point light](point-light-fixed.gif)
+![Fixed point light](images/point-light-fixed.gif)
+
+## Spotlight
+A **spotlight** only shines light in one direction, with a *cut-off* angle Φ, where all the fragments within this cut-off angle is lit.
+
+<img src="images/spotlight.png" alt="drawing" width="400"/>
+
+* `SpotDir`: The direction that the light is pointing at
+* `LightDir`: The vector from the fragment and the light source
+* `Φ`: The cut-off angle, determines the maximum area that is lit
+* `θ`: The angle between the `SpotDir` and the `LightDir`
+    * If `θ` is less than the cut-off angle `Φ`, then that fragment is lit up
+
+### Flashlight
+
+A flashlight is a spotlight that moves with the viewer/camera.
+
+We define the flashlight with three parameters in the fragment shader:
+```glsl
+struct Flashlight {
+    vec3 position;
+    vec3 direction; // the fragment to the flashlight's position
+    float cos_cutoff; // the *cosine* of the cut-off angle Φ
+}
+```
+
+We store the cosine of the cut-off angle to avoid calculating the inverse cosine of the dot product to get the actual angle `θ`. Recall the dot product: `|a| x |b| = cos(θ)`.
+
+Now we can simply compare `cos(Φ)` (cosine of the cut-off angle) and `cos(θ)` (the cosine of the angle between LightDir and SpotDir).
+
+Since we are now comparing cosines instead of the angles directly, if `cos(θ)` is *greater* than the `cos(Φ)`, the fragment is lit up:
+
+![Compare cosines](images/compare-cosines.png)
+
+If the angle is smaller, than the cosine is greater (if the angle is between 0 and 90 degrees).
