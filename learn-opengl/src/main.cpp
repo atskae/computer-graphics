@@ -12,7 +12,7 @@
 #include <glm/gtx/string_cast.hpp> // to_string()
 
 // Read in image files
-#include "stb_image.h"
+#include "stb_image.h"/Sli
 
 // Imgui UI
 #include "imgui.h"
@@ -53,7 +53,8 @@ struct Light {
     glm::vec3 ambient;
     glm::vec3 diffuse;
     glm::vec3 specular;
-    glm::vec3 position;  
+    glm::vec3 position;
+    float cutoff_degrees;
 };
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
@@ -721,7 +722,8 @@ int main(int argc, char* argv[]) {
         glm::vec3(0.5f),
         glm::vec3(1.0f),
         glm::vec3(0.5f),
-        lightPos
+        lightPos,
+        50 // cutoff angle, in degrees
     };
 
     lightingShader.setVec3("light.ambient", light_settings.ambient);
@@ -859,7 +861,11 @@ int main(int argc, char* argv[]) {
         lightingShader.setVec3("light.ambient", light_settings.ambient);
         lightingShader.setVec3("light.diffuse", light_settings.diffuse);
         lightingShader.setVec3("light.specular", light_settings.specular);
-        
+
+        lightingShader.setVec3("light.position", camera.getPosition());
+        lightingShader.setVec3("light.direction", camera.getFront());
+        lightingShader.setFloat("light.cos_cutoff", glm::cos(glm::radians(light_settings.cutoff_degrees)));
+
         // Draw each cube positioned at different locations
         for (int i=0; i<10; i++) {
             // Create a transformation matrix for this cube and apply it in the vertex shader
@@ -960,7 +966,8 @@ int main(int argc, char* argv[]) {
         ImGui::ColorEdit3("Ambient", (float*)&light_settings.ambient);
         ImGui::ColorEdit3("Diffuse", (float*)&light_settings.diffuse);
         ImGui::ColorEdit3("Specular", (float*)&light_settings.specular);
-        
+        ImGui::SliderFloat("Cutoff Angle", (float*)&light_settings.cutoff_degrees, 0.0, 90.0);
+
         ImGui::End();
 
         // Update shader variables here...

@@ -128,6 +128,8 @@ class Camera {
 
         glm::vec3 getPosition() { return this->position; }
 
+        glm::vec3 getFront() { return this->front; }
+
         /*
             Methods for changing camera settings with user input
         */
