@@ -106,6 +106,8 @@ Weird bug where the closest object lights up correct but the values outside of t
 
 That was because the default ambience is lighter than the ambience that is calculated for objects that are farther away. (The point light effect, where the object gets darker further away, is still being applied in the area that is lit).
 
+I also had to compute the view space coordinates of the light position in the vertex shader instead of passing in the world-space coordinates from the camera directly.
+
 If we set the default ambience lower, then it looks fine:
 
 ![Flashlight bug fixed](images/flashlight-bug-fixed.png)
