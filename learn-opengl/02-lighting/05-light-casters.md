@@ -140,3 +140,24 @@ I = (θ - γ) / ϵ
 ```
 
 ![Flashlight all angles](images/flashlight-all-angles.png)
+
+As theta increases, the light intensity starts to decrease when the fragment starts falling in the region in `ϵ`:
+
+![Intensity greater than 1.0](images/intensity-ge-1.0.png)
+
+![Intensity 0.5](images/intensity-0.5.png)
+
+![Intensity 0.25](images/intensity-0.25.png)
+
+![Intensity 0.0](images/intensity-le-0.0.png)
+
+Had a bug here where I subtracted the inner from the outer:
+```glsl
+float cos_epsilon = light.cos_inner_cutoff - light.cos_outer_cutoff;
+```
+
+Since we are comparing cosines now and not direct angles, the cosine of the inner cone is actually larger than the cosine of the outer cone.
+
+![Flashlight hard edge](images/flashlight-hard-edge.png)
+
+![Flashlight soft edge](images/flashlight-soft-edge.png)

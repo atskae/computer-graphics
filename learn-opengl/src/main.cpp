@@ -54,7 +54,8 @@ struct Light {
     glm::vec3 diffuse;
     glm::vec3 specular;
     glm::vec3 position;
-    float cutoff_degrees;
+    float inner_cutoff_degrees;
+    float outer_cutoff_degrees;
 };
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
@@ -723,7 +724,8 @@ int main(int argc, char* argv[]) {
         glm::vec3(1.0f),
         glm::vec3(0.5f),
         lightPos,
-        50 // cutoff angle, in degrees
+        10, // inner cutoff angle, in degrees
+        30 // outer cutoff angle, in degrees
     };
 
     lightingShader.setVec3("light.ambient", light_settings.ambient);
@@ -760,9 +762,6 @@ int main(int argc, char* argv[]) {
     // Set global directional light source
     // This vector points away from the light source
     //lightingShader.setVec3("light.direction", glm::vec3(-0.2, 1.0, -0.3));
-
-    // ImGui Controls
-    bool checkbox_state = false;
 
     // Start the render loop
     // This keeps the application running and handles new input
@@ -864,7 +863,8 @@ int main(int argc, char* argv[]) {
 
         lightingShader.setVec3("lightPos", camera.getPosition());
         lightingShader.setVec3("light.direction", camera.getFront());
-        lightingShader.setFloat("light.cos_cutoff", glm::cos(glm::radians(light_settings.cutoff_degrees)));
+        lightingShader.setFloat("light.cos_inner_cutoff", glm::cos(glm::radians(light_settings.inner_cutoff_degrees)));
+        lightingShader.setFloat("light.cos_outer_cutoff", glm::cos(glm::radians(light_settings.outer_cutoff_degrees)));
 
         // Draw each cube positioned at different locations
         for (int i=0; i<10; i++) {
@@ -959,14 +959,13 @@ int main(int argc, char* argv[]) {
         // Display UI
         
         ImGui::Begin("ImGui Controls");
-        ImGui::Text("Yay!");
-        ImGui::Checkbox("Click here", &checkbox_state);
         
         ImGui::Text("Light settings");
         ImGui::ColorEdit3("Ambient", (float*)&light_settings.ambient);
         ImGui::ColorEdit3("Diffuse", (float*)&light_settings.diffuse);
         ImGui::ColorEdit3("Specular", (float*)&light_settings.specular);
-        ImGui::SliderFloat("Cutoff Angle", (float*)&light_settings.cutoff_degrees, 0.0, 90.0);
+        ImGui::SliderFloat("Outer Cutoff Angle", (float*)&light_settings.outer_cutoff_degrees, 0.0, 90.0);
+        ImGui::SliderFloat("Inner Cutoff Angle", (float*)&light_settings.inner_cutoff_degrees, 0.0, light_settings.outer_cutoff_degrees);
 
         ImGui::End();
 
