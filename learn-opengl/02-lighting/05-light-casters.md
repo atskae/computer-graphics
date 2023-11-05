@@ -98,7 +98,16 @@ Since we are now comparing cosines instead of the angles directly, if `cos(θ)` 
 
 If the angle is smaller, than the cosine is greater (if the angle is between 0 and 90 degrees).
 
+We use `camera.front` instead of `camera.direction` for the light's direction because the light's direction is usually defined as from the light source to the fragment (whereas camera direction points in the *opposite* direction of what it's looking at).
+
+Recall:
+
+![Camera vectors review](images/camera-vectors-review.png)
+
+#### Ambience bug
+
 Weird bug where the closest object lights up correct but the values outside of the flashlight are inverted in terms of lightness:
+
 
 ![Flashlight bug 1](images/flashlight-bug-1.png)
 
