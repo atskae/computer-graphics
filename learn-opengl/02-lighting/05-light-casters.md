@@ -120,3 +120,23 @@ I also had to compute the view space coordinates of the light position in the ve
 If we set the default ambience lower, then it looks fine:
 
 ![Flashlight bug fixed](images/flashlight-bug-fixed.png)
+
+#### Smooth Flashlight Edges
+
+To create a smooth transition from inside the flashlight's boundaries to the outside, we define an *inner cone* and an *outer cone*.
+
+The inner cone is what we already had as the flashlights boundaries. The outer cone has a larger boundary (angle, radius) than the inner cone. If the fragment's position falls between the inner cone and the outer cone, we interpolate the fragment's intensity between 1.0 and 0.0.
+
+The intensity is 1.0 within the inner cone, and 0.0 outside of the outer cone.
+
+![Smooth flashlight edges using outer and inner cone](images/smooth-flashlight-edges.png)
+
+`ϵ` (epsilon) is the difference between the outer cone `γ` (gamma) and inner cone `Φ` (phi).
+
+We can then use the following equation to calculate the light's intensity at a given fragment's position, with `θ` as the angle between the flashlight's `SpotDir` and `LightDir` (as before):
+
+```
+I = (θ - γ) / ϵ
+```
+
+![Flashlight all angles](images/flashlight-all-angles.png)
