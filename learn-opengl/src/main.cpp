@@ -759,7 +759,7 @@ int main(int argc, char* argv[]) {
 
     // Set global directional light source
     // This vector points away from the light source
-    lightingShader.setVec3("light.direction", glm::vec3(-0.2, 1.0, -0.3));
+    //lightingShader.setVec3("light.direction", glm::vec3(-0.2, 1.0, -0.3));
 
     // ImGui Controls
     bool checkbox_state = false;
@@ -855,14 +855,14 @@ int main(int argc, char* argv[]) {
         glBindVertexArray(VAO);
 
         // Set the position of the light source
-        lightingShader.setVec3("lightPos", lightPos);
+        //lightingShader.setVec3("lightPos", lightPos);
 
         // Update lighting if ImGUI settings were updated
         lightingShader.setVec3("light.ambient", light_settings.ambient);
         lightingShader.setVec3("light.diffuse", light_settings.diffuse);
         lightingShader.setVec3("light.specular", light_settings.specular);
 
-        lightingShader.setVec3("light.position", camera.getPosition());
+        lightingShader.setVec3("lightPos", camera.getPosition());
         lightingShader.setVec3("light.direction", camera.getFront());
         lightingShader.setFloat("light.cos_cutoff", glm::cos(glm::radians(light_settings.cutoff_degrees)));
 

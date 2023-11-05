@@ -84,52 +84,52 @@ void main() {
     if (cos_theta > light.cos_cutoff) {
         // Since we are comparing cosines instead of angeles, if the cosine value
         // is *greater* that means the angle is smaller
-        FragColor = vec4(vec3(texture(material.diffuse, TextureCoordinates)), 1.0);
+        
+        // Attenuation
+
+        // Get the angle between the light ray and the normal vector
+        // The angle determines the brightness of the fragment
+        // If the angle is closer to 0, the light ray and the normal is more closely aligned
+        // causing a brighter affect. When the angle is closer to 90 degrees, the effect is no light
+        // The product of two *unit* vectors will give us cos(theta) 
+        // We take the max to avoid negative dot product (occurs when the angle > 90)
+        float diffuseStrength = max(dot(lightDirection, normalVec), 0.0);
+        vec3 diffuse = light.diffuse * diffuseStrength * vec3(texture(material.diffuse, TextureCoordinates)) +
+            (material.emission_strength * vec3(texture(material.emission, TextureCoordinates)) * vec3(texture(material.emission_area, TextureCoordinates)));
+
+        // vec4 color: red, green, blue, alpha (transparency)
+        //vec3 ambience = light.ambient * vec3(texture(material.emission, TextureCoordinates));
+        vec3 ambience = light.ambient * vec3(texture(material.diffuse, TextureCoordinates));
+    
+        // In view space, we compute relative to the viewer (set at 0,0,0)
+        vec3 viewPos = vec3(0,0,0);
+        vec3 viewDirection = normalize(viewPos - FragPos);
+    
+        // -1 since the lightDirection is currently fragPos to light, and we want the opposite direction
+        // The reflect() function expects direction light-> fragPos
+        vec3 reflectionDirection = reflect(-lightDirection, normalVec); 
+        // How much the light is properly reflected versus scattered around
+        // Higher values, a smaller area will get intense light (highlights)
+        // Lower values, light is spread out across the fragment
+        float spec = pow(max(dot(viewDirection, reflectionDirection), 0.0), material.shininess);
+        vec3 texture_color = vec3(texture(material.specular, TextureCoordinates));
+        vec3 specular = light.specular * texture_color * spec;
+
+        // Apply attenuation to each light component
+        // Distance from the point light and the fragment
+        float dist = length(LightPos - FragPos);
+        float attenuation = 1 / (light.constant + light.linear * dist + light.quadratic * dist * dist);
+        ambience *= attenuation;
+        diffuse *= attenuation;
+        specular *= attenuation;
+
+        // The final light effect is the addition of diffuse and ambience effect
+        // The final color is obtained by multiplying the object's color and the final light effect
+        vec3 lightEffect = diffuse + ambience + specular;
+        FragColor = vec4(lightEffect, 1.0f);
     } else {
         // Ambient light
         FragColor = vec4(light.ambient * vec3(texture(material.diffuse, TextureCoordinates)), 1.0);
     }
-
-    // Attenuation
-
-    //// Get the angle between the light ray and the normal vector
-    //// The angle determines the brightness of the fragment
-    //// If the angle is closer to 0, the light ray and the normal is more closely aligned
-    //// causing a brighter affect. When the angle is closer to 90 degrees, the effect is no light
-    //// The product of two *unit* vectors will give us cos(theta) 
-    //// We take the max to avoid negative dot product (occurs when the angle > 90)
-    //float diffuseStrength = max(dot(lightDirection, normalVec), 0.0);
-    //vec3 diffuse = light.diffuse * diffuseStrength * vec3(texture(material.diffuse, TextureCoordinates)) +
-    //    (material.emission_strength * vec3(texture(material.emission, TextureCoordinates)) * vec3(texture(material.emission_area, TextureCoordinates)));
-
-    //// vec4 color: red, green, blue, alpha (transparency)
-    ////vec3 ambience = light.ambient * vec3(texture(material.emission, TextureCoordinates));
-    //vec3 ambience = light.ambient * vec3(texture(material.diffuse, TextureCoordinates));
     
-    //// In view space, we compute relative to the viewer (set at 0,0,0)
-    //vec3 viewPos = vec3(0,0,0);
-    //vec3 viewDirection = normalize(viewPos - FragPos);
-    
-    //// -1 since the lightDirection is currently fragPos to light, and we want the opposite direction
-    //// The reflect() function expects direction light-> fragPos
-    //vec3 reflectionDirection = reflect(-lightDirection, normalVec); 
-    //// How much the light is properly reflected versus scattered around
-    //// Higher values, a smaller area will get intense light (highlights)
-    //// Lower values, light is spread out across the fragment
-    //float spec = pow(max(dot(viewDirection, reflectionDirection), 0.0), material.shininess);
-    //vec3 texture_color = vec3(texture(material.specular, TextureCoordinates));
-    //vec3 specular = light.specular * texture_color * spec;
-
-    //// Apply attenuation to each light component
-    //// Distance from the point light and the fragment
-    //float dist = length(LightPos - FragPos);
-    //float attenuation = 1 / (light.constant + light.linear * dist + light.quadratic * dist * dist);
-    //ambience *= attenuation;
-    //diffuse *= attenuation;
-    //specular *= attenuation;
-
-    //// The final light effect is the addition of diffuse and ambience effect
-    //// The final color is obtained by multiplying the object's color and the final light effect
-    //vec3 lightEffect = diffuse + ambience + specular;
-    //FragColor = vec4(lightEffect, 1.0f);
 }

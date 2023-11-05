@@ -97,3 +97,15 @@ Since we are now comparing cosines instead of the angles directly, if `cos(θ)` 
 ![Compare cosines](images/compare-cosines.png)
 
 If the angle is smaller, than the cosine is greater (if the angle is between 0 and 90 degrees).
+
+Weird bug where the closest object lights up correct but the values outside of the flashlight are inverted in terms of lightness:
+
+![Flashlight bug 1](images/flashlight-bug-1.png)
+
+![Flashlight bug 2](images/flashlight-bug-2.png)
+
+That was because the default ambience is lighter than the ambience that is calculated for objects that are farther away. (The point light effect, where the object gets darker further away, is still being applied in the area that is lit).
+
+If we set the default ambience lower, then it looks fine:
+
+![Flashlight bug fixed](images/flashlight-bug-fixed.png)
