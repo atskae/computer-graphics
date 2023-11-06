@@ -16,6 +16,22 @@ struct Material {
     float shininess;
 };
 
+// Light source with no position and are defined to be infinitely far away (ex. sun)
+// All light rays have the same direction
+// No position is defined (light source is infintely far away)
+struct DirectionalLight {
+    // Vector from the light source to the fragment
+    // Direction vector's w component should be zero so they do not get
+    // impacted by transformations (since we only care about direction, not position)
+    // ex. vec4 direction(x, y, z, 0.0);
+    vec3 direction;
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+uniform DirectionalLight directionalLight;
+
+
 // Intensities of the light source
 struct Light {
     vec3 ambient;
@@ -68,19 +84,22 @@ uniform Light light;
 // Fragment shader's only required output, a vector of size 4
 out vec4 FragColor;
 
+/*
+    Functions to calculate each type of light source
+*/
+vec3 calculateAmbience(vec3 lightAmbience);
+vec3 calculateDiffuse(vec3 lightDiffuse, vec3 lightDirection, vec3 normal);
+vec3 calculateSpecular(vec3 lightSpecular, vec3 lightDirection, vec3 normal, vec3 viewDirection);
+vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDirection);
+
 void main() {
     // Create a vector of the light ray
     // A vector from FragPos to LightPos
-    vec3 lightDirection = vec3(LightPos - FragPos);
-    lightDirection = normalize(lightDirection);
-
-    //// Directional light, light position is irrelevant
-    //// We negate the light direction since it was set to the vector
-    ////  pointing away from the light source
-    //// In our calculation we want the vector pointing toward our light source
-    //vec3 lightDirection = normalize(-light.direction);
-    
+    vec3 lightDirection = normalize(vec3(LightPos - FragPos));
     vec3 normalVec = normalize(Normal);
+    // In view space, we compute relative to the viewer (set at 0,0,0)
+    vec3 viewPos = vec3(0,0,0);
+    vec3 viewDirection = normalize(viewPos - FragPos);
 
     // Calculate the flashlight's area and intensity
 
@@ -90,37 +109,12 @@ void main() {
     float cos_theta = dot(lightDirection, normalize(-light.direction));
     float cos_epsilon = light.cos_inner_cutoff - light.cos_outer_cutoff;
     float intensity = clamp((cos_theta - light.cos_outer_cutoff) / cos_epsilon, 0.0, 1.0);
-    
+
+    vec3 diffuse = calculateDiffuse(light.diffuse, lightDirection, normalVec);
+    vec3 ambience = calculateAmbience(light.ambient);
+    vec3 specular = calculateSpecular(light.specular, lightDirection, normalVec, viewDirection);
+
     // Attenuation
-
-    // Get the angle between the light ray and the normal vector
-    // The angle determines the brightness of the fragment
-    // If the angle is closer to 0, the light ray and the normal is more closely aligned
-    // causing a brighter affect. When the angle is closer to 90 degrees, the effect is no light
-    // The product of two *unit* vectors will give us cos(theta) 
-    // We take the max to avoid negative dot product (occurs when the angle > 90)
-    float diffuseStrength = max(dot(lightDirection, normalVec), 0.0);
-    vec3 diffuse = light.diffuse * diffuseStrength * vec3(texture(material.diffuse, TextureCoordinates)) +
-        (material.emission_strength * vec3(texture(material.emission, TextureCoordinates)) * vec3(texture(material.emission_area, TextureCoordinates)));
-
-    // vec4 color: red, green, blue, alpha (transparency)
-    //vec3 ambience = light.ambient * vec3(texture(material.emission, TextureCoordinates));
-    vec3 ambience = light.ambient * vec3(texture(material.diffuse, TextureCoordinates));
-    
-    // In view space, we compute relative to the viewer (set at 0,0,0)
-    vec3 viewPos = vec3(0,0,0);
-    vec3 viewDirection = normalize(viewPos - FragPos);
-    
-    // -1 since the lightDirection is currently fragPos to light, and we want the opposite direction
-    // The reflect() function expects direction light-> fragPos
-    vec3 reflectionDirection = reflect(-lightDirection, normalVec); 
-    // How much the light is properly reflected versus scattered around
-    // Higher values, a smaller area will get intense light (highlights)
-    // Lower values, light is spread out across the fragment
-    float spec = pow(max(dot(viewDirection, reflectionDirection), 0.0), material.shininess);
-    vec3 texture_color = vec3(texture(material.specular, TextureCoordinates));
-    vec3 specular = light.specular * texture_color * spec;
-
     // Apply attenuation to each light component
     // Distance from the point light and the fragment
     float dist = length(LightPos - FragPos);
@@ -135,4 +129,48 @@ void main() {
     vec3 lightEffect = diffuse + ambience + specular;
     // Apply the flashlight's intensity effect
     FragColor = vec4(intensity * lightEffect, 1.0f);
+}
+
+vec3 calculateAmbience(vec3 lightAmbience) {
+    vec3 ambience = lightAmbience * vec3(texture(material.diffuse, TextureCoordinates));
+    return ambience;
+}
+
+vec3 calculateDiffuse(vec3 lightDiffuse, vec3 lightDirection, vec3 normal) {
+    // Get the angle between the light ray and the normal vector
+    // The angle determines the brightness of the fragment
+    // If the angle is closer to 0, the light ray and the normal is more closely aligned
+    // causing a brighter affect. When the angle is closer to 90 degrees, the effect is no light
+    // The product of two *unit* vectors will give us cos(theta) 
+    // We take the max to avoid negative dot product (occurs when the angle > 90)
+    float diffuseStrength = max(dot(lightDirection, normal), 0.0);
+    vec3 diffuse = lightDiffuse * diffuseStrength * vec3(texture(material.diffuse, TextureCoordinates)) +
+        (material.emission_strength * vec3(texture(material.emission, TextureCoordinates)) * vec3(texture(material.emission_area, TextureCoordinates)));
+    return diffuse;
+}
+
+vec3 calculateSpecular(vec3 lightSpecular, vec3 lightDirection, vec3 normal, vec3 viewDirection) {
+    // -1 since the lightDirection is currently fragPos to light, and we want the opposite direction
+    // The reflect() function expects direction light-> fragPos
+    vec3 reflectionDirection = reflect(-lightDirection, normal); 
+    // How much the light is properly reflected versus scattered around
+    // Higher values, a smaller area will get intense light (highlights)
+    // Lower values, light is spread out across the fragment
+    float spec = pow(max(dot(viewDirection, reflectionDirection), 0.0), material.shininess);
+    vec3 texture_color = vec3(texture(material.specular, TextureCoordinates));
+    vec3 specular = lightSpecular * texture_color * spec;
+    return specular;
+}
+
+vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDirection) {
+    // Directional light, light position is irrelevant
+    // We negate the light direction since it was set to the vector
+    //  pointing away from the light source
+    // In our calculation we want the vector pointing toward our light source
+    vec3 lightDirection = normalize(-light.direction);
+
+    vec3 ambience = calculateAmbience(light.ambient);
+    vec3 diffuse = calculateDiffuse(light.diffuse, lightDirection, normal);
+    vec3 specular = calculateSpecular(light.specular, lightDirection, normal, viewDirection);
+    return ambience + diffuse + specular;
 }
