@@ -111,8 +111,8 @@ void main() {
     float cos_epsilon = light.cos_inner_cutoff - light.cos_outer_cutoff;
     float intensity = clamp((cos_theta - light.cos_outer_cutoff) / cos_epsilon, 0.0, 1.0);
 
-    vec3 diffuse = calculateDiffuse(light.diffuse, lightDirection, normalVec);
     vec3 ambience = calculateAmbience(light.ambient);
+    vec3 diffuse = calculateDiffuse(light.diffuse, lightDirection, normalVec);
     vec3 specular = calculateSpecular(light.specular, lightDirection, normalVec, viewDirection);
 
     // Attenuation
@@ -132,7 +132,7 @@ void main() {
     lightEffect *= intensity;
     
     // Add directional light
-    lightEffect += calculateDirectionalLight(directionalLight, normalVec, viewDirection);
+    lightEffect = calculateDirectionalLight(directionalLight, normalVec, viewDirection);
     
     FragColor = vec4(lightEffect, 1.0f);
 }
@@ -150,8 +150,7 @@ vec3 calculateDiffuse(vec3 lightDiffuse, vec3 lightDirection, vec3 normal) {
     // The product of two *unit* vectors will give us cos(theta) 
     // We take the max to avoid negative dot product (occurs when the angle > 90)
     float diffuseStrength = max(dot(lightDirection, normal), 0.0);
-    vec3 diffuse = lightDiffuse * diffuseStrength * vec3(texture(material.diffuse, TextureCoordinates)) +
-        (material.emission_strength * vec3(texture(material.emission, TextureCoordinates)) * vec3(texture(material.emission_area, TextureCoordinates)));
+    vec3 diffuse = lightDiffuse * diffuseStrength * vec3(texture(material.diffuse, TextureCoordinates));
     return diffuse;
 }
 
@@ -169,6 +168,9 @@ vec3 calculateSpecular(vec3 lightSpecular, vec3 lightDirection, vec3 normal, vec
 }
 
 vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDirection) {
+    if (!light.enabled) {
+        return vec3(0.0);
+    }
     // Directional light, light position is irrelevant
     // We negate the light direction since it was set to the vector
     //  pointing away from the light source

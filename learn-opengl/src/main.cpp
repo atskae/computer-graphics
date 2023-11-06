@@ -750,7 +750,7 @@ int main(int argc, char* argv[]) {
         true, // enabled
         glm::vec3(-0.2f, -1.0f, -0.3f), // direction
         glm::vec3(0.25), // ambience
-        glm::vec3(0.25), // diffuse
+        glm::vec3(0.75), // diffuse
         glm::vec3(0.25), // specular
     };
 
@@ -879,9 +879,14 @@ int main(int argc, char* argv[]) {
         //lightingShader.setVec3("lightPos", lightPos);
 
         // Update lighting if ImGUI settings were updated
-        lightingShader.setVec3("light.ambient", light_settings.ambient);
-        lightingShader.setVec3("light.diffuse", light_settings.diffuse);
-        lightingShader.setVec3("light.specular", light_settings.specular);
+        //lightingShader.setVec3("light.ambient", light_settings.ambient);
+        //lightingShader.setVec3("light.diffuse", light_settings.diffuse);
+        //lightingShader.setVec3("light.specular", light_settings.specular);
+
+        lightingShader.setBool("directionalLight.enabled", directional_light.enabled);
+        lightingShader.setVec3("directionalLight.ambient", directional_light.ambient);
+        lightingShader.setVec3("directionalLight.diffuse", directional_light.diffuse);
+        lightingShader.setVec3("directionalLight.specular", directional_light.specular);
 
         lightingShader.setVec3("lightPos", camera.getPosition());
         lightingShader.setVec3("light.direction", camera.getFront());
@@ -984,10 +989,12 @@ int main(int argc, char* argv[]) {
 
         ImGui::Checkbox("Enable Directional Light", (bool*)&directional_light.enabled);
 
-        ImGui::Text("Light settings");
-        ImGui::ColorEdit3("Ambient", (float*)&light_settings.ambient);
-        ImGui::ColorEdit3("Diffuse", (float*)&light_settings.diffuse);
-        ImGui::ColorEdit3("Specular", (float*)&light_settings.specular);
+        ImGui::Text("Directional Light Settings");
+        ImGui::ColorEdit3("Ambient", (float*)&directional_light.ambient);
+        ImGui::ColorEdit3("Diffuse", (float*)&directional_light.diffuse);
+        ImGui::ColorEdit3("Specular", (float*)&directional_light.specular);
+        
+        ImGui::Text("Spotlight Settings");
         ImGui::SliderFloat("Outer Cutoff Angle", (float*)&light_settings.outer_cutoff_degrees, 0.0, 90.0);
         ImGui::SliderFloat("Inner Cutoff Angle", (float*)&light_settings.inner_cutoff_degrees, 0.0, light_settings.outer_cutoff_degrees);
 
