@@ -20,6 +20,7 @@ struct Material {
 // All light rays have the same direction
 // No position is defined (light source is infintely far away)
 struct DirectionalLight {
+    bool enabled;
     // Vector from the light source to the fragment
     // Direction vector's w component should be zero so they do not get
     // impacted by transformations (since we only care about direction, not position)
@@ -128,7 +129,12 @@ void main() {
     // The final color is obtained by multiplying the object's color and the final light effect
     vec3 lightEffect = diffuse + ambience + specular;
     // Apply the flashlight's intensity effect
-    FragColor = vec4(intensity * lightEffect, 1.0f);
+    lightEffect *= intensity;
+    
+    // Add directional light
+    lightEffect += calculateDirectionalLight(directionalLight, normalVec, viewDirection);
+    
+    FragColor = vec4(lightEffect, 1.0f);
 }
 
 vec3 calculateAmbience(vec3 lightAmbience) {

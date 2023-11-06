@@ -12,7 +12,7 @@
 #include <glm/gtx/string_cast.hpp> // to_string()
 
 // Read in image files
-#include "stb_image.h"/Sli
+#include "stb_image.h"
 
 // Imgui UI
 #include "imgui.h"
@@ -47,6 +47,14 @@ struct Material {
     glm::vec3 diffuse;
     glm::vec3 specular;
     float shininess;
+};
+
+struct DirectionalLight {
+    bool enabled;
+    glm::vec3 direction; // from light source to fragment
+    glm::vec3 ambient;
+    glm::vec3 diffuse;
+    glm::vec3 specular;
 };
 
 struct Light {
@@ -724,8 +732,8 @@ int main(int argc, char* argv[]) {
         glm::vec3(1.0f),
         glm::vec3(0.5f),
         lightPos,
-        10, // inner cutoff angle, in degrees
-        30 // outer cutoff angle, in degrees
+        15, // inner cutoff angle, in degrees
+        20 // outer cutoff angle, in degrees
     };
 
     lightingShader.setVec3("light.ambient", light_settings.ambient);
@@ -737,6 +745,20 @@ int main(int argc, char* argv[]) {
     lightingShader.setFloat("light.constant", 1.0);
     lightingShader.setFloat("light.linear", 0.09);
     lightingShader.setFloat("light.quadratic", 0.032);
+
+    DirectionalLight directional_light = {
+        true, // enabled
+        glm::vec3(-0.2f, -1.0f, -0.3f), // direction
+        glm::vec3(0.25), // ambience
+        glm::vec3(0.25), // diffuse
+        glm::vec3(0.25), // specular
+    };
+
+    lightingShader.setBool("directionalLight.enabled", directional_light.enabled);
+    lightingShader.setVec3("directionalLight.direction", directional_light.direction);
+    lightingShader.setVec3("directionalLight.ambient", directional_light.ambient);
+    lightingShader.setVec3("directionalLight.diffuse", directional_light.diffuse);
+    lightingShader.setVec3("directionalLight.specular", directional_light.specular);
 
     //// Define the View matrix, which captures a scene in the view of the camera
     //// We aren't really moving the camera, we are moving the scene relative to a camera at the origin (?)
@@ -959,7 +981,9 @@ int main(int argc, char* argv[]) {
         // Display UI
         
         ImGui::Begin("ImGui Controls");
-        
+
+        ImGui::Checkbox("Enable Directional Light", (bool*)&directional_light.enabled);
+
         ImGui::Text("Light settings");
         ImGui::ColorEdit3("Ambient", (float*)&light_settings.ambient);
         ImGui::ColorEdit3("Diffuse", (float*)&light_settings.diffuse);
