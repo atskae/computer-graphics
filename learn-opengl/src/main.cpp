@@ -41,6 +41,8 @@ glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
 // Imgui color
 ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+const int NUM_POINT_LIGHTS = 4;
+
 // Equivalent struct in the fragment shader
 struct Material {
     glm::vec3 ambient;
@@ -55,6 +57,19 @@ struct DirectionalLight {
     glm::vec3 ambient;
     glm::vec3 diffuse;
     glm::vec3 specular;
+};
+
+struct PointLight {
+    bool enabled;
+    glm::vec3 position;
+    
+    glm::vec3 ambient;
+    glm::vec3 diffuse;
+    glm::vec3 specular;
+
+    float constant;
+    float linear;
+    float quadratic;
 };
 
 struct Light {
@@ -83,8 +98,11 @@ void mouse_pressed_callback(GLFWwindow* window, int button, int action, int mods
 }
  
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-    // Ignore the xoffset for mouse scroll changes
-    camera.updateFieldOfView(yoffset);
+    ImGuiIO& io = ImGui::GetIO();
+    if (!io.WantCaptureMouse && mouse_pressed) {
+        // Ignore the xoffset for mouse scroll changes
+        camera.updateFieldOfView(yoffset);
+    }
 }
 
 // User input callback
@@ -675,6 +693,18 @@ int main(int argc, char* argv[]) {
     lightSourceShader.use();
     //lightSourceShader.setVec3("lightColor", lightColor);
 
+    // The point lights are drawn in the light source shader
+    glm::vec3 pointLightPos[NUM_POINT_LIGHTS] = {
+        glm::vec3(1.5f, 1.0f, 2.0f),
+        glm::vec3(0.0, 1.0f, -5.0f),
+        glm::vec3(1.5f, -3.0f, 2.0f),
+        glm::vec3(1.5f, 3.0f, -3.0f)
+    };
+
+    bool pointLightEnabled[NUM_POINT_LIGHTS] = {
+        true, true, true, true
+    };
+
     // Activate so setting the values actually applies
     lightingShader.use();
 
@@ -735,17 +765,7 @@ int main(int argc, char* argv[]) {
         15, // inner cutoff angle, in degrees
         20 // outer cutoff angle, in degrees
     };
-
-    lightingShader.setVec3("light.ambient", light_settings.ambient);
-    lightingShader.setVec3("light.diffuse", light_settings.diffuse);
-    lightingShader.setVec3("light.specular", light_settings.specular);
-
-    // Values for different distances: https://wiki.ogre3d.org/tiki-index.php?page=-Point+Light+Attenuation
-    // Here we chose settings for distance of up to 50
-    lightingShader.setFloat("light.constant", 1.0);
-    lightingShader.setFloat("light.linear", 0.09);
-    lightingShader.setFloat("light.quadratic", 0.032);
-
+    
     DirectionalLight directional_light = {
         true, // enabled
         glm::vec3(-0.2f, -1.0f, -0.3f), // direction
@@ -759,6 +779,33 @@ int main(int argc, char* argv[]) {
     lightingShader.setVec3("directionalLight.ambient", directional_light.ambient);
     lightingShader.setVec3("directionalLight.diffuse", directional_light.diffuse);
     lightingShader.setVec3("directionalLight.specular", directional_light.specular);
+
+    PointLight point_light = {
+        true, // enabled
+        lightPos,
+        glm::vec3(0.25), // ambient
+        glm::vec3(0.75), // diffuse
+        glm::vec3(0.25), // specular
+        1.0, // constant
+        0.09, // linear
+        0.032 // quadratic
+    };
+
+    // Values for different distances: https://wiki.ogre3d.org/tiki-index.php?page=-Point+Light+Attenuation
+    // Here we chose settings for distance of up to 50
+    for (int i=0; i<NUM_POINT_LIGHTS; i++) {
+        char buffer[100];
+        int result = std::sprintf(buffer, "pointLightEnabled[%i]", i);
+        lightingShader.setBool(std::string(buffer, result), pointLightEnabled[i]);
+    }
+    
+    lightingShader.setVec3("pointLight.ambient", point_light.ambient);
+    lightingShader.setVec3("pointLight.diffuse", point_light.diffuse);
+    lightingShader.setVec3("pointLight.specular", point_light.specular);
+
+    lightingShader.setFloat("pointLight.constant", point_light.constant);
+    lightingShader.setFloat("pointLight.linear", point_light.linear);
+    lightingShader.setFloat("pointLight.quadratic", point_light.quadratic);
 
     //// Define the View matrix, which captures a scene in the view of the camera
     //// We aren't really moving the camera, we are moving the scene relative to a camera at the origin (?)
@@ -875,8 +922,13 @@ int main(int argc, char* argv[]) {
         // Now draw the cube object that is getting hit by the light source
         glBindVertexArray(VAO);
 
-        // Set the position of the light source
-        //lightingShader.setVec3("lightPos", lightPos);
+        // Set the position of each point light
+        for (int i=0; i<NUM_POINT_LIGHTS; i++) {
+            // No f-strings like Python until C++20 OTL
+            char buffer[100];
+            int result = std::sprintf(buffer, "pointLightPos[%i]", i);
+            lightingShader.setVec3(std::string(buffer, result), pointLightPos[i]);
+        }
 
         // Update lighting if ImGUI settings were updated
         //lightingShader.setVec3("light.ambient", light_settings.ambient);
@@ -888,10 +940,24 @@ int main(int argc, char* argv[]) {
         lightingShader.setVec3("directionalLight.diffuse", directional_light.diffuse);
         lightingShader.setVec3("directionalLight.specular", directional_light.specular);
 
-        lightingShader.setVec3("lightPos", camera.getPosition());
-        lightingShader.setVec3("light.direction", camera.getFront());
-        lightingShader.setFloat("light.cos_inner_cutoff", glm::cos(glm::radians(light_settings.inner_cutoff_degrees)));
-        lightingShader.setFloat("light.cos_outer_cutoff", glm::cos(glm::radians(light_settings.outer_cutoff_degrees)));
+        for (int i=0; i<NUM_POINT_LIGHTS; i++) {
+            char buffer[100];
+            int result = std::sprintf(buffer, "pointLightEnabled[%i]", i);
+            lightingShader.setBool(std::string(buffer, result), pointLightEnabled[i]);
+        }
+
+        lightingShader.setVec3("pointLight.ambient", point_light.ambient);
+        lightingShader.setVec3("pointLight.diffuse", point_light.diffuse);
+        lightingShader.setVec3("pointLight.specular", point_light.specular);
+
+        lightingShader.setFloat("pointLight.constant", point_light.constant);
+        lightingShader.setFloat("pointLight.linear", point_light.linear);
+        lightingShader.setFloat("pointLight.quadratic", point_light.quadratic);
+
+        //lightingShader.setVec3("lightPos", camera.getPosition());
+        //lightingShader.setVec3("light.direction", camera.getFront());
+        //lightingShader.setFloat("light.cos_inner_cutoff", glm::cos(glm::radians(light_settings.inner_cutoff_degrees)));
+        //lightingShader.setFloat("light.cos_outer_cutoff", glm::cos(glm::radians(light_settings.outer_cutoff_degrees)));
 
         // Draw each cube positioned at different locations
         for (int i=0; i<10; i++) {
@@ -924,36 +990,43 @@ int main(int argc, char* argv[]) {
         //// Need to activate so changes apply 
         glBindVertexArray(lightVAO);
         lightSourceShader.use();
+
+        // Draw each point light
+        for (int i=0; i<NUM_POINT_LIGHTS; i++) {
+            // Set the model, view, and projection matrices
+            // Model matrix
+            glm::mat4 model(1.0f);
         
-        // Set the model, view, and projection matrices
-        // Model matrix
-        glm::mat4 model(1.0f);
+            ////// Rotate the camera around the y-axis over time
+            ////double timeStamp = glfwGetTime();
+            ////double timeStamp = 1.0;
+            ////float lightPosX = cos(timeStamp) * rotationRadius;
+            ////float lightPosZ = -1 * sin(timeStamp) * rotationRadius; // negative 1 for clockwise rotation
+            //////glm::vec3 lightPos = glm::vec3(lightPosX, 1.0f, lightPosZ);
+            //glm::vec3 lightPos = glm::vec3(1.2, 1.0, 2);
+
+            model = glm::translate(model, pointLightPos[i]);
+            model = glm::scale(model, glm::vec3(0.2f)); // scale down
+            lightSourceShader.setMatrix("model", model);
+
+            // View Matrix
+            lightSourceShader.setMatrix("view", viewMatrix);
+
+            // Projection matrix
+            lightSourceShader.setMatrix("projection", projection);
+
+            // Update light color
+            if (pointLightEnabled[i]) {
+                lightSourceShader.setVec3("lightColor", point_light.diffuse);
+            } else {
+                // If disabled, set to black
+                lightSourceShader.setVec3("lightColor", glm::vec3(0.0));
+            }
         
-        ////// Rotate the camera around the y-axis over time
-        ////double timeStamp = glfwGetTime();
-        ////double timeStamp = 1.0;
-        ////float lightPosX = cos(timeStamp) * rotationRadius;
-        ////float lightPosZ = -1 * sin(timeStamp) * rotationRadius; // negative 1 for clockwise rotation
-        //////glm::vec3 lightPos = glm::vec3(lightPosX, 1.0f, lightPosZ);
-        //glm::vec3 lightPos = glm::vec3(1.2, 1.0, 2);
-
-        model = glm::translate(model, lightPos);
-        model = glm::scale(model, glm::vec3(0.2f)); // scale down
-        lightSourceShader.setMatrix("model", model);
-
-        // View Matrix
-        lightSourceShader.setMatrix("view", viewMatrix);
-
-        // Projection matrix
-        lightSourceShader.setMatrix("projection", projection);
-
-        // Update light color
-        lightSourceShader.setVec3("lightColor", light_settings.diffuse);
-        
-        // Draw
-        // type, starting index, number of *vertices*
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-
+            // Draw
+            // type, starting index, number of *vertices*
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        } 
                 
         // Change the cube's color over time
         //glm::vec3 ambientColor = lightColor * glm::vec3(0.2);
@@ -987,16 +1060,26 @@ int main(int argc, char* argv[]) {
         
         ImGui::Begin("ImGui Controls");
 
-        ImGui::Checkbox("Enable Directional Light", (bool*)&directional_light.enabled);
-
         ImGui::Text("Directional Light Settings");
-        ImGui::ColorEdit3("Ambient", (float*)&directional_light.ambient);
-        ImGui::ColorEdit3("Diffuse", (float*)&directional_light.diffuse);
-        ImGui::ColorEdit3("Specular", (float*)&directional_light.specular);
+        ImGui::Checkbox("Enable Directional Light", (bool*)&directional_light.enabled);
+        ImGui::ColorEdit3("Ambient##Directional Light", (float*)&directional_light.ambient);
+        ImGui::ColorEdit3("Diffuse##Directional Light", (float*)&directional_light.diffuse);
+        ImGui::ColorEdit3("Specular##Directional Light", (float*)&directional_light.specular);
         
-        ImGui::Text("Spotlight Settings");
-        ImGui::SliderFloat("Outer Cutoff Angle", (float*)&light_settings.outer_cutoff_degrees, 0.0, 90.0);
-        ImGui::SliderFloat("Inner Cutoff Angle", (float*)&light_settings.inner_cutoff_degrees, 0.0, light_settings.outer_cutoff_degrees);
+        ImGui::Text("Point Light Settings");
+        for (int i=0; i<NUM_POINT_LIGHTS; i++) {
+            char buffer[100];
+            int result = std::sprintf(buffer, "Enable Point Light %i", i);
+            ImGui::Checkbox(std::string(buffer, result).c_str(), (bool*)&pointLightEnabled[i]);
+        }
+        
+        ImGui::ColorEdit3("Ambient##Point Light", (float*)&point_light.ambient);
+        ImGui::ColorEdit3("Diffuse##Point Light", (float*)&point_light.diffuse);
+        ImGui::ColorEdit3("Specular##Point Light", (float*)&point_light.specular);
+
+        //ImGui::Text("Spotlight Settings");
+        //ImGui::SliderFloat("Outer Cutoff Angle", (float*)&light_settings.outer_cutoff_degrees, 0.0, 90.0);
+        //ImGui::SliderFloat("Inner Cutoff Angle", (float*)&light_settings.inner_cutoff_degrees, 0.0, light_settings.outer_cutoff_degrees);
 
         ImGui::End();
 

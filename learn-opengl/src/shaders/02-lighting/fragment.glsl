@@ -32,38 +32,25 @@ struct DirectionalLight {
 };
 uniform DirectionalLight directionalLight;
 
-
-// Intensities of the light source
-struct Light {
+struct PointLight {
+    //bool enabled;
+    
+    // Obtain position from vertex shader's calculation
+    // vec3 position;
+    
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
 
-    vec3 position;
-    // For directional light, position is irrelevant
-    // Direction from the light source
-    // Note that this is the opposite of how direction is defined in the Camera
-    vec3 direction;
-
-    // Attenuation terms (for point lights)
-    // attenuation = 1 / (constant + linear*d + quadratic*d)
-    //  where `d` is the distance from the point light
-    // to the fragment
-    // We then multiply this attenuation value to the light's
-    // intensity value of each component (ambient, diffuse, and specular)
     float constant;
     float linear;
     float quadratic;
-
-    // The cosine of the cut-off angle of the inner cone,
-    // which is radius of the light source
-    float cos_inner_cutoff;
-
-    // The cosine of the cut-off angle of the outer cone
-    // The intensity of the light decreases between
-    // the inner cone and the outer cone
-    float cos_outer_cutoff;
 };
+uniform PointLight pointLight;
+// Point light positions in view space
+#define NUM_POINT_LIGHTS 4
+in vec3 PointLightPos[NUM_POINT_LIGHTS];
+uniform bool pointLightEnabled[NUM_POINT_LIGHTS];
 
 // Values received from the vertex shader
 // Normal vector of the vertex
@@ -79,8 +66,6 @@ in vec2 TextureCoordinates;
 //uniform vec3 lightColor;
 // Material properties of the object
 uniform Material material;
-// Intensities and position of the light source
-uniform Light light;
 
 // Fragment shader's only required output, a vector of size 4
 out vec4 FragColor;
@@ -92,6 +77,7 @@ vec3 calculateAmbience(vec3 lightAmbience);
 vec3 calculateDiffuse(vec3 lightDiffuse, vec3 lightDirection, vec3 normal);
 vec3 calculateSpecular(vec3 lightSpecular, vec3 lightDirection, vec3 normal, vec3 viewDirection);
 vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDirection);
+vec3 calculatePointLight(PointLight light, vec3 normal, vec3 viewDirection, vec3 lightPos, vec3 fragPos, bool enabled);
 
 void main() {
     // Create a vector of the light ray
@@ -104,36 +90,27 @@ void main() {
 
     // Calculate the flashlight's area and intensity
 
-    // Get the cos(theta) between the lightDir and the light's direction
-    // We negate the light's direction since it is pointing *from* the light source
-    // We need the vector from the target *to* the light source
-    float cos_theta = dot(lightDirection, normalize(-light.direction));
-    float cos_epsilon = light.cos_inner_cutoff - light.cos_outer_cutoff;
-    float intensity = clamp((cos_theta - light.cos_outer_cutoff) / cos_epsilon, 0.0, 1.0);
-
-    vec3 ambience = calculateAmbience(light.ambient);
-    vec3 diffuse = calculateDiffuse(light.diffuse, lightDirection, normalVec);
-    vec3 specular = calculateSpecular(light.specular, lightDirection, normalVec, viewDirection);
-
-    // Attenuation
-    // Apply attenuation to each light component
-    // Distance from the point light and the fragment
-    float dist = length(LightPos - FragPos);
-    float attenuation = 1 / (light.constant + light.linear * dist + light.quadratic * dist * dist);
+    //// Get the cos(theta) between the lightDir and the light's direction
+    //// We negate the light's direction since it is pointing *from* the light source
+    //// We need the vector from the target *to* the light source
+    //float cos_theta = dot(lightDirection, normalize(-light.direction));
+    //float cos_epsilon = light.cos_inner_cutoff - light.cos_outer_cutoff;
+    //float intensity = clamp((cos_theta - light.cos_outer_cutoff) / cos_epsilon, 0.0, 1.0);
     
-    ambience *= attenuation;
-    diffuse *= attenuation;
-    specular *= attenuation;
-
-    // The final light effect is the addition of diffuse and ambience effect
-    // The final color is obtained by multiplying the object's color and the final light effect
-    vec3 lightEffect = diffuse + ambience + specular;
-    // Apply the flashlight's intensity effect
-    lightEffect *= intensity;
+    //// The final light effect is the addition of diffuse and ambience effect
+    //// The final color is obtained by multiplying the object's color and the final light effect
+    //vec3 lightEffect = diffuse + ambience + specular;
+    vec3 lightEffect = vec3(0.0);
+    //// Apply the flashlight's intensity effect
+    //lightEffect *= intensity;
     
     // Add directional light
     lightEffect = calculateDirectionalLight(directionalLight, normalVec, viewDirection);
-    
+    // Add point lights
+    for (int i=0; i<NUM_POINT_LIGHTS; i++) {
+        lightEffect += calculatePointLight(pointLight, normalVec, viewDirection, PointLightPos[i], FragPos, pointLightEnabled[i]);
+    }
+
     FragColor = vec4(lightEffect, 1.0f);
 }
 
@@ -180,5 +157,29 @@ vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir
     vec3 ambience = calculateAmbience(light.ambient);
     vec3 diffuse = calculateDiffuse(light.diffuse, lightDirection, normal);
     vec3 specular = calculateSpecular(light.specular, lightDirection, normal, viewDirection);
+    return ambience + diffuse + specular;
+}
+
+vec3 calculatePointLight(PointLight light, vec3 normal, vec3 viewDirection, vec3 lightPos, vec3 fragPos, bool enabled) {
+    if (!enabled) {
+        return vec3(0.0);
+    }
+    
+    vec3 lightDirection = normalize(vec3(lightPos - fragPos));
+    
+    vec3 ambience = calculateAmbience(light.ambient);
+    vec3 diffuse = calculateDiffuse(light.diffuse, lightDirection, normal);
+    vec3 specular = calculateSpecular(light.specular, lightDirection, normal, viewDirection);
+
+    // Attenuation
+    // Apply attenuation to each light component
+    // Distance from the point light and the fragment
+    float dist = length(LightPos - FragPos);
+    float attenuation = 1 / (light.constant + light.linear * dist + light.quadratic * dist * dist);
+    
+    ambience *= attenuation;
+    diffuse *= attenuation;
+    specular *= attenuation;
+
     return ambience + diffuse + specular;
 }

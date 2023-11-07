@@ -21,6 +21,9 @@ uniform mat4 projection;
 // Position of the light source, in world-space
 uniform vec3 lightPos;
 
+#define NUM_POINT_LIGHTS 4
+uniform vec3 pointLightPos[NUM_POINT_LIGHTS];
+
 // Variables to pass to the fragment shader
 // Normal vector
 out vec3 Normal;
@@ -31,6 +34,9 @@ out vec3 FragPos;
 out vec3 LightPos;
 // Texture coordinates
 out vec2 TextureCoordinates;
+
+// View-space coordinates of the point lights
+out vec3 PointLightPos[NUM_POINT_LIGHTS];
 
 void main() {
     // We set the return value to `gl_Position`
@@ -57,6 +63,11 @@ void main() {
     // LightPos is already in world space
     // Convert the light source coordinates from world-space to view space
     LightPos = vec3(view * vec4(lightPos, 1.0f));
+
+    // Compute point light positions to view space
+    for (int i=0; i<NUM_POINT_LIGHTS; i++) {
+        PointLightPos[i] = vec3(view * vec4(pointLightPos[i], 1.0f));
+    }
 
     // Pass the texture coordinates to the fragment shader
     TextureCoordinates = aTextureCoordinates;
