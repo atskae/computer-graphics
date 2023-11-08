@@ -43,6 +43,11 @@ ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
 const int NUM_POINT_LIGHTS = 4;
 
+const glm::vec3 DEFAULT_AMBIENCE = glm::vec3(0.25);
+const glm::vec3 DEFAULT_DIFFUSE = glm::vec3(0.75);
+const glm::vec3 DEFAULT_SPECULAR = glm::vec3(0.25);
+
+
 // Equivalent struct in the fragment shader
 struct Material {
     glm::vec3 ambient;
@@ -72,12 +77,19 @@ struct PointLight {
     float quadratic;
 };
 
-struct Light {
+// A flashlight that follows the camera/user
+struct SpotLight {
+    bool enabled;
+    
     glm::vec3 ambient;
     glm::vec3 diffuse;
     glm::vec3 specular;
-    glm::vec3 position;
+    
+    // The vector from the camera to what it is looking at (it's front vector)
+    glm::vec3 spot_dir;
+    // The angle of the inner cone, in degrees
     float inner_cutoff_degrees;
+    // The angle of the outer cone, in degrees
     float outer_cutoff_degrees;
 };
 
@@ -153,36 +165,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-// Renders the Imgui UI onto the screen
-void build_imgui_ui(GLFWwindow* window, ImGuiIO& io) {
-
-    bool show_demo_window = true;
-    ImGui::ShowDemoWindow(&show_demo_window);
-    
-    // Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
-    {
-        static float f = 0.0f;
-        static int counter = 0;
-
-        ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-        ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-
-        ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-        ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-
-        if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-            counter++;
-        ImGui::SameLine();
-        ImGui::Text("counter = %d", counter);
-
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-        ImGui::End();
-    }
-
-    
-}
-
 int main(int argc, char* argv[]) {
     std::cout << "LearnOpenGL Window" << std::endl;
     std::cout << "C++ version: " << __cplusplus << std::endl;
@@ -234,10 +216,7 @@ int main(int argc, char* argv[]) {
 
     
     // Our state
-    bool show_demo_window = true;
-    bool show_another_window = false;
-    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
+    
     // Draw in wireframe mode (only draw outlines of primitive shapes, no fill)
     // Draw both front and back of the primitive shape
     //  and only draw the lines of the primitives.
@@ -245,13 +224,8 @@ int main(int argc, char* argv[]) {
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     
     // Specify window to OpenGL
-    // Left x-coordinate of the viewport
-    int viewport_x = 0;
-    // The bottom y-coordinate of the viewport
-    int viewport_y = 0;
     // Create the viewport
     glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-
     
     // Register the window resize callback
     // When the user resizes the window, framebuffer_size_callback() gets called
@@ -287,22 +261,10 @@ int main(int argc, char* argv[]) {
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 460");
 
-
     /* Render-loop configuration */
     
-    // Background color, gray
-    GLfloat background_color[] = {
-        0.39f, // red
-        0.40f, // green
-        0.42f, // blue
-        1.0f, // alpha
-    };
-
     // Enable depth testing
     glEnable(GL_DEPTH_TEST);
-
-    // 2D triangle
-    int startTriangleIndex = 0;
 
     // 3D cube
     // 36 vertices in total
@@ -386,14 +348,14 @@ int main(int argc, char* argv[]) {
 
     // Rectangle using an Element Buffer Object (EBO)
     // The z-coordinates are zero to keep it 2D in a 3D space
-    float numAwesomeFaces = 1.0f; // per row/column
-    float rectangle_vertices[] = {
-        // Positions            // Colors               // Texture coordinates
-        0.5f, 0.5f, 0.0f,       1.0f, 1.0f, 0.0f,       1.0f, 1.0f,     numAwesomeFaces, numAwesomeFaces,   // top-right
-        0.5f, -0.5f, 0.0f,      0.0f, 1.0f, 1.0f,       1.0f, 0.0f,     numAwesomeFaces, 0.0f,              // bottom-right
-        -0.5f, -0.5f, 0.0f,     1.0f, 0.0f, 1.0f,       0.0f, 0.0f,     0.0f, 0.0f,                         // bottom-left
-        -0.5f, 0.5f, 0.0f,      1.0f, 1.0f, 0.0f,       0.0f, 1.0f,     0.0f, numAwesomeFaces               // top-right
-    };
+    //float numAwesomeFaces = 1.0f; // per row/column
+    //float rectangle_vertices[] = {
+    //    // Positions            // Colors               // Texture coordinates
+    //    0.5f, 0.5f, 0.0f,       1.0f, 1.0f, 0.0f,       1.0f, 1.0f,     numAwesomeFaces, numAwesomeFaces,   // top-right
+    //    0.5f, -0.5f, 0.0f,      0.0f, 1.0f, 1.0f,       1.0f, 0.0f,     numAwesomeFaces, 0.0f,              // bottom-right
+    //    -0.5f, -0.5f, 0.0f,     1.0f, 0.0f, 1.0f,       0.0f, 0.0f,     0.0f, 0.0f,                         // bottom-left
+    //    -0.5f, 0.5f, 0.0f,      1.0f, 1.0f, 0.0f,       0.0f, 1.0f,     0.0f, numAwesomeFaces               // top-right
+    //};
     // Number of floats between each vertice data (position, color, texture)
     int verticesStride = 8;
     
@@ -418,9 +380,6 @@ int main(int argc, char* argv[]) {
 
     // Location of input argument in the vertex shader program
     unsigned int vertexAttributeLocation = 0;
-
-    // Location of the input argument for color in the vertex shader
-    unsigned int colorAttributeLocation = 1;
 
     // Create vertex buffer objects, which stores the vertices
     // that will be sent to the GPU's memory
@@ -755,23 +714,13 @@ int main(int argc, char* argv[]) {
     //lightingShader.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
     //lightingShader.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
     //lightingShader.setVec3("light.specular", glm::vec3(0.5, 0.5, 0.5));
-
-    Light light_settings = {
-        //lightColor,
-        glm::vec3(0.5f),
-        glm::vec3(1.0f),
-        glm::vec3(0.5f),
-        lightPos,
-        15, // inner cutoff angle, in degrees
-        20 // outer cutoff angle, in degrees
-    };
-    
+        
     DirectionalLight directional_light = {
         true, // enabled
         glm::vec3(-0.2f, -1.0f, -0.3f), // direction
-        glm::vec3(0.25), // ambience
-        glm::vec3(0.75), // diffuse
-        glm::vec3(0.25), // specular
+        DEFAULT_AMBIENCE,
+        DEFAULT_DIFFUSE,
+        DEFAULT_SPECULAR,
     };
 
     lightingShader.setBool("directionalLight.enabled", directional_light.enabled);
@@ -783,9 +732,9 @@ int main(int argc, char* argv[]) {
     PointLight point_light = {
         true, // enabled
         lightPos,
-        glm::vec3(0.25), // ambient
-        glm::vec3(0.75), // diffuse
-        glm::vec3(0.25), // specular
+        DEFAULT_AMBIENCE,
+        DEFAULT_DIFFUSE,
+        DEFAULT_SPECULAR,
         1.0, // constant
         0.09, // linear
         0.032 // quadratic
@@ -807,6 +756,26 @@ int main(int argc, char* argv[]) {
     lightingShader.setFloat("pointLight.linear", point_light.linear);
     lightingShader.setFloat("pointLight.quadratic", point_light.quadratic);
 
+    // Spotlight
+    SpotLight spot_light = {
+        true, // enabled,
+        DEFAULT_AMBIENCE,
+        DEFAULT_DIFFUSE,
+        DEFAULT_SPECULAR,
+        camera.getFront(), // spot_dir, direction of the spotlight
+        20.0, // inner cutoff, in degrees
+        40.0, // outer cutoff, in degrees
+    };
+
+    lightingShader.setBool("spotLight.enabled", spot_light.enabled);
+    lightingShader.setVec3("spotLight.spot_dir", spot_light.spot_dir);
+    lightingShader.setFloat("spotLight.cos_inner_cutoff", glm::cos(glm::radians(spot_light.inner_cutoff_degrees)));
+    lightingShader.setFloat("spotLight.cos_outer_cutoff", glm::cos(glm::radians(spot_light.outer_cutoff_degrees)));
+
+    lightingShader.setVec3("spotLight.ambient", spot_light.ambient);
+    lightingShader.setVec3("spotLight.diffuse", spot_light.diffuse);
+    lightingShader.setVec3("spotLight.specular", spot_light.specular);
+
     //// Define the View matrix, which captures a scene in the view of the camera
     //// We aren't really moving the camera, we are moving the scene relative to a camera at the origin (?)
     //// So to give the view of the camera that moved away from the scene, we move the scene away from the camera
@@ -815,10 +784,6 @@ int main(int argc, char* argv[]) {
     //view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
     //int viewLoc = glGetUniformLocation(shaderProgram.getProgramId(), "view");
     //glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-
-    // Rotation around the origin, around the y-axis
-    // for rotating objects such as the camera, light source, ...
-    const float rotationRadius = 2.5f;
 
     // Set the diffuse map to the correct texture unit
     lightingShader.setInt("material.diffuse", 0);
@@ -851,9 +816,6 @@ int main(int argc, char* argv[]) {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-            
-        //// Build our custom UI
-        //build_imgui_ui(window, io);
                 
         // Update the camera speed based on this frame's render time
         camera.updateSpeed();
@@ -862,7 +824,6 @@ int main(int argc, char* argv[]) {
         if (!io.WantCaptureMouse) {
             processInput(window, lightingShader);
         }
-        glm::vec3 viewPos = camera.getPosition();
 
         /* Rendering */
         
@@ -953,11 +914,14 @@ int main(int argc, char* argv[]) {
         lightingShader.setFloat("pointLight.constant", point_light.constant);
         lightingShader.setFloat("pointLight.linear", point_light.linear);
         lightingShader.setFloat("pointLight.quadratic", point_light.quadratic);
-
-        //lightingShader.setVec3("lightPos", camera.getPosition());
-        //lightingShader.setVec3("light.direction", camera.getFront());
-        //lightingShader.setFloat("light.cos_inner_cutoff", glm::cos(glm::radians(light_settings.inner_cutoff_degrees)));
-        //lightingShader.setFloat("light.cos_outer_cutoff", glm::cos(glm::radians(light_settings.outer_cutoff_degrees)));
+        
+        lightingShader.setBool("spotLight.enabled", spot_light.enabled);
+        lightingShader.setVec3("spotLight.ambient", spot_light.ambient);
+        lightingShader.setVec3("spotLight.diffuse", spot_light.diffuse);
+        lightingShader.setVec3("spotLight.specular", spot_light.specular);
+        lightingShader.setVec3("spotLight.spot_dir", spot_light.spot_dir);
+        lightingShader.setFloat("spotLight.cos_inner_cutoff", glm::cos(glm::radians(spot_light.inner_cutoff_degrees)));
+        lightingShader.setFloat("spotLight.cos_outer_cutoff", glm::cos(glm::radians(spot_light.outer_cutoff_degrees)));
 
         // Draw each cube positioned at different locations
         for (int i=0; i<10; i++) {
@@ -1077,13 +1041,15 @@ int main(int argc, char* argv[]) {
         ImGui::ColorEdit3("Diffuse##Point Light", (float*)&point_light.diffuse);
         ImGui::ColorEdit3("Specular##Point Light", (float*)&point_light.specular);
 
-        //ImGui::Text("Spotlight Settings");
-        //ImGui::SliderFloat("Outer Cutoff Angle", (float*)&light_settings.outer_cutoff_degrees, 0.0, 90.0);
-        //ImGui::SliderFloat("Inner Cutoff Angle", (float*)&light_settings.inner_cutoff_degrees, 0.0, light_settings.outer_cutoff_degrees);
-
+        ImGui::Text("Spotlight Settings");
+        ImGui::Checkbox("Enable Spot Light", (bool*)&spot_light.enabled);
+        ImGui::ColorEdit3("Ambient##Spot Light", (float*)&spot_light.ambient);
+        ImGui::ColorEdit3("Diffuse##Spot Light", (float*)&spot_light.diffuse);
+        ImGui::ColorEdit3("Specular##Spot Light", (float*)&spot_light.specular);
+        ImGui::SliderFloat("Inner Cutoff Angle", (float*)&spot_light.inner_cutoff_degrees, 0.0, spot_light.outer_cutoff_degrees);
+        ImGui::SliderFloat("Outer Cutoff Angle", (float*)&spot_light.outer_cutoff_degrees, 0.0, 90.0);
+        
         ImGui::End();
-
-        // Update shader variables here...
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

@@ -52,6 +52,23 @@ uniform PointLight pointLight;
 in vec3 PointLightPos[NUM_POINT_LIGHTS];
 uniform bool pointLightEnabled[NUM_POINT_LIGHTS];
 
+// A flashlight that follows the camera/user
+struct SpotLight {
+    bool enabled;
+    
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+    
+    // The vector from the camera to what it is looking at (it's front vector)
+    vec3 spot_dir;
+    // The cosine of the angle of the inner cone
+    float cos_inner_cutoff;
+    // The cosine of the angle of the outer cone
+    float cos_outer_cutoff;
+};
+uniform SpotLight spotLight;
+
 // Values received from the vertex shader
 // Normal vector of the vertex
 in vec3 Normal;
@@ -71,45 +88,34 @@ uniform Material material;
 out vec4 FragColor;
 
 /*
-    Functions to calculate each type of light source
+    Functions to calculate each type vec3 lightPos, of light source
 */
 vec3 calculateAmbience(vec3 lightAmbience);
 vec3 calculateDiffuse(vec3 lightDiffuse, vec3 lightDirection, vec3 normal);
 vec3 calculateSpecular(vec3 lightSpecular, vec3 lightDirection, vec3 normal, vec3 viewDirection);
 vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDirection);
 vec3 calculatePointLight(PointLight light, vec3 normal, vec3 viewDirection, vec3 lightPos, vec3 fragPos, bool enabled);
+vec3 calculateSpotLight(SpotLight light, vec3 normal, vec3 viewDirection);
 
 void main() {
-    // Create a vector of the light ray
-    // A vector from FragPos to LightPos
-    vec3 lightDirection = normalize(vec3(LightPos - FragPos));
     vec3 normalVec = normalize(Normal);
     // In view space, we compute relative to the viewer (set at 0,0,0)
     vec3 viewPos = vec3(0,0,0);
     vec3 viewDirection = normalize(viewPos - FragPos);
-
-    // Calculate the flashlight's area and intensity
-
-    //// Get the cos(theta) between the lightDir and the light's direction
-    //// We negate the light's direction since it is pointing *from* the light source
-    //// We need the vector from the target *to* the light source
-    //float cos_theta = dot(lightDirection, normalize(-light.direction));
-    //float cos_epsilon = light.cos_inner_cutoff - light.cos_outer_cutoff;
-    //float intensity = clamp((cos_theta - light.cos_outer_cutoff) / cos_epsilon, 0.0, 1.0);
-    
+        
     //// The final light effect is the addition of diffuse and ambience effect
     //// The final color is obtained by multiplying the object's color and the final light effect
     //vec3 lightEffect = diffuse + ambience + specular;
     vec3 lightEffect = vec3(0.0);
-    //// Apply the flashlight's intensity effect
-    //lightEffect *= intensity;
     
     // Add directional light
-    lightEffect = calculateDirectionalLight(directionalLight, normalVec, viewDirection);
+    lightEffect += calculateDirectionalLight(directionalLight, normalVec, viewDirection);
     // Add point lights
     for (int i=0; i<NUM_POINT_LIGHTS; i++) {
         lightEffect += calculatePointLight(pointLight, normalVec, viewDirection, PointLightPos[i], FragPos, pointLightEnabled[i]);
     }
+    // Add spotlight (flashlight)
+    lightEffect += calculateSpotLight(spotLight, normalVec, viewDirection);
 
     FragColor = vec4(lightEffect, 1.0f);
 }
@@ -182,4 +188,31 @@ vec3 calculatePointLight(PointLight light, vec3 normal, vec3 viewDirection, vec3
     specular *= attenuation;
 
     return ambience + diffuse + specular;
+}
+
+vec3 calculateSpotLight(SpotLight light, vec3 normal, vec3 viewDirection) {
+    if (!light.enabled) {
+        return vec3(0.0);
+    }
+
+    // Since the camera/viewer is the light source
+    // the light direction is the same as view direction 
+    // The fragment to the camera
+    vec3 lightDirection = viewDirection;
+    
+    vec3 ambience = calculateAmbience(light.ambient);
+    vec3 diffuse = calculateDiffuse(light.diffuse, lightDirection, normal);
+    vec3 specular = calculateSpecular(light.specular, lightDirection, normal, viewDirection);
+
+    // Calculate the flashlight's area and intensity
+
+    // Get the cos(theta) between the lightDir and the spotlight's direction
+    // We negate the spotlight's direction since it is pointing *from* the light source
+    // We need the vector from the target *to* the light source
+    float cos_theta = dot(lightDirection, normalize(-light.spot_dir));
+    float cos_epsilon = light.cos_inner_cutoff - light.cos_outer_cutoff;
+    float intensity = clamp((cos_theta - light.cos_outer_cutoff) / cos_epsilon, 0.0, 1.0);
+
+    vec3 lightEffect = ambience + diffuse + specular;
+    return intensity*lightEffect;
 }

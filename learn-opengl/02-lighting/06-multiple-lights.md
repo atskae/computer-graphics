@@ -46,6 +46,8 @@ ImGui::ColorEdit3("Diffuse##Point Light", (float*)&point_light.diffuse);
 ImGui::ColorEdit3("Specular##Point Light", (float*)&point_light.specular);
 ```
 
+## Point Lights Toggle 
+
 ![Toggle point lights](images/point-light-toggle.gif)
 
 ![Pink point light and directional light](images/pink-point-light.gif)
@@ -55,3 +57,9 @@ Multiple point lights!
 ![Multiple point lights](images/multiple-point-lights.gif)
 
 Not sure what the best way to send the light positions in the same `PointLightStruct`, I had to send it separately since the positions had to be computed in view space.
+
+## Flashlight Toggle
+
+🔦!!
+
+![Toggle flashlight](images/toggle-flashlight.gif)
