@@ -32,25 +32,24 @@ struct DirectionalLight {
 };
 uniform DirectionalLight directionalLight;
 
+#define NUM_POINT_LIGHTS 4
 struct PointLight {
-    //bool enabled;
+    bool enabled[NUM_POINT_LIGHTS];
     
     // Obtain position from vertex shader's calculation
     // vec3 position;
     
     vec3 ambient;
-    vec3 diffuse;
+    vec3 diffuse[NUM_POINT_LIGHTS];
     vec3 specular;
 
     float constant;
     float linear;
     float quadratic;
 };
-uniform PointLight pointLight;
+uniform PointLight pointLights;
 // Point light positions in view space
-#define NUM_POINT_LIGHTS 4
 in vec3 PointLightPos[NUM_POINT_LIGHTS];
-uniform bool pointLightEnabled[NUM_POINT_LIGHTS];
 
 // A flashlight that follows the camera/user
 struct SpotLight {
@@ -94,7 +93,7 @@ vec3 calculateAmbience(vec3 lightAmbience);
 vec3 calculateDiffuse(vec3 lightDiffuse, vec3 lightDirection, vec3 normal);
 vec3 calculateSpecular(vec3 lightSpecular, vec3 lightDirection, vec3 normal, vec3 viewDirection);
 vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDirection);
-vec3 calculatePointLight(PointLight light, vec3 normal, vec3 viewDirection, vec3 lightPos, vec3 fragPos, bool enabled);
+vec3 calculatePointLight(PointLight light, vec3 normal, vec3 viewDirection, vec3 fragPos, int index);
 vec3 calculateSpotLight(SpotLight light, vec3 normal, vec3 viewDirection);
 
 void main() {
@@ -112,7 +111,7 @@ void main() {
     lightEffect += calculateDirectionalLight(directionalLight, normalVec, viewDirection);
     // Add point lights
     for (int i=0; i<NUM_POINT_LIGHTS; i++) {
-        lightEffect += calculatePointLight(pointLight, normalVec, viewDirection, PointLightPos[i], FragPos, pointLightEnabled[i]);
+        lightEffect += calculatePointLight(pointLights, normalVec, viewDirection, FragPos, i);
     }
     // Add spotlight (flashlight)
     lightEffect += calculateSpotLight(spotLight, normalVec, viewDirection);
@@ -166,15 +165,16 @@ vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir
     return ambience + diffuse + specular;
 }
 
-vec3 calculatePointLight(PointLight light, vec3 normal, vec3 viewDirection, vec3 lightPos, vec3 fragPos, bool enabled) {
-    if (!enabled) {
+vec3 calculatePointLight(PointLight light, vec3 normal, vec3 viewDirection, vec3 fragPos, int index) {
+    if (!light.enabled[index]) {
         return vec3(0.0);
     }
-    
+
+    vec3 lightPos = PointLightPos[index];
     vec3 lightDirection = normalize(vec3(lightPos - fragPos));
     
     vec3 ambience = calculateAmbience(light.ambient);
-    vec3 diffuse = calculateDiffuse(light.diffuse, lightDirection, normal);
+    vec3 diffuse = calculateDiffuse(light.diffuse[index], lightDirection, normal);
     vec3 specular = calculateSpecular(light.specular, lightDirection, normal, viewDirection);
 
     // Attenuation

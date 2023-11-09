@@ -23,8 +23,8 @@
 #include "camera.h"
 
 
-const int WINDOW_WIDTH = 800;
-const int WINDOW_HEIGHT = 450;
+const int WINDOW_WIDTH = 1200;
+const int WINDOW_HEIGHT = 750;
 const bool IS_FPS = false;
 
 bool mouse_pressed = false;
@@ -65,16 +65,18 @@ struct DirectionalLight {
 };
 
 struct PointLight {
-    bool enabled;
-    glm::vec3 position;
+    bool enabled[NUM_POINT_LIGHTS] = {true};
+    glm::vec3 position[NUM_POINT_LIGHTS] = {glm::vec3(0.0)};
     
-    glm::vec3 ambient;
-    glm::vec3 diffuse;
-    glm::vec3 specular;
+    glm::vec3 ambient = DEFAULT_AMBIENCE;
+    glm::vec3 diffuse[NUM_POINT_LIGHTS] = {DEFAULT_DIFFUSE};
+    glm::vec3 specular = DEFAULT_SPECULAR;
 
-    float constant;
-    float linear;
-    float quadratic;
+    // Values for different distances: https://wiki.ogre3d.org/tiki-index.php?page=-Point+Light+Attenuation
+    // Here we chose settings for distance of up to 50
+    float constant = 1.0;
+    float linear = 0.09;
+    float quadratic = 0.032;
 };
 
 // A flashlight that follows the camera/user
@@ -652,14 +654,7 @@ int main(int argc, char* argv[]) {
     lightSourceShader.use();
     //lightSourceShader.setVec3("lightColor", lightColor);
 
-    // The point lights are drawn in the light source shader
-    glm::vec3 pointLightPos[NUM_POINT_LIGHTS] = {
-        glm::vec3(1.5f, 1.0f, 2.0f),
-        glm::vec3(0.0, 1.0f, -5.0f),
-        glm::vec3(1.5f, -3.0f, 2.0f),
-        glm::vec3(1.5f, 3.0f, -3.0f)
-    };
-
+    
     bool pointLightEnabled[NUM_POINT_LIGHTS] = {
         true, true, true, true
     };
@@ -728,33 +723,31 @@ int main(int argc, char* argv[]) {
     lightingShader.setVec3("directionalLight.ambient", directional_light.ambient);
     lightingShader.setVec3("directionalLight.diffuse", directional_light.diffuse);
     lightingShader.setVec3("directionalLight.specular", directional_light.specular);
+    
+    PointLight pointLights;
+    pointLights.position[0] = glm::vec3(1.5f, 1.0f, 2.0f);
+    pointLights.position[1] = glm::vec3(0.0, 1.0f, -5.0f);
+    pointLights.position[2] = glm::vec3(1.5f, -3.0f, 2.0f);
+    pointLights.position[3] = glm::vec3(1.5f, 3.0f, -3.0f);
 
-    PointLight point_light = {
-        true, // enabled
-        lightPos,
-        DEFAULT_AMBIENCE,
-        DEFAULT_DIFFUSE,
-        DEFAULT_SPECULAR,
-        1.0, // constant
-        0.09, // linear
-        0.032 // quadratic
-    };
-
-    // Values for different distances: https://wiki.ogre3d.org/tiki-index.php?page=-Point+Light+Attenuation
-    // Here we chose settings for distance of up to 50
     for (int i=0; i<NUM_POINT_LIGHTS; i++) {
         char buffer[100];
-        int result = std::sprintf(buffer, "pointLightEnabled[%i]", i);
-        lightingShader.setBool(std::string(buffer, result), pointLightEnabled[i]);
+        int result = std::sprintf(buffer, "pointLights.enabled[%i]", i);
+        lightingShader.setBool(std::string(buffer, result), pointLights.enabled[i]);
+
+        result = std::sprintf(buffer, "pointLightPos[%i]", i);
+        lightingShader.setVec3(std::string(buffer, result), pointLights.position[i]);
+
+        result = std::sprintf(buffer, "pointLights.diffuse[%i]", i);
+        lightingShader.setVec3(std::string(buffer, result), pointLights.diffuse[i]);
     }
     
-    lightingShader.setVec3("pointLight.ambient", point_light.ambient);
-    lightingShader.setVec3("pointLight.diffuse", point_light.diffuse);
-    lightingShader.setVec3("pointLight.specular", point_light.specular);
+    lightingShader.setVec3("pointLights.ambient", pointLights.ambient);
+    lightingShader.setVec3("pointLights.specular", pointLights.specular);
 
-    lightingShader.setFloat("pointLight.constant", point_light.constant);
-    lightingShader.setFloat("pointLight.linear", point_light.linear);
-    lightingShader.setFloat("pointLight.quadratic", point_light.quadratic);
+    lightingShader.setFloat("pointLights.constant", pointLights.constant);
+    lightingShader.setFloat("pointLights.linear", pointLights.linear);
+    lightingShader.setFloat("pointLights.quadratic", pointLights.quadratic);
 
     // Spotlight
     SpotLight spot_light = {
@@ -882,20 +875,7 @@ int main(int argc, char* argv[]) {
 
         // Now draw the cube object that is getting hit by the light source
         glBindVertexArray(VAO);
-
-        // Set the position of each point light
-        for (int i=0; i<NUM_POINT_LIGHTS; i++) {
-            // No f-strings like Python until C++20 OTL
-            char buffer[100];
-            int result = std::sprintf(buffer, "pointLightPos[%i]", i);
-            lightingShader.setVec3(std::string(buffer, result), pointLightPos[i]);
-        }
-
-        // Update lighting if ImGUI settings were updated
-        //lightingShader.setVec3("light.ambient", light_settings.ambient);
-        //lightingShader.setVec3("light.diffuse", light_settings.diffuse);
-        //lightingShader.setVec3("light.specular", light_settings.specular);
-
+        
         lightingShader.setBool("directionalLight.enabled", directional_light.enabled);
         lightingShader.setVec3("directionalLight.ambient", directional_light.ambient);
         lightingShader.setVec3("directionalLight.diffuse", directional_light.diffuse);
@@ -903,17 +883,22 @@ int main(int argc, char* argv[]) {
 
         for (int i=0; i<NUM_POINT_LIGHTS; i++) {
             char buffer[100];
-            int result = std::sprintf(buffer, "pointLightEnabled[%i]", i);
-            lightingShader.setBool(std::string(buffer, result), pointLightEnabled[i]);
+            int result = std::sprintf(buffer, "pointLights.enabled[%i]", i);
+            lightingShader.setBool(std::string(buffer, result), pointLights.enabled[i]);
+
+            result = std::sprintf(buffer, "pointLightPos[%i]", i);
+            lightingShader.setVec3(std::string(buffer, result), pointLights.position[i]);
+
+            result = std::sprintf(buffer, "pointLights.diffuse[%i]", i);
+            lightingShader.setVec3(std::string(buffer, result), pointLights.diffuse[i]);
         }
+    
+        lightingShader.setVec3("pointLights.ambient", pointLights.ambient);
+        lightingShader.setVec3("pointLights.specular", pointLights.specular);
 
-        lightingShader.setVec3("pointLight.ambient", point_light.ambient);
-        lightingShader.setVec3("pointLight.diffuse", point_light.diffuse);
-        lightingShader.setVec3("pointLight.specular", point_light.specular);
-
-        lightingShader.setFloat("pointLight.constant", point_light.constant);
-        lightingShader.setFloat("pointLight.linear", point_light.linear);
-        lightingShader.setFloat("pointLight.quadratic", point_light.quadratic);
+        lightingShader.setFloat("pointLights.constant", pointLights.constant);
+        lightingShader.setFloat("pointLights.linear", pointLights.linear);
+        lightingShader.setFloat("pointLights.quadratic", pointLights.quadratic);
         
         lightingShader.setBool("spotLight.enabled", spot_light.enabled);
         lightingShader.setVec3("spotLight.ambient", spot_light.ambient);
@@ -969,7 +954,7 @@ int main(int argc, char* argv[]) {
             //////glm::vec3 lightPos = glm::vec3(lightPosX, 1.0f, lightPosZ);
             //glm::vec3 lightPos = glm::vec3(1.2, 1.0, 2);
 
-            model = glm::translate(model, pointLightPos[i]);
+            model = glm::translate(model, pointLights.position[i]);
             model = glm::scale(model, glm::vec3(0.2f)); // scale down
             lightSourceShader.setMatrix("model", model);
 
@@ -981,7 +966,7 @@ int main(int argc, char* argv[]) {
 
             // Update light color
             if (pointLightEnabled[i]) {
-                lightSourceShader.setVec3("lightColor", point_light.diffuse);
+                lightSourceShader.setVec3("lightColor", pointLights.diffuse[i]);
             } else {
                 // If disabled, set to black
                 lightSourceShader.setVec3("lightColor", glm::vec3(0.0));
@@ -1031,16 +1016,21 @@ int main(int argc, char* argv[]) {
         ImGui::ColorEdit3("Specular##Directional Light", (float*)&directional_light.specular);
 
         ImGui::Text("Point Light Settings");
+        ImGui::ColorEdit3("Ambient##Point Light", (float*)&pointLights.ambient);
+        ImGui::ColorEdit3("Specular##Point Light", (float*)&pointLights.specular);
+
         for (int i=0; i<NUM_POINT_LIGHTS; i++) {
             char buffer[100];
             int result = std::sprintf(buffer, "Enable Point Light %i", i);
-            ImGui::Checkbox(std::string(buffer, result).c_str(), (bool*)&pointLightEnabled[i]);
+            ImGui::Checkbox(std::string(buffer, result).c_str(), (bool*)&pointLights.enabled[i]);
+
+            result = std::sprintf(buffer, "Position## Point Light %i", i);
+            ImGui::SliderFloat3(std::string(buffer, result).c_str(), (float*)&pointLights.position[i], -25, 25.0);
+            
+            result = std::sprintf(buffer, "Diffuse##Point Light %i", i);
+            ImGui::ColorEdit3(std::string(buffer, result).c_str(), (float*)&pointLights.diffuse[i]);
         }
         
-        ImGui::ColorEdit3("Ambient##Point Light", (float*)&point_light.ambient);
-        ImGui::ColorEdit3("Diffuse##Point Light", (float*)&point_light.diffuse);
-        ImGui::ColorEdit3("Specular##Point Light", (float*)&point_light.specular);
-
         ImGui::Text("Spotlight Settings");
         ImGui::Checkbox("Enable Spot Light", (bool*)&spot_light.enabled);
         ImGui::ColorEdit3("Ambient##Spot Light", (float*)&spot_light.ambient);
