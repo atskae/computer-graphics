@@ -792,11 +792,7 @@ int main(int argc, char* argv[]) {
     lightingShader.setInt("material.emission", 2);
     // Indicate where the emission occurs
     lightingShader.setInt("material.emission_area", 3);
-
-    // Set global directional light source
-    // This vector points away from the light source
-    //lightingShader.setVec3("light.direction", glm::vec3(-0.2, 1.0, -0.3));
-
+    
     // Start the render loop
     // This keeps the application running and handles new input
     //  until the application is closed
@@ -827,13 +823,17 @@ int main(int argc, char* argv[]) {
 
         /* Rendering */
         
-        //// Configure the color setting used by glClear()
-        //glClearColor(
-        //    background_color[0],
-        //    background_color[1],
-        //    background_color[2],
-        //    background_color[3]
-        //);
+        // Configure the color setting used by glClear()
+        if (directional_light.enabled) {
+                glClearColor(
+                directional_light.diffuse[0],
+                directional_light.diffuse[1],
+                directional_light.diffuse[2],
+                1.0 // alpha
+            );
+        } else {
+            glClearColor(0.0, 0.0, 0.0, 0.0);
+        }
 
         // Make the texture object that we created the active texture object
         // Bind each texture to its own texture unit in the fragment shader
@@ -1029,7 +1029,7 @@ int main(int argc, char* argv[]) {
         ImGui::ColorEdit3("Ambient##Directional Light", (float*)&directional_light.ambient);
         ImGui::ColorEdit3("Diffuse##Directional Light", (float*)&directional_light.diffuse);
         ImGui::ColorEdit3("Specular##Directional Light", (float*)&directional_light.specular);
-        
+
         ImGui::Text("Point Light Settings");
         for (int i=0; i<NUM_POINT_LIGHTS; i++) {
             char buffer[100];
