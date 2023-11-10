@@ -66,8 +66,20 @@ Not sure what the best way to send the light positions in the same `PointLightSt
 
 ## Different Scenes
 
-Made each point light's diffuse and position toggle-able.
+Made each point light's diffuse and position toggle-able!
 
 Desert:
 
 ![Desert](images/desert.png)
+
+Factory:
+
+![Factory](images/factory.png)
+
+Horror:
+
+![Horror](images/horror.png)
+
+Biochemical Lab
+
+![Biochemical Lab](images/biochemical-lab.png)
