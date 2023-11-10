@@ -83,3 +83,7 @@ Horror:
 Biochemical Lab
 
 ![Biochemical Lab](images/biochemical-lab.png)
+
+A sunny day
+
+![Sunny day](images/sunny.png)
