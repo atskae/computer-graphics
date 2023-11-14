@@ -19,9 +19,16 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
+// Assimp
+#include <assimp/Importer.hpp> // C++ importer interface
+#include <assimp/scene.h> // Output data structure
+#include <assimp/postprocess.h> // Post processing flags
+
 #include "shader.h"
 #include "camera.h"
 
+// Test import
+Assimp::Importer importer;
 
 const int WINDOW_WIDTH = 1200;
 const int WINDOW_HEIGHT = 750;
