@@ -1,0 +1,124 @@
+#ifndef MODEL_H
+#define MODEL_H
+
+#include <vector>
+
+#include <assimp/Importer.hpp> // C++ importer interface
+#include <assimp/scene.h> // Output data structure
+#include <assimp/postprocess.h> // Post processing flags
+
+#include "mesh.h"
+#include "shader.h"
+
+
+class Model {
+    public:
+        // Takes in a path to the model file
+        Model(char* path);
+        // Draws each Mesh object
+        void draw(Shader& shader);
+
+    private:
+        // Model file loaded as Mesh objects
+        std::vector<Mesh> meshes;
+        // Directory of the path that contains textures
+        std::string directory;
+
+        // Methods
+        void loadModel(std::string path);
+
+        // Assimp
+        void processNode(aiNode* node, const aiScene* scene);
+        // Converts an Assimpl mesh to a Mesh object
+        Mesh processMesh(aiMesh* mesh, const aiScene* scene);
+};
+
+Model::Model(char* path) {
+    this->loadModel(path);
+}
+
+void Model::draw(Shader& shader) {
+    for(unsigned int i=0; i<this->meshes.size(); i++) {
+        this->meshes[i].draw(shader);
+    }
+}
+
+// Loads a model file from path
+void Model::loadModel(std::string path) {
+    Assimp::Importer importer;
+    // ReadFile() takes in a path and post-processing options
+    // aiProcess_Triangulate: convert all primitives into triangles, if not already
+    // aiProcess_FlipUVs: converts the texture coordinates so that the top-left corner is (0,0) and bottom-right corner is (1,1)
+    const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+
+    // AI_SCENE_FLAGS_INCOMPLETE: if the data that was loaded is incomplete
+    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+        std::cout << "Assimp failed to load scene from file " << path << " with error: " << importer.GetErrorString() << std::endl;
+        return;
+    }
+
+    // std::string.find_last_of(): finds the last character that matches and returns its index
+    this->directory = path.substr(0, path.find_last_of('/'));
+
+    // Generate and collect Mesh objects
+    this->processNode(scene->mRootNode, scene);
+}
+
+// Recursive function that traverses the Assimp Scene graph and generates Mesh objects
+void Model::processNode(aiNode* node, const aiScene* scene) {
+    // Process the meshes of this node
+    for (unsigned int i=0; i<node->mNumMeshes; i++) {
+        // The index into the Scene (root) node's mesh list where this node's mesh is located
+        unsigned int index = node->mMeshes[i];
+        // Convert the Assimp Mesh object to our Mesh object
+        Mesh mesh = this->processMesh(scene->mMeshes[index], scene);
+        this->meshes.push_back(mesh);
+    }
+
+    // Convert the meshes of this node's child nodes
+    for (unsigned int i=0; i<node->mNumChildren; i++) {
+        aiNode* child = node->mChildren[i];
+        this->processNode(child, scene);
+    }
+}
+
+// Converts an Assimp 3D vector to a glm 3D vector
+glm::vec3 convert(aiVector3D vector) {
+    return glm::vec3(vector[0], vector[1], vector[2]);
+}
+
+// Convert an Assimp Mesh to our Mesh object definition
+Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
+    std::cout << "Found " << mesh->mNumVertices << " vertices." << std::endl;
+
+    // Create the Vertex objects
+    std::vector<Vertex> vertices;
+    for (unsigned int i=0; i<mesh->mNumVertices; i++) {
+        Vertex vertex;
+        vertex.position = convert(mesh->mVertices[i]);
+        if (mesh->HasNormals()) {
+            vertex.normal = convert(mesh->mNormals[i]);
+        }
+        if (mesh->HasTextureCoords(i)) {
+            vertex.textureCoordinates = convert(mesh->mTextureCoords[i]);
+        }
+        vertices.push_back(vertex);
+    }
+
+    // Get indices into the vertex array
+    std::vector<unsigned int> indices;
+    for (unsigned int i=0; i<mesh->mNumFaces; i++) {
+        aiFace face = mesh->mFaces[i];
+        for (unsigned int j=0; j<face.mNumIndices; j++) {
+            unsigned int index = face.mIndices[j];
+            indices.push_back(index);
+        }
+    }
+
+    // TODO: fill in textures
+    std::vector<Texture> textures;
+
+    return Mesh(vertices, indices, textures);
+}
+
+#endif // header guard
