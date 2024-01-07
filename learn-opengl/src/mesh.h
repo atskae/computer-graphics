@@ -17,12 +17,13 @@ const unsigned int TEXTURE_COORDINATE_VERTEX_ATTRIBUTE_LOCATION = 2;
 struct Vertex {
     glm::vec3 position;
     glm::vec3 normal;
-    glm::vec3 textureCoordinates;
+    glm::vec2 textureCoordinates;
 };
 
 struct Texture {
     unsigned int id;
     std::string type; // diffuse, specular; used to find the uniform variable
+    std::string path; // path of the texture file
 };
 
 class Mesh {

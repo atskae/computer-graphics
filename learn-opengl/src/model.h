@@ -29,6 +29,10 @@ class Model {
 
         // Assimp
         void processNode(aiNode* node, const aiScene* scene);
+        
+        // Loads all textures from the Assimp Material object
+        std::vector<Texture> Model::loadMaterialTexture(aiMaterial* material, aiTextureType type, std::string typeName);
+        
         // Converts an Assimpl mesh to a Mesh object
         Mesh processMesh(aiMesh* mesh, const aiScene* scene);
 };
@@ -87,6 +91,29 @@ glm::vec3 convert(aiVector3D vector) {
     return glm::vec3(vector[0], vector[1], vector[2]);
 }
 
+// Converts an Assimp 2D vector (ex. texture coordinates) to a glm  2D vector
+glm::vec2 convert(aiVector2D vector) {
+    return glm::vec2(vector[0], vector[1]);
+}
+
+// Loads the textures from the material
+std::vector<Texture> Model::loadMaterialTexture(aiMaterial* material, aiTextureType type, std::string typeName) {
+    std::vector<Texture> textures;
+    for(unsigned int i=0; i<material->GetTextureCount(type); i++) {
+        // Get the file path to the texture file
+        aiString filePath;
+        material->GetTexture(type, i, &filePath);
+
+        Texture texture;
+        texture.id = TextureFromFile(filePath.C_Str(), this->directory);
+        texture.type = typeName;
+        texture.path = filePath.C_Str();
+        
+        textures.push_back(texture);
+    }
+    return textures;
+}
+
 // Convert an Assimp Mesh to our Mesh object definition
 Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
     std::cout << "Found " << mesh->mNumVertices << " vertices." << std::endl;
@@ -98,14 +125,26 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
         vertex.position = convert(mesh->mVertices[i]);
         if (mesh->HasNormals()) {
             vertex.normal = convert(mesh->mNormals[i]);
+        } else {
+            std::cout << "No normal vector found" << std::endl;
+            vertex.normal = glm::vec3(0);
         }
-        if (mesh->HasTextureCoords(i)) {
-            vertex.textureCoordinates = convert(mesh->mTextureCoords[i]);
+        
+        // Assimp allows up to 8 texture coordinates per vertex
+        // but for now we only look at the first one
+        if (mesh->mTextureCoords[0]) {
+            vertex.textureCoordinates = convert(mesh->mTextureCoords[0][i]);
+        } else {
+            vertex.textureCoordinates = glm::vec2(0);
         }
+        
         vertices.push_back(vertex);
     }
 
     // Get indices into the vertex array
+    // Each face represents a primitive
+    // Since we loaded the model with `aiProcess_Triangulate`,
+    // all the primitives are triangles
     std::vector<unsigned int> indices;
     for (unsigned int i=0; i<mesh->mNumFaces; i++) {
         aiFace face = mesh->mFaces[i];
@@ -115,8 +154,12 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
         }
     }
 
-    // TODO: fill in textures
     std::vector<Texture> textures;
+    // The mesh only contains the index into the materials array
+    // which is held by the scene object
+    if(mesh->mMaterialIndex >=0) {
+        aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+    }
 
     return Mesh(vertices, indices, textures);
 }
