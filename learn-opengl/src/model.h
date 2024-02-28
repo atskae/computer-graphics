@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <filesystem>
+#include <unordered_map>
 
 #include <assimp/Importer.hpp> // C++ importer interface
 #include <assimp/scene.h> // Output data structure
@@ -27,6 +28,8 @@ class Model {
         std::vector<Mesh> meshes;
         // Directory of the path that contains textures
         std::string directory;
+        // Textures that were already loaded
+        std::unordered_map<std::string, Texture> loadedTextures;
 
         // Methods
         void loadModel(std::string path);
@@ -136,12 +139,19 @@ std::vector<Texture> Model::loadMaterialTexture(aiMaterial* material, aiTextureT
         aiString filePath;
         material->GetTexture(type, i, &filePath);
 
-        Texture texture;
-        texture.id = TextureFromFile(filePath.C_Str(), this->directory);
-        texture.type = typeName;
-        texture.path = filePath.C_Str();
-        
-        textures.push_back(texture);
+        std::string filePathString = std::string(filePath.C_Str());
+        if (this->loadedTextures.find(filePathString) == this->loadedTextures.end()) {
+            Texture texture;
+            texture.id = TextureFromFile(filePath.C_Str(), this->directory);
+            texture.type = typeName;
+            texture.path = filePath.C_Str();
+            textures.push_back(texture);
+            // Mark the texture as already loaded
+            this->loadedTextures.insert({filePathString, texture});
+            std::cout << "Created texture object " << texture.path << std::endl;
+        } else {
+            std::cout << filePathString << " was already loaded" << std::endl;
+        }
     }
     return textures;
 }
