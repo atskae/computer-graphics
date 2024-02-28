@@ -2,10 +2,14 @@
 #define MODEL_H
 
 #include <vector>
+#include <filesystem>
 
 #include <assimp/Importer.hpp> // C++ importer interface
 #include <assimp/scene.h> // Output data structure
 #include <assimp/postprocess.h> // Post processing flags
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 #include "mesh.h"
 #include "shader.h"
@@ -94,6 +98,34 @@ glm::vec3 convert(aiVector3D vector) {
 // Converts an Assimp 2D vector (ex. texture coordinates) to a glm  2D vector
 glm::vec2 convert(aiVector2D vector) {
     return glm::vec2(vector[0], vector[1]);
+}
+
+// Loads a texture file and binds it to an OpenGL texture unit
+// Returns the integer ID of the texture
+unsigned int TextureFromFile(const char* filePath, std::string directory) {
+    unsigned int id;
+    // Generates 1 texture and assigns an ID to it
+    glGenTextures(1, &id);
+    // Activate the texture unit so subsequent texture calls affect this texture
+    glBindTexture(GL_TEXTURE_2D, id);
+
+    // Load the texture file
+    // Texture image properties
+    int width, height, numColorChannels;
+    std::filesystem::path texturePath(directory);
+    texturePath = texturePath / filePath;
+    unsigned char* data = stbi_load(texturePath.c_str(), &width, &height, &numColorChannels, 0);
+    if (data) {
+        // Bind the texture data to the texture unit
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        std::cout << "Loaded texture file: " << texturePath.string() << std::endl;
+    } else {
+        std::cout << "Failed to load texture file: " << texturePath.string() << std::endl;
+    }
+    // Free image data
+    stbi_image_free(data);
+
+    return id;
 }
 
 // Loads the textures from the material
