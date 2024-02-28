@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cmath>
 #include <algorithm> // clamp
+#include <filesystem>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -12,7 +13,7 @@
 #include <glm/gtx/string_cast.hpp> // to_string()
 
 // Read in image files
-#include "stb_image.h"
+//#include "stb_image.h"
 
 // Imgui UI
 #include "imgui.h"
@@ -26,6 +27,7 @@
 
 #include "shader.h"
 #include "camera.h"
+#include "model.h"
 
 // Test import
 Assimp::Importer importer;
@@ -793,6 +795,11 @@ int main(int argc, char* argv[]) {
     // Indicate where the emission occurs
     lightingShader.setInt("material.emission_area", 3);
     
+    // Load the backpack model
+    std::filesystem::path modelPath("textures");
+    modelPath /= "backpack";
+    Model backpack(modelPath.c_str());
+
     // Start the render loop
     // This keeps the application running and handles new input
     //  until the application is closed
@@ -938,6 +945,9 @@ int main(int argc, char* argv[]) {
             // Draw the cube!
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
+
+        // Draw the backpack
+        backpack.draw(lightingShader);
 
         //lightColor.x = sin(glfwGetTime() * 2.0f);
         //lightColor.y = sin(glfwGetTime() * 0.7f);

@@ -183,7 +183,7 @@ void Mesh::draw(Shader& shader) {
         }
         
         char buffer[100];
-        int result = std::sprintf(buffer, "material.texture_%s%i", texture.type, texture_unit);
+        int result = std::sprintf(buffer, "material.texture_%s%i", texture.type.c_str(), texture_unit);
         std::string texture_name = std::string(buffer, result);
         
         shader.setInt(texture_name, texture.id);

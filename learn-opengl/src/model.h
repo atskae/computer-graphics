@@ -9,7 +9,6 @@
 #include <assimp/scene.h> // Output data structure
 #include <assimp/postprocess.h> // Post processing flags
 
-#define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
 #include "mesh.h"
@@ -19,7 +18,7 @@
 class Model {
     public:
         // Takes in a path to the model file
-        Model(char* path);
+        Model(const char* path);
         // Draws each Mesh object
         void draw(Shader& shader);
 
@@ -38,13 +37,13 @@ class Model {
         void processNode(aiNode* node, const aiScene* scene);
         
         // Loads all textures from the Assimp Material object
-        std::vector<Texture> Model::loadMaterialTexture(aiMaterial* material, aiTextureType type, std::string typeName);
+        std::vector<Texture> loadMaterialTexture(aiMaterial* material, aiTextureType type, std::string typeName);
         
         // Converts an Assimpl mesh to a Mesh object
         Mesh processMesh(aiMesh* mesh, const aiScene* scene);
 };
 
-Model::Model(char* path) {
+Model::Model(const char* path) {
     this->loadModel(path);
 }
 
@@ -201,6 +200,12 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
     // which is held by the scene object
     if(mesh->mMaterialIndex >=0) {
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+        
+        std::vector<Texture> diffuseMaps = this->loadMaterialTexture(material, aiTextureType_DIFFUSE, "texture_diffuse");
+        textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+
+        std::vector<Texture> specularMaps = this->loadMaterialTexture(material, aiTextureType_SPECULAR, "texture_specular");
+        textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
     }
 
     return Mesh(vertices, indices, textures);
