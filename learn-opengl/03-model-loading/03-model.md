@@ -16,3 +16,11 @@ General steps to loading a model:
     * Assimp's [Mesh object](https://assimp.sourceforge.net/lib_html/structai_mesh.html#details)
 
 All of Assimp's [post-processing options](https://assimp.sourceforge.net/lib_html/postprocess_8h.html)
+
+## Loading Model
+
+Download the backpack model from [here](https://learnopengl.com/Model-Loading/Model) (under **No more containers!**), and extract the zip to `src/textures/backpack`.
+
+I commented out the backpack's texture loading logic and got the container texture onto it:
+
+![Container backpack](images/container_backpack.png)

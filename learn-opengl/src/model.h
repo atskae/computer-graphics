@@ -78,7 +78,6 @@ void Model::loadModel(std::string path) {
 // Recursive function that traverses the Assimp Scene graph and generates Mesh objects
 void Model::processNode(aiNode* node, const aiScene* scene) {
     // Process the meshes of this node
-    std::cout << node->mNumMeshes << " meshes found" << std::endl;
     for (unsigned int i=0; i<node->mNumMeshes; i++) {
         // The index into the Scene (root) node's mesh list where this node's mesh is located
         unsigned int index = node->mMeshes[i];
@@ -150,16 +149,14 @@ std::vector<Texture> Model::loadMaterialTexture(aiMaterial* material, aiTextureT
             // Mark the texture as already loaded
             this->loadedTextures.insert({filePathString, texture});
             std::cout << "Created texture object " << texture.path << std::endl;
-        } else {
-            std::cout << filePathString << " was already loaded" << std::endl;
-        }
+        } 
     }
     return textures;
 }
 
 // Convert an Assimp Mesh to our Mesh object definition
 Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
-    std::cout << "Found " << mesh->mNumVertices << " vertices." << std::endl;
+    //std::cout << "Found " << mesh->mNumVertices << " vertices." << std::endl;
 
     // Create the Vertex objects
     std::vector<Vertex> vertices;
