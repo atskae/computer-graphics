@@ -45,6 +45,7 @@ class Model {
 
 Model::Model(const char* path) {
     this->loadModel(path);
+    std::cout << "Model " << path << " was created." << std::endl;
 }
 
 void Model::draw(Shader& shader) {
@@ -77,6 +78,7 @@ void Model::loadModel(std::string path) {
 // Recursive function that traverses the Assimp Scene graph and generates Mesh objects
 void Model::processNode(aiNode* node, const aiScene* scene) {
     // Process the meshes of this node
+    std::cout << node->mNumMeshes << " meshes found" << std::endl;
     for (unsigned int i=0; i<node->mNumMeshes; i++) {
         // The index into the Scene (root) node's mesh list where this node's mesh is located
         unsigned int index = node->mMeshes[i];
@@ -201,10 +203,10 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
     if(mesh->mMaterialIndex >=0) {
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
         
-        std::vector<Texture> diffuseMaps = this->loadMaterialTexture(material, aiTextureType_DIFFUSE, "texture_diffuse");
+        std::vector<Texture> diffuseMaps = this->loadMaterialTexture(material, aiTextureType_DIFFUSE, "diffuse");
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
-        std::vector<Texture> specularMaps = this->loadMaterialTexture(material, aiTextureType_SPECULAR, "texture_specular");
+        std::vector<Texture> specularMaps = this->loadMaterialTexture(material, aiTextureType_SPECULAR, "specular");
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
     }
 

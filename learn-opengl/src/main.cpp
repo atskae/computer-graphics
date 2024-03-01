@@ -798,6 +798,7 @@ int main(int argc, char* argv[]) {
     // Load the backpack model
     std::filesystem::path modelPath("textures");
     modelPath /= "backpack";
+    modelPath /= "backpack.obj";
     Model backpack(modelPath.c_str());
 
     // Start the render loop

@@ -92,13 +92,13 @@ void Mesh::setupMesh() {
     // GL_STATIC_DRAW is best for data that doesn't change much and is read many times
     // If the data changes a lot, we'd use GL_DYNAMIC_DRAW
     // We need to pass in the size *in bytes*
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * this->vertices.size(), &this->vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * this->vertices.size(), &this->vertices[0], GL_STATIC_DRAW);
 
     // Bind the EBO 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
 
     // Copy over the indicies data to the EBO
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * this->indices.size(), &this->indices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * this->indices.size(), &this->indices[0], GL_STATIC_DRAW);
 
     // Define how OpenGL should interpret the data and enable the buffers
     
