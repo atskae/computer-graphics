@@ -947,6 +947,10 @@ int main(int argc, char* argv[]) {
         //    glDrawArrays(GL_TRIANGLES, 0, 36);
         //}
 
+        // Create a transformation matrix
+        glm::mat4 model_matrix(1.0f);
+        lightingShader.setMatrix("model", model_matrix);
+
         // Draw the backpack
         backpack.draw(lightingShader);
 
