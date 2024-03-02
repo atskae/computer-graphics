@@ -21,6 +21,18 @@ All of Assimp's [post-processing options](https://assimp.sourceforge.net/lib_htm
 
 Download the backpack model from [here](https://learnopengl.com/Model-Loading/Model) (under **No more containers!**), and extract the zip to `src/textures/backpack`.
 
-I commented out the backpack's texture loading logic and got the container texture onto it:
+I commented out the backpack's texture loading logic and got the container texture onto it (commit: 5b35a1408dbde1dd003fc954f54f004070a5223b):
 
 ![Container backpack](images/container_backpack.png)
+
+With some weird hacks off of commit `5b35a1408dbde1dd003fc954f54f004070a5223b` I was able to get the backpack... but not through the normal `Mesh.draw()` OTL
+
+Things I forgot:
+* Setting the  model_matrix in the shader for the backpack (otherwise nothing renders)
+
+Hacks applied to commit:
+* Change the texture files to the backpack textures
+
+![Backpack hack](images/weird_hack_backpack.png)
+
+The textures are not applied through Mesh.draw() though...
