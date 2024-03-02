@@ -95,12 +95,12 @@ void Model::processNode(aiNode* node, const aiScene* scene) {
 
 // Converts an Assimp 3D vector to a glm 3D vector
 glm::vec3 convert(aiVector3D vector) {
-    return glm::vec3(vector[0], vector[1], vector[2]);
+    return glm::vec3(vector.x, vector.y, vector.z);
 }
 
 // Converts an Assimp 2D vector (ex. texture coordinates) to a glm  2D vector
 glm::vec2 convert(aiVector2D vector) {
-    return glm::vec2(vector[0], vector[1]);
+    return glm::vec2(vector.x, vector.y);
 }
 
 // Loads a texture file and binds it to an OpenGL texture unit
@@ -117,6 +117,11 @@ unsigned int TextureFromFile(const char* filePath, std::string directory) {
     int width, height, numColorChannels;
     std::filesystem::path texturePath(directory);
     texturePath = texturePath / filePath;
+    
+    // Images by default have y=0.0 at the top of the image, but OpenGL expects y=0.0 at the bottom
+    // Configure stdbi library to flip the y-axis
+    stbi_set_flip_vertically_on_load(true);
+    
     unsigned char* data = stbi_load(texturePath.c_str(), &width, &height, &numColorChannels, 0);
     if (data) {
         // Bind the texture data to the texture unit
@@ -148,7 +153,7 @@ std::vector<Texture> Model::loadMaterialTexture(aiMaterial* material, aiTextureT
             textures.push_back(texture);
             // Mark the texture as already loaded
             this->loadedTextures.insert({filePathString, texture});
-            std::cout << "Created texture object " << texture.path << std::endl;
+            std::cout << "Created texture object " << texture.path << " with ID=" << texture.id << std::endl;
         } 
     }
     return textures;

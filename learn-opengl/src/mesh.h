@@ -156,42 +156,43 @@ void Mesh::setupMesh() {
 
 void Mesh::draw(Shader& shader) {
     // TODO: fix
-    //// Bind all the texture units
-    //// Assumes the following naming convention in the vertex shader:
-    ////  uniform sampler2D texture_diffuse1;
-    ////  uniform sampler2D texture_diffuse2;
-    ////  ...etc
-    ////  uniform sampler2D texture_specular1;
-    ////  uniform sampler2D texture_specular2
-    ////  ...etc
-    //unsigned int numDiffuse = 0;
-    //unsigned int numSpecular = 0;
-    //for (unsigned int i=0; i<this->textures.size(); i++) {
-    //    glActiveTexture(GL_TEXTURE0 + i);
-    //    
-    //    Texture& texture = this->textures[i];
+    // Bind all the texture units
+    // Assumes the following naming convention in the vertex shader:
+    //  uniform sampler2D texture_diffuse1;
+    //  uniform sampler2D texture_diffuse2;
+    //  ...etc
+    //  uniform sampler2D texture_specular1;
+    //  uniform sampler2D texture_specular2
+    //  ...etc
+    unsigned int numDiffuse = 1;
+    unsigned int numSpecular = 1;
+    for (unsigned int i=0; i<this->textures.size(); i++) {
+        glActiveTexture(GL_TEXTURE0 + i);
+        
+        Texture& texture = this->textures[i];
 
-    //    // Set the uniform variable that holds the texture
-    //    int texture_unit = 0;
-    //    if (texture.type == "diffuse") {
-    //        texture_unit = numDiffuse++;
-    //    }
-    //    else if (texture.type == "specular") {
-    //        texture_unit = numSpecular++;
-    //    }
-    //    else {
-    //        std::cout << "Invalid texture type: " << texture.type << std::endl;
-    //    }
-    //    
-    //    char buffer[100];
-    //    int result = std::sprintf(buffer, "material.texture_%s%i", texture.type.c_str(), texture_unit);
-    //    std::string texture_name = std::string(buffer, result);
+        // Set the uniform variable that holds the texture
+        int texture_unit = 0;
+        if (texture.type == "diffuse") {
+            texture_unit = numDiffuse++;
+        }
+        else if (texture.type == "specular") {
+            texture_unit = numSpecular++;
+        }
+        else {
+            std::cout << "Invalid texture type: " << texture.type << std::endl;
+        }
+        
+        char buffer[100];
+        //int result = std::sprintf(buffer, "material.texture_%s%i", texture.type.c_str(), texture_unit);
+        int result = std::sprintf(buffer, "material.%s", texture.type.c_str());
+        std::string texture_name = std::string(buffer, result);
 
-    //    shader.setInt(texture_name, texture.id);
-    //    
-    //    glBindTexture(GL_TEXTURE_2D, texture.id); 
-    //}
-    //glActiveTexture(GL_TEXTURE0);
+        shader.setInt(texture_name, texture.id);
+        
+        glBindTexture(GL_TEXTURE_2D, texture.id); 
+    }
+    glActiveTexture(GL_TEXTURE0);
 
     // Draw the mesh
     

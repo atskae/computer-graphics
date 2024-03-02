@@ -343,19 +343,19 @@ int main(int argc, char* argv[]) {
 
     }; 
 
-    // Positions where we move and place each cube
-    glm::vec3 cubePositions[10] = {
-        glm::vec3( 0.0f,  0.0f,  0.0f), 
-        glm::vec3( 2.0f,  5.0f, -15.0f), 
-        glm::vec3(-1.5f, -2.2f, -2.5f),  
-        glm::vec3(-3.8f, -2.0f, -12.3f),  
-        glm::vec3( 2.4f, -0.4f, -3.5f),  
-        glm::vec3(-1.7f,  3.0f, -7.5f),  
-        glm::vec3( 1.3f, -2.0f, -2.5f),  
-        glm::vec3( 1.5f,  2.0f, -2.5f), 
-        glm::vec3( 1.5f,  0.2f, -1.5f), 
-        glm::vec3(-1.3f,  1.0f, -1.5f)  
-    };
+    //// Positions where we move and place each cube
+    //glm::vec3 cubePositions[10] = {
+    //    glm::vec3( 0.0f,  0.0f,  0.0f), 
+    //    glm::vec3( 2.0f,  5.0f, -15.0f), 
+    //    glm::vec3(-1.5f, -2.2f, -2.5f),  
+    //    glm::vec3(-3.8f, -2.0f, -12.3f),  
+    //    glm::vec3( 2.4f, -0.4f, -3.5f),  
+    //    glm::vec3(-1.7f,  3.0f, -7.5f),  
+    //    glm::vec3( 1.3f, -2.0f, -2.5f),  
+    //    glm::vec3( 1.5f,  2.0f, -2.5f), 
+    //    glm::vec3( 1.5f,  0.2f, -1.5f), 
+    //    glm::vec3(-1.3f,  1.0f, -1.5f)  
+    //};
 
     // Rectangle using an Element Buffer Object (EBO)
     // The z-coordinates are zero to keep it 2D in a 3D space
@@ -482,109 +482,109 @@ int main(int argc, char* argv[]) {
     
     /* Textures */
     
-    unsigned int textureAttributeLocation = 2;
+    //unsigned int textureAttributeLocation = 2;
     
-    // Read in each texture image
-    // Images by default have y=0.0 at the top of the image, but OpenGL expects y=0.0 at the bottom
-    // Configure stdbi library to flip the y-axis
-    stbi_set_flip_vertically_on_load(true);
+    //// Read in each texture image
+    //// Images by default have y=0.0 at the top of the image, but OpenGL expects y=0.0 at the bottom
+    //// Configure stdbi library to flip the y-axis
+    //stbi_set_flip_vertically_on_load(true);
     
-    const char* textureFilenames[] = {
-        "textures/container2.png",
-        "textures/container2_specular.png",
-        "textures/matrix.jpg",
-        "textures/container2_specular_inverted.png",
-        "textures/linux-penguin-with-outline.png",
-    };
-    unsigned int textureIds[] = {0};
-    GLenum imageFormats[] = {GL_RGBA, GL_RGBA, GL_RGB, GL_RGBA, GL_RGBA};
-    for (int i=0; i<4; i++) {
-        // Configure the input argument in our vertex shader
-        // to accept the texture coordinates 
-        glVertexAttribPointer(
-            // (location = 2)
-            textureAttributeLocation+i,
-            // Number of components per vertex attribute
-            // Each texture coordinate is a (s,t) pair
-            2,
-            // The data type of the texture coordinate
-            GL_FLOAT,
-            // No need to normalize the data to [-1, 1]
-            GL_FALSE,
-            // The number of bytes between the first element of each texture coordinate
-            //  aka the stride
-            sizeof(float) * verticesStride,
-            // Pointer offset to the first texture coordinate in the vertices data
-            (void*)(sizeof(float)*3)
-            // 6 is where texture coordinates start in general in the rectangle_vertices array
-            // + 2*i will choose either texture1 (i=0) or texture2 (i=1)
-            //(void*)(sizeof(float)*(6 + 2*i))
-        );
-        glEnableVertexAttribArray(textureAttributeLocation+i);
+    //const char* textureFilenames[] = {
+    //    "textures/container2.png",
+    //    "textures/container2_specular.png",
+    //    "textures/matrix.jpg",
+    //    "textures/container2_specular_inverted.png",
+    //    "textures/linux-penguin-with-outline.png",
+    //};
+    //unsigned int textureIds[] = {0};
+    //GLenum imageFormats[] = {GL_RGBA, GL_RGBA, GL_RGB, GL_RGBA, GL_RGBA};
+    //for (int i=0; i<4; i++) {
+    //    // Configure the input argument in our vertex shader
+    //    // to accept the texture coordinates 
+    //    glVertexAttribPointer(
+    //        // (location = 2)
+    //        textureAttributeLocation+i,
+    //        // Number of components per vertex attribute
+    //        // Each texture coordinate is a (s,t) pair
+    //        2,
+    //        // The data type of the texture coordinate
+    //        GL_FLOAT,
+    //        // No need to normalize the data to [-1, 1]
+    //        GL_FALSE,
+    //        // The number of bytes between the first element of each texture coordinate
+    //        //  aka the stride
+    //        sizeof(float) * verticesStride,
+    //        // Pointer offset to the first texture coordinate in the vertices data
+    //        (void*)(sizeof(float)*3)
+    //        // 6 is where texture coordinates start in general in the rectangle_vertices array
+    //        // + 2*i will choose either texture1 (i=0) or texture2 (i=1)
+    //        //(void*)(sizeof(float)*(6 + 2*i))
+    //    );
+    //    glEnableVertexAttribArray(textureAttributeLocation+i);
 
-        const char* textureFilename = textureFilenames[i];
-        std::cout << "Opening texture file: " << textureFilename << std::endl;
-        int width, height, numColorChannels;
-        // Reads in the image, and computes the width, height, and number of color channels in the image
-        unsigned char* textureImageData = stbi_load(textureFilename, &width, &height, &numColorChannels, 0);
-        if (!textureImageData) {
-            std::cerr << "Failed to load texture image: " << textureFilename << std::endl;
-            return 1;
-        }
+    //    const char* textureFilename = textureFilenames[i];
+    //    std::cout << "Opening texture file: " << textureFilename << std::endl;
+    //    int width, height, numColorChannels;
+    //    // Reads in the image, and computes the width, height, and number of color channels in the image
+    //    unsigned char* textureImageData = stbi_load(textureFilename, &width, &height, &numColorChannels, 0);
+    //    if (!textureImageData) {
+    //        std::cerr << "Failed to load texture image: " << textureFilename << std::endl;
+    //        return 1;
+    //    }
 
-        // Create an OpenGL texture object, and get the unique ID assigned to the object
-        unsigned int textureId;
-        glGenTextures(1, &textureId);
+    //    // Create an OpenGL texture object, and get the unique ID assigned to the object
+    //    unsigned int textureId;
+    //    glGenTextures(1, &textureId);
 
-        // Bind/activate the texture object so subsequent 2D texure configurations will apply
-        // to the texture object we just created
-        glBindTexture(GL_TEXTURE_2D, textureId);
+    //    // Bind/activate the texture object so subsequent 2D texure configurations will apply
+    //    // to the texture object we just created
+    //    glBindTexture(GL_TEXTURE_2D, textureId);
 
-        // Configure how OpenGL will apply the texture with out-of-bounds coordinates
-        // Texture coordinate labels: (s,t,r)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        // When the texture is minimized, linearly interpolate between the two closest minmaps
-        //  and sample the interpolated minmap level with linear interpolation
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        // When magnifying, stay on the same minmap level, and linearly interpolate the color value
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    //    // Configure how OpenGL will apply the texture with out-of-bounds coordinates
+    //    // Texture coordinate labels: (s,t,r)
+    //    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    //    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    //    // When the texture is minimized, linearly interpolate between the two closest minmaps
+    //    //  and sample the interpolated minmap level with linear interpolation
+    //    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    //    // When magnifying, stay on the same minmap level, and linearly interpolate the color value
+    //    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        // Set the loaded texture image to the OpenGL texture object
-        glTexImage2D(
-            // Texture target
-            GL_TEXTURE_2D,
-            // Mipmap level - level of detail number
-            // n=0 is the original image, n is the nth downsized texture image
-            0,
-            // Image format to store the texture in
-            GL_RGB,
-            // Width and height of the *resulting* texture
-            width,
-            height,
-            // This value always has to be zero, due to legacy...
-            // What if we don't pass in zero...?
-            0,
-            // Format of the loaded texture image data
-            // We loaded a `.jpg` texture image as an unsigned char
-            imageFormats[i],
-            GL_UNSIGNED_BYTE,
-            // Actual image data
-            textureImageData
-        );
+    //    // Set the loaded texture image to the OpenGL texture object
+    //    glTexImage2D(
+    //        // Texture target
+    //        GL_TEXTURE_2D,
+    //        // Mipmap level - level of detail number
+    //        // n=0 is the original image, n is the nth downsized texture image
+    //        0,
+    //        // Image format to store the texture in
+    //        GL_RGB,
+    //        // Width and height of the *resulting* texture
+    //        width,
+    //        height,
+    //        // This value always has to be zero, due to legacy...
+    //        // What if we don't pass in zero...?
+    //        0,
+    //        // Format of the loaded texture image data
+    //        // We loaded a `.jpg` texture image as an unsigned char
+    //        imageFormats[i],
+    //        GL_UNSIGNED_BYTE,
+    //        // Actual image data
+    //        textureImageData
+    //    );
     
-        // Generate mipmaps for this texture
-        // Can do the equivalent for each image size by calling `glTexImage2D()`
-        //  for each mipmap level to generate
-        glGenerateMipmap(GL_TEXTURE_2D);
+    //    // Generate mipmaps for this texture
+    //    // Can do the equivalent for each image size by calling `glTexImage2D()`
+    //    //  for each mipmap level to generate
+    //    glGenerateMipmap(GL_TEXTURE_2D);
 
-        // Since the texture object has its own copy of the texture image data
-        //  we can free the loaded image
-        stbi_image_free(textureImageData);
+    //    // Since the texture object has its own copy of the texture image data
+    //    //  we can free the loaded image
+    //    stbi_image_free(textureImageData);
 
-        // Save the texture ID
-        textureIds[i] = textureId;
-    }
+    //    // Save the texture ID
+    //    textureIds[i] = textureId;
+    //}
     
     /* Textures end */
 
@@ -788,12 +788,12 @@ int main(int argc, char* argv[]) {
     //glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
     // Set the diffuse map to the correct texture unit
-    lightingShader.setInt("material.diffuse", 0);
-    lightingShader.setInt("material.specular", 1);
-    // Use the matrix emission map
-    lightingShader.setInt("material.emission", 2);
-    // Indicate where the emission occurs
-    lightingShader.setInt("material.emission_area", 3);
+    //lightingShader.setInt("material.diffuse", 0);
+    //lightingShader.setInt("material.specular", 1);
+    //// Use the matrix emission map
+    //lightingShader.setInt("material.emission", 2);
+    //// Indicate where the emission occurs
+    //lightingShader.setInt("material.emission_area", 3);
     
     // Load the backpack model
     std::filesystem::path modelPath("textures");
@@ -843,21 +843,21 @@ int main(int argc, char* argv[]) {
             glClearColor(0.0, 0.0, 0.0, 0.0);
         }
 
-        // Make the texture object that we created the active texture object
-        // Bind each texture to its own texture unit in the fragment shader
-        glActiveTexture(GL_TEXTURE0); // activate the texture unit first
-        glBindTexture(GL_TEXTURE_2D, textureIds[0]);    
+        //// Make the texture object that we created the active texture object
+        //// Bind each texture to its own texture unit in the fragment shader
+        //glActiveTexture(GL_TEXTURE0); // activate the texture unit first
+        //glBindTexture(GL_TEXTURE_2D, textureIds[0]);    
 
-        glActiveTexture(GL_TEXTURE1); // activate the texture unit first
-        glBindTexture(GL_TEXTURE_2D, textureIds[1]);    
+        //glActiveTexture(GL_TEXTURE1); // activate the texture unit first
+        //glBindTexture(GL_TEXTURE_2D, textureIds[1]);    
 
-        // Matrix emission map    
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, textureIds[2]);    
+        //// Matrix emission map    
+        //glActiveTexture(GL_TEXTURE2);
+        //glBindTexture(GL_TEXTURE_2D, textureIds[2]);    
 
-        // Matrix emission map area
-        glActiveTexture(GL_TEXTURE3);
-        glBindTexture(GL_TEXTURE_2D, textureIds[3]);    
+        //// Matrix emission map area
+        //glActiveTexture(GL_TEXTURE3);
+        //glBindTexture(GL_TEXTURE_2D, textureIds[3]);    
 
         glBindVertexArray(VAO);
         
@@ -923,29 +923,29 @@ int main(int argc, char* argv[]) {
         lightingShader.setFloat("spotLight.cos_inner_cutoff", glm::cos(glm::radians(spot_light.inner_cutoff_degrees)));
         lightingShader.setFloat("spotLight.cos_outer_cutoff", glm::cos(glm::radians(spot_light.outer_cutoff_degrees)));
 
-        // Draw each cube positioned at different locations
-        for (int i=0; i<10; i++) {
-            // Create a transformation matrix for this cube and apply it in the vertex shader
-            glm::mat4 model_matrix(1.0f);
-            model_matrix = glm::translate(model_matrix, cubePositions[i]);
-            model_matrix = glm::rotate(model_matrix, glm::radians(20.f * i), glm::vec3(1.0f, 0.3f, 0.5f));
-             
-            //if (i%3 == 0) {
-            //    // Update the angle of rotation over time
-            //    float angle_of_rotation = (float)glfwGetTime() * glm::radians(50.0f);
-            //    model_matrix = glm::rotate(model_matrix, angle_of_rotation, axis_of_rotation);
-            //}
-            // Set the model matrix
-            lightingShader.setMatrix("model", model_matrix);
+        //// Draw each cube positioned at different locations
+        //for (int i=0; i<10; i++) {
+        //    // Create a transformation matrix for this cube and apply it in the vertex shader
+        //    glm::mat4 model_matrix(1.0f);
+        //    model_matrix = glm::translate(model_matrix, cubePositions[i]);
+        //    model_matrix = glm::rotate(model_matrix, glm::radians(20.f * i), glm::vec3(1.0f, 0.3f, 0.5f));
+        //     
+        //    //if (i%3 == 0) {
+        //    //    // Update the angle of rotation over time
+        //    //    float angle_of_rotation = (float)glfwGetTime() * glm::radians(50.0f);
+        //    //    model_matrix = glm::rotate(model_matrix, angle_of_rotation, axis_of_rotation);
+        //    //}
+        //    // Set the model matrix
+        //    lightingShader.setMatrix("model", model_matrix);
 
-            //// Change the emission over time
-            //float emission_strength = abs(cos(glfwGetTime() + i));
-            //float emission_strength = 1.0f;
-            //lightingShader.setFloat("material.emission_strength", emission_strength);
+        //    //// Change the emission over time
+        //    //float emission_strength = abs(cos(glfwGetTime() + i));
+        //    //float emission_strength = 1.0f;
+        //    //lightingShader.setFloat("material.emission_strength", emission_strength);
 
-            // Draw the cube!
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
+        //    // Draw the cube!
+        //    glDrawArrays(GL_TRIANGLES, 0, 36);
+        //}
 
         // Draw the backpack
         backpack.draw(lightingShader);

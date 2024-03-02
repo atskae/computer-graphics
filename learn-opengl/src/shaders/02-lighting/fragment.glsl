@@ -14,12 +14,6 @@ struct Material {
     sampler2D emission_area;
     float emission_strength;
     float shininess;
-
-    // The backpack
-    sampler2D texture_diffuse0;
-    sampler2D texture_diffuse1;
-    sampler2D texture_specular0;
-    sampler2D texture_specular1;
 };
 
 // Light source with no position and are defined to be infinitely far away (ex. sun)
