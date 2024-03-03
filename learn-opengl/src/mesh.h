@@ -149,19 +149,7 @@ void Mesh::setupMesh() {
         (void*) offsetof(Vertex, textureCoordinates) // offset into the vertex data where this data starts
     );
     glEnableVertexAttribArray(TEXTURE_COORDINATE_VERTEX_ATTRIBUTE_LOCATION);
-
-    // Configure how OpenGL will apply the texture with out-of-bounds coordinates
-    // Texture coordinate labels: (s,t,r)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // When the texture is minimized, linearly interpolate between the two closest minmaps
-    //  and sample the interpolated minmap level with linear interpolation
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    // When magnifying, stay on the same minmap level, and linearly interpolate the color value
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // Generate mip maps
-    glGenerateMipmap(GL_TEXTURE_2D);
-
+    
     // Unbind the bounded Vertex Array Object by passing in zero
     glBindVertexArray(0);
 }
@@ -179,9 +167,9 @@ void Mesh::draw(Shader& shader) {
     unsigned int numDiffuse = 1;
     unsigned int numSpecular = 1;
     for (unsigned int i=0; i<this->textures.size(); i++) {
-        glActiveTexture(GL_TEXTURE0 + i);
-        
         Texture& texture = this->textures[i];
+        
+        glActiveTexture(GL_TEXTURE0 + i);
 
         // Set the uniform variable that holds the texture
         int texture_unit = 0;

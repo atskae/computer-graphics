@@ -112,6 +112,16 @@ unsigned int TextureFromFile(const char* filePath, std::string directory) {
     // Activate the texture unit so subsequent texture calls affect this texture
     glBindTexture(GL_TEXTURE_2D, id);
 
+    // Configure how OpenGL will apply the texture with out-of-bounds coordinates
+    // Texture coordinate labels: (s,t,r)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // When the texture is minimized, linearly interpolate between the two closest minmaps
+    //  and sample the interpolated minmap level with linear interpolation
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    // When magnifying, stay on the same minmap level, and linearly interpolate the color value
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    
     // Load the texture file
     // Texture image properties
     int width, height, numColorChannels;
@@ -130,6 +140,10 @@ unsigned int TextureFromFile(const char* filePath, std::string directory) {
     } else {
         std::cout << "Failed to load texture file: " << texturePath.string() << std::endl;
     }
+    
+    // Generate mip maps
+    glGenerateMipmap(GL_TEXTURE_2D);
+    
     // Free image data
     stbi_image_free(data);
 
