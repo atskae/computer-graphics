@@ -72,4 +72,4 @@ shader.setInt(texture_name, i);
 
 I also had to update the fragment shader to use uniform variables `texture_x` in the lighting calculations.
 
-![Backpack](images/backpack.mp4)
+![Backpack](images/backpack.gif)
