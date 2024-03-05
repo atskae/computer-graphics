@@ -58,3 +58,18 @@ glGenerateMipmap(GL_TEXTURE_2D);
 Light can still be applied:
 
 ![Black white backpack purple light](images/bw_backpack_purple.png)
+
+### Bug
+
+Fixed! The error was not calling `glActiveTexture` in the Mesh class, and I was accidentally setting the uniform variable to the textureID, and not the texture sampler number:
+```cpp
+// Activate the texture unit
+glActiveTexture(GL_TEXTURE0 + i);
+
+// Assign the texture's texture unit
+shader.setInt(texture_name, i);
+```
+
+I also had to update the fragment shader to use uniform variables `texture_x` in the lighting calculations.
+
+![Backpack](images/backpack.mp4)

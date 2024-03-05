@@ -14,6 +14,13 @@ struct Material {
     sampler2D emission_area;
     float emission_strength;
     float shininess;
+
+    // backpack
+    sampler2D texture_specular0;
+    sampler2D texture_specular1;
+    sampler2D texture_diffuse0;
+    sampler2D texture_diffuse1;
+
 };
 
 // Light source with no position and are defined to be infinitely far away (ex. sun)
@@ -120,7 +127,7 @@ void main() {
 }
 
 vec3 calculateAmbience(vec3 lightAmbience) {
-    vec3 ambience = lightAmbience * vec3(texture(material.diffuse, TextureCoordinates));
+    vec3 ambience = lightAmbience * vec3(texture(material.texture_diffuse0, TextureCoordinates));
     return ambience;
 }
 
@@ -132,7 +139,7 @@ vec3 calculateDiffuse(vec3 lightDiffuse, vec3 lightDirection, vec3 normal) {
     // The product of two *unit* vectors will give us cos(theta) 
     // We take the max to avoid negative dot product (occurs when the angle > 90)
     float diffuseStrength = max(dot(lightDirection, normal), 0.0);
-    vec3 diffuse = lightDiffuse * diffuseStrength * vec3(texture(material.diffuse, TextureCoordinates));
+    vec3 diffuse = lightDiffuse * diffuseStrength * vec3(texture(material.texture_diffuse0, TextureCoordinates));
     return diffuse;
 }
 
@@ -144,7 +151,7 @@ vec3 calculateSpecular(vec3 lightSpecular, vec3 lightDirection, vec3 normal, vec
     // Higher values, a smaller area will get intense light (highlights)
     // Lower values, light is spread out across the fragment
     float spec = pow(max(dot(viewDirection, reflectionDirection), 0.0), material.shininess);
-    vec3 texture_color = vec3(texture(material.specular, TextureCoordinates));
+    vec3 texture_color = vec3(texture(material.texture_specular0, TextureCoordinates));
     vec3 specular = lightSpecular * texture_color * spec;
     return specular;
 }

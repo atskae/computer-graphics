@@ -164,12 +164,10 @@ void Mesh::draw(Shader& shader) {
     //  uniform sampler2D texture_specular1;
     //  uniform sampler2D texture_specular2
     //  ...etc
-    unsigned int numDiffuse = 1;
-    unsigned int numSpecular = 1;
+    unsigned int numDiffuse = 0;
+    unsigned int numSpecular = 0;
     for (unsigned int i=0; i<this->textures.size(); i++) {
         Texture& texture = this->textures[i];
-        
-        glActiveTexture(GL_TEXTURE0 + i);
 
         // Set the uniform variable that holds the texture
         int texture_unit = 0;
@@ -182,17 +180,20 @@ void Mesh::draw(Shader& shader) {
         else {
             std::cout << "Invalid texture type: " << texture.type << std::endl;
         }
-        
+
         char buffer[100];
-        //int result = std::sprintf(buffer, "material.texture_%s%i", texture.type.c_str(), texture_unit);
-        int result = std::sprintf(buffer, "material.%s", texture.type.c_str());
+        int result = std::sprintf(buffer, "material.texture_%s%i", texture.type.c_str(), texture_unit);
         std::string texture_name = std::string(buffer, result);
 
-        shader.setInt(texture_name, texture.id);
+        // Activate the texture unit
+        glActiveTexture(GL_TEXTURE0 + i);
+
+        // Assign the texture's texture unit
+        shader.setInt(texture_name, i);
         
+        // Bind the loaded texture to the activated texture unit
         glBindTexture(GL_TEXTURE_2D, texture.id); 
     }
-    glActiveTexture(GL_TEXTURE0);
 
     // Draw the mesh
     
