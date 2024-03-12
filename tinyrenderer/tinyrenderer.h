@@ -17,4 +17,7 @@ struct Point {
 // Colors a line of pixels spaced by `step`
 void line_with_step(Point p0, Point p1, TGAImage& image, TGAColor color);
 
+// Calculates the number of pixels needed to fill the line
+void line_with_calculated_step(Point p0, Point p1, TGAImage& image, TGAColor color);
+
 #endif // Header guard
