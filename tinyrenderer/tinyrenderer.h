@@ -20,4 +20,8 @@ void line_with_step(Point p0, Point p1, TGAImage& image, TGAColor color);
 // Calculates the number of pixels needed to fill the line
 void line_with_calculated_step(Point p0, Point p1, TGAImage& image, TGAColor color);
 
+// Swaps the coordinates so that drawing a line from p0 to p1
+// contains points that increase going from p0 to p1
+void line_with_swap(Point p0, Point p1, TGAImage& image, TGAColor color);
+
 #endif // Header guard
