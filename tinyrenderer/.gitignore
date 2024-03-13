@@ -1,3 +1,5 @@
 *.o
 tinyrenderer
 output.png
+*.out
+

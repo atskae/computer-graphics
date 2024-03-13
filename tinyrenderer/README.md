@@ -91,3 +91,46 @@ line_with_swap(Point(13, 20), Point(80, 40), image, white);
 ```
 
 ![Line with swap](images/line_with_swap.png)
+
+### [Timings: Fourth Attempt](https://github.com/ssloy/tinyrenderer/wiki/Lesson-1:-Bresenham%E2%80%99s-Line-Drawing-Algorithm#timings-fourth-attempt)
+
+We profile our code by running the line drawing steps `1,000,000` times:
+```cpp
+for (int i=0; i<1000000; i++) {	
+    line_with_swap(Point(13, 20), Point(80, 40), image, white);
+    line_with_swap(Point(20, 13), Point(40, 80), image, red);
+    line_with_swap(Point(80, 40), Point(13, 20), image, red);
+}
+```
+
+We use `gprof` to profile our code.
+
+First I updated the Makefile to use the profiling flags:
+```make
+CPPFLAGS     = -ggdb -g -pg -O0
+LDFLAGS      = -pg
+```
+
+Then we run the executable as normal, which then generates a `gmon.out` file.
+
+Then we pass in the executable and `gmon.out` to `grof`:
+```
+gprof tinyrenderer gmon.out > profile.out
+```
+
+We can then view the profiling analysis:
+
+```
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  ms/call  ms/call  name    
+ 57.93      1.90     1.90  3000000     0.00     0.00  line_with_swap(Point, Point, TGAImage&, TGAColor)
+ 29.27      2.86     0.96 204000000     0.00     0.00  TGAImage::set(int, int, TGAColor)
+  7.93      3.12     0.26 207000000     0.00     0.00  TGAColor::TGAColor(TGAColor const&)
+  2.74      3.21     0.09                             _init
+  1.68      3.27     0.06  6000000     0.00     0.00  Point::Point(int, int)
+  0.30      3.27     0.01                             main
+  0.15      3.28     0.01        2     2.50     2.50  TGAColor::TGAColor(unsigned char, unsigned char, unsigned char, unsigned char)
+```
