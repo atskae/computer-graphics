@@ -134,3 +134,83 @@ Each sample counts as 0.01 seconds.
   0.30      3.27     0.01                             main
   0.15      3.28     0.01        2     2.50     2.50  TGAColor::TGAColor(unsigned char, unsigned char, unsigned char, unsigned char)
 ```
+
+The left-most column shows the percentage of total time that a function took. So drawing lines took 58% of the total time.
+
+### [Fourth Attempt Continued](https://github.com/ssloy/tinyrenderer/wiki/Lesson-1:-Bresenham%E2%80%99s-Line-Drawing-Algorithm#fourth-attempt-continued)
+
+Re-running actually gives a range of percentages, maybe due to caching?
+The percentage of drawing a line ranges from 45-60%.
+
+Using `std::swap()` and calculating `dy`/`dx` outside the loop didn't change it much.
+
+We apply [Bresenham's Algorithm](https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm).
+
+![Bresenham's illustrated](images/bresenham.png)
+
+The ideal line intersects at `y` at a multiple of the slope.
+
+The `error` keeps track of the distance between the bottom edge of the pixel and where the ideal line intersects and leaves the pixel.
+
+If this error exceeds `0.5` (halfway mark of the edge of a pixel), then we increment the y-coordinate.
+
+If we incremented `y`, we subtract `1` from the error (the length of each side of a pixel is `1`). Then when we add the slope value to `error`, this gives us the distance between the next pixel's bottom edge to the point of intersection.
+
+Drawing a line from `(0,1)` to `(4,4)` (with each pixel alternating colors):
+```
+derror=0.75
+---
+(0,1); error=0; red=0
+---
+error=0.75
+(1,2); error=-0.25; red=255
+---
+error=0.5
+(2,2); error=0.5; red=0
+---
+error=1.25
+(3,3); error=0.25; red=255
+---
+error=1
+(4,4); error=0; red=0
+---
+error=0.75
+```
+
+![Tiny line](images/tiny_line.png)
+
+I drew both lines to ensure correctness (`line()` is from tinyrenderer):
+```cpp
+line_with_swap_optimized(Point(80, 40), Point(13, 20), image, red);
+line(Point(80, 40), Point(13, 20), image, white);
+
+line_with_swap_optimized(Point(20, 13), Point(40, 80), image, red);
+line(Point(20, 13), Point(40, 80), image, white);
+```
+
+If my implementation was incorrect, we'd see red pixels:
+
+![Bresenham check](images/bresenham_check.png)
+
+Running the benchmark of the three lines for 1,000,000 iterations:
+```
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  ns/call  ns/call  name    
+ 45.91      0.79     0.79 204000000     3.85     3.85  TGAImage::set(int, int, TGAColor)
+ 23.39      1.19     0.40  3000000   133.33   513.26  line_with_swap_optimized(Point, Point, TGAImage&, TGAColor)
+ 21.05      1.54     0.36 207000000     1.74     1.74  TGAColor::TGAColor(TGAColor const&)
+  3.80      1.61     0.07                             TGAImage::get(int, int)
+  2.92      1.66     0.05                             _init
+  1.75      1.69     0.03                             TGAImage::get_bytespp()
+  0.58      1.70     0.01  6000000     1.67     1.67  Point::Point(int, int)
+  0.58      1.71     0.01                             main
+  0.00      1.71     0.00  3000000     0.00     0.00  std::remove_reference<Point&>::type&& std::move<Point&>(Point&)
+  0.00      1.71     0.00  1000000     0.00     0.00  std::enable_if<std::__and_<std::__not_<std::__is_tuple_like<Point> >, std::is_move_constructible<Point>, std::is_move_assignable<Point> >::value, void>::type std::swap<Point>(Point&, Point&)
+  0.00      1.71     0.00        2     0.00     0.00  TGAColor::TGAColor(unsigned char, unsigned char, unsigned char, unsigned char)
+...
+```
+
+Drawing the line now accounts for only 23% of the time, versus the 57% from previous attempts.

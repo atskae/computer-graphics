@@ -7,10 +7,11 @@ const TGAColor red   = TGAColor(255, 0,   0,   255);
 int main(int argc, char** argv) {
 	TGAImage image(100, 100, TGAImage::RGB);
 
-	for (int i=0; i<1000000; i++) {	
-	    line_with_swap(Point(13, 20), Point(80, 40), image, white);
-	    line_with_swap(Point(20, 13), Point(40, 80), image, red);
-	    line_with_swap(Point(80, 40), Point(13, 20), image, red);
+	int num_iter = 1000000;
+	for (int i=0; i<num_iter; i++) {	
+	 	line_with_swap_optimized(Point(13, 20), Point(80, 40), image, white);
+	    line_with_swap_optimized(Point(20, 13), Point(40, 80), image, red);
+	    line_with_swap_optimized(Point(80, 40), Point(13, 20), image, red);
 	}
 
 	image.flip_vertically(); // i want to have the origin at the left bottom corner of the image

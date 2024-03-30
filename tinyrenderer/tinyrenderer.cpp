@@ -65,3 +65,92 @@ void line_with_swap(Point p0, Point p1, TGAImage& image, TGAColor color) {
 
     }
 }
+
+// Avoids executing multiplication by keeping track of the error
+// between the ideal line and pixel
+void line_with_swap_optimized(Point p0, Point p1, TGAImage& image, TGAColor color) {
+    // Choose the axis with the larger range so that more points are sampled
+    // Then make sure the that the range is increasing
+    if (abs(p0.y - p1.y) > abs(p0.x - p1.x)) {
+        // The y-axis has a larger range
+        // Ensure we are increasing
+        if (p1.y < p0.y) {
+            std::swap(p0, p1);
+        }
+
+        float slope = (float) (p1.x - p0.x) / (p1.y - p0.y);
+        
+        // The distance between the bottom edge of a pixel to where
+        // the ideal line intersects and leaves the pixel's edge
+        // The ideal line's y-value is at a multipe of the slope
+        float error = 0;
+        
+        int x = p0.x;
+        for (int y=p0.y; y<=p1.y; y++) {
+            image.set(x, y, color);
+            error += slope;
+            // Check if the distance between the point of intersection
+            // and the bottom edge of the pixel is greater than
+            // the midpoint of the edge of the pixel
+            if (error > 0.5) {
+                x += 1;
+                error -= 1;
+            }
+        }         
+
+    } else {
+        // The x-axis has a larger range
+        // Ensure we are increasing
+        if (p1.x < p0.x) {
+            std::swap(p0, p1);
+        }
+
+        float slope = (float) (p1.y - p0.y) / (p1.x - p0.x);
+        float error = 0;
+        int y = p0.y;
+        for (int x=p0.x; x<=p1.x; x++) {
+            image.set(x, y, color);
+            error += slope;
+            if (error > 0.5) {
+                y += 1;
+                error -= 1;
+            }
+        }
+    }
+}
+
+// Solution from tinyrenderer (to check for correctness)
+void line(Point p0, Point p1, TGAImage &image, TGAColor color) { 
+    bool steep = false; 
+    if (abs(p0.x-p1.x) < std::abs(p0.y-p1.y)) { 
+        std::swap(p0.x, p0.y); 
+        std::swap(p1.x, p1.y); 
+        steep = true; 
+    } 
+    if (p0.x>p1.x) { 
+        std::swap(p0, p1); 
+    } 
+    int dx = p1.x - p0.x; 
+    int dy = p1.y - p0.y; 
+    float derror = std::abs(dy/float(dx)); 
+    float error = 0; 
+    int y = p0.y; 
+    std::cout << "derror=" << derror << std::endl;
+    std::cout << "---" << std::endl;
+    for (int x=p0.x; x<=p1.x; x++) { 
+        std::swap(color.r, color.g);
+        if (steep) { 
+            image.set(y, x, color); 
+        } else { 
+            image.set(x, y, color); 
+        } 
+        std::cout << "(" << x << "," << y << "); error=" << error << "; red=" << (int)color.r << std::endl;
+        std::cout << "---" << std::endl;
+        error += derror; 
+        std::cout << "error=" << error << std::endl;
+        if (error>.5) { 
+            y += (y1 > y0 ? 1 :-1); 
+            error -= 1.0; 
+        } 
+    } 
+}
