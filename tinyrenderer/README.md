@@ -214,3 +214,121 @@ Each sample counts as 0.01 seconds.
 ```
 
 Drawing the line now accounts for only 23% of the time, versus the 57% from previous attempts.
+
+### [Timings: Fifth and final attempt](https://github.com/ssloy/tinyrenderer/wiki/Lesson-1:-Bresenham%E2%80%99s-Line-Drawing-Algorithm#timings-fifth-and-final-attempt)
+
+(`line_with_swap()` above was renamed to `line_no_multiply()`).
+
+This [explanation](https://www.cs.helsinki.fi/group/goa/mallinnus/lines/bresenh.html) was a good source on how to remove floating point.
+
+In the above logic we compared `error` with 0.5:
+```C++
+error += slope;
+if (error < 0.5) {
+  ///
+}
+```
+
+We can rewrite this comparison like:
+```C++
+if (error + slope < 0.5)
+```
+
+We can write the slope in terms of `dy` and `dx`
+```
+error + dy/dx < 0.5
+```
+
+Multiply by 2 on both sides to get an integer:
+```
+2(error + dy/dx) < 1
+2*error + 2*dy/dx < 1
+```
+
+Multiply by `dx` to remove the division from the slope:
+```
+(dx)(2*error + 2*dy/dx) < (dx)1
+2*dx*error + 2*dy < dx
+2(dx*error + dy) < dx
+```
+
+The update rule (for when the comparison is false) in the fractional version for `error` was:
+```C++
+error = error + slope - 1
+```
+
+Rewrite the update rule:
+```
+error = error + dy/dx - 1
+```
+
+Multiply by `dx` to remove the division in the slope:
+```
+dx(error) = dx(error + dy/dx - 1)
+dx*error = dx*error + dy - dx
+```
+
+Recall the comparison rule is now:
+```
+2(dx*error + dy) < dx
+2*dx*error + 2*dy < dx
+```
+
+The update rule is now:
+```
+dx*error = dx*error + dy - dx
+2*dx*error = 2*dx*error + 2*dy - 2*dx
+```
+
+We can rewrite `2*dx*error` as the new `error'` variable:
+Comparison:
+```
+error' + 2*dy < dx
+```
+
+Update:
+```
+error' = error' + 2*dy - 2dx
+```
+
+We still have multiplies but they are only multiplies by 2, which can be efficiently calculated by left-shift.
+
+In the loop (for each x), we add `2*dy` to `error'`.
+
+New performance profile:
+```
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  ns/call  ns/call  name    
+ 43.40      0.69     0.69 204000000     3.38     3.38  TGAImage::set(int, int, TGAColor)
+ 26.42      1.11     0.42  3000000   140.00   481.74  line_no_floating_point(Point, Point, TGAImage&, TGAColor)
+ 20.75      1.44     0.33 207000000     1.59     1.59  TGAColor::TGAColor(TGAColor const&)
+  3.77      1.50     0.06                             TGAImage::get(int, int)
+  1.89      1.53     0.03                             TGAImage::get_bytespp()
+  1.89      1.56     0.03                             main
+  0.63      1.57     0.01  6000000     1.67     1.67  Point::Point(int, int)
+  0.63      1.58     0.01  3000000     3.33     3.33  std::remove_reference<Point&>::type&& std::move<Point&>(Point&)
+  0.63      1.59     0.01                             _init
+  0.00      1.59     0.00  1000000     0.00    10.00  std::enable_if<std::__and_<std::__not_<std::__is_tuple_like<Point> >, std::is_move_constructible<Point>, std::is_move_assignable<Point> >::value, void>::type std::swap<Point>(Point&, Point&)
+  0.00      1.59     0.00        2     0.00     0.00  TGAColor::TGAColor(unsigned char, unsigned char, unsigned char, unsigned char)
+  ... 
+```
+
+The drawing line call decreased from `1.19` seconds to `1.11` seconds.
+
+Huh, slower with a constant reference to color:
+```
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  ns/call  ns/call  name    
+ 49.74      0.94     0.94 204000000     4.61     4.61  TGAImage::set(int, int, TGAColor)
+ 24.87      1.41     0.47  3000000   156.67   585.00  line_no_floating_point(Point, Point, TGAImage&, TGAColor const&)
+ 18.25      1.75     0.34 204000000     1.69     1.69  TGAColor::TGAColor(TGAColor const&)
+
+```
+
+Acutally the time fluctuates a lot...

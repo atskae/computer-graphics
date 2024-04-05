@@ -24,8 +24,13 @@ void line_with_calculated_step(Point p0, Point p1, TGAImage& image, TGAColor col
 // contains points that increase going from p0 to p1
 void line_with_swap(Point p0, Point p1, TGAImage& image, TGAColor color);
 
-// Same as line_with_swap() but optimized for performance
-void line_with_swap_optimized(Point p0, Point p1, TGAImage& image, TGAColor color);
+// Same as line_with_swap() but optimized for performance by removing multiplies
+void line_no_multiply(Point p0, Point p1, TGAImage& image, TGAColor color);
+
+// Same as line_With_swap_optmized() but removes floating point and division
+// Also passes by reference
+// Multiplies used are only by 2, so they are efficient (only require a left-shift)
+void line_no_floating_point(Point p0, Point p1, TGAImage& image, TGAColor color);
 
 // tinyrenderer (repo)'s implementation
 void line(Point p0, Point p1, TGAImage &image, TGAColor color);

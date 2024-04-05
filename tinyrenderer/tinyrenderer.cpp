@@ -68,7 +68,7 @@ void line_with_swap(Point p0, Point p1, TGAImage& image, TGAColor color) {
 
 // Avoids executing multiplication by keeping track of the error
 // between the ideal line and pixel
-void line_with_swap_optimized(Point p0, Point p1, TGAImage& image, TGAColor color) {
+void line_no_multiply(Point p0, Point p1, TGAImage& image, TGAColor color) {
     // Choose the axis with the larger range so that more points are sampled
     // Then make sure the that the range is increasing
     if (abs(p0.y - p1.y) > abs(p0.x - p1.x)) {
@@ -118,6 +118,55 @@ void line_with_swap_optimized(Point p0, Point p1, TGAImage& image, TGAColor colo
         }
     }
 }
+
+// Avoids floating point and division
+void line_no_floating_point(Point p0, Point p1, TGAImage& image, TGAColor color) {
+    // Choose the axis with the larger range so that more points are sampled
+    // Then make sure the that the range is increasing
+    if (abs(p0.y - p1.y) > abs(p0.x - p1.x)) {
+        // The y-axis has a larger range
+        // Ensure we are increasing
+        if (p1.y < p0.y) {
+            std::swap(p0, p1);
+        }
+
+        int dy = p1.y - p0.y;
+        int dy_2 = 2*dy;
+        int dx_2 = 2*(p1.x - p0.x);
+        int error = 0;
+        int x = p0.x;
+        for (int y=p0.y; y<=p1.y; y++) {
+            image.set(x, y, color);
+            error += dx_2;
+            if (error > dy) {
+                x += 1;
+                error -= dy_2;
+            }
+        }         
+
+    } else {
+        // The x-axis has a larger range
+        // Ensure we are increasing
+        if (p1.x < p0.x) {
+            std::swap(p0, p1);
+        }
+
+        int dx = p1.x - p0.x;
+        int dx_2 = 2*dx;
+        int dy_2 = 2*(p1.y - p0.y);
+        int error = 0;
+        int y = p0.y;
+        for (int x=p0.x; x<=p1.x; x++) {
+            image.set(x, y, color);
+            error += dy_2;
+            if (error > dx) {
+                y += 1;
+                error -= dx_2;
+            }
+        }
+    }
+}
+
 
 // Solution from tinyrenderer (to check for correctness)
 void line(Point p0, Point p1, TGAImage &image, TGAColor color) { 
