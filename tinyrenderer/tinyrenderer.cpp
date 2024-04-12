@@ -168,38 +168,6 @@ void line_no_floating_point(Point p0, Point p1, TGAImage& image, TGAColor color)
 }
 
 
-// Solution from tinyrenderer (to check for correctness)
 void line(Point p0, Point p1, TGAImage &image, TGAColor color) { 
-    bool steep = false; 
-    if (abs(p0.x-p1.x) < std::abs(p0.y-p1.y)) { 
-        std::swap(p0.x, p0.y); 
-        std::swap(p1.x, p1.y); 
-        steep = true; 
-    } 
-    if (p0.x>p1.x) { 
-        std::swap(p0, p1); 
-    } 
-    int dx = p1.x - p0.x; 
-    int dy = p1.y - p0.y; 
-    float derror = std::abs(dy/float(dx)); 
-    float error = 0; 
-    int y = p0.y; 
-    std::cout << "derror=" << derror << std::endl;
-    std::cout << "---" << std::endl;
-    for (int x=p0.x; x<=p1.x; x++) { 
-        std::swap(color.r, color.g);
-        if (steep) { 
-            image.set(y, x, color); 
-        } else { 
-            image.set(x, y, color); 
-        } 
-        std::cout << "(" << x << "," << y << "); error=" << error << "; red=" << (int)color.r << std::endl;
-        std::cout << "---" << std::endl;
-        error += derror; 
-        std::cout << "error=" << error << std::endl;
-        if (error>.5) { 
-            y += (y1 > y0 ? 1 :-1); 
-            error -= 1.0; 
-        } 
-    } 
+    line_no_floating_point(p0, p1, image, color);
 }

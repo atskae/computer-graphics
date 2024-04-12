@@ -32,7 +32,7 @@ void line_no_multiply(Point p0, Point p1, TGAImage& image, TGAColor color);
 // Multiplies used are only by 2, so they are efficient (only require a left-shift)
 void line_no_floating_point(Point p0, Point p1, TGAImage& image, TGAColor color);
 
-// tinyrenderer (repo)'s implementation
+// Current implementation used 
 void line(Point p0, Point p1, TGAImage &image, TGAColor color);
 
 #endif // Header guard
