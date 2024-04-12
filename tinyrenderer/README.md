@@ -332,3 +332,8 @@ Each sample counts as 0.01 seconds.
 ```
 
 Acutally the time fluctuates a lot...
+
+### [Wireframe Rendering](https://github.com/ssloy/tinyrenderer/wiki/Lesson-1:-Bresenham%E2%80%99s-Line-Drawing-Algorithm#wireframe-rendering)
+
+[Wavefront Obj](https://en.wikipedia.org/wiki/Wavefront_.obj_file) is a file format that stores 3D geometry definitions (developed by a company called Wavefront Technologies), storing vertices, UV coordinates for textures, faces, and normal vectors.
+

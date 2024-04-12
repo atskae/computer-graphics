@@ -1,5 +1,8 @@
+#include <vector>
+
 #include "tgaimage.h"
 #include "tinyrenderer.h"
+#include "model.h"
 
 const TGAColor white = TGAColor(255, 255, 255, 255);
 const TGAColor red   = TGAColor(255, 0,   0,   255);
@@ -12,6 +15,11 @@ int main(int argc, char** argv) {
 	 	line(Point(13, 20), Point(80, 40), image, white);
 	    line(Point(20, 13), Point(40, 80), image, red);
 	    line(Point(80, 40), Point(13, 20), image, red);
+	}
+	Model model("obj/african_head.obj");
+	std::vector<Vec3>& vertices = model.get_vertices();
+	for (auto& v: vertices) {
+		std::cout << v << std::endl;
 	}
 
 	image.flip_vertically(); // i want to have the origin at the left bottom corner of the image
