@@ -6,6 +6,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <algorithm>
 
 #include "geometry.h"
 
@@ -15,6 +16,12 @@ struct VertexIndex {
     unsigned int normal_index = 0; // index into the normal vectors array
 };
 
+std::ostream& operator << (std::ostream& o, const VertexIndex& vi) {
+    o << "VertexIndex(vertex_index=" << vi.vertex_index << 
+        ", texture_coordinate_index=" << vi.texture_coordinate_index <<
+        ", normal_index=" << vi.normal_index << ")";
+    return o;
+}
 struct Face {
     std::vector<VertexIndex> vertex_indices;
 };
@@ -26,6 +33,18 @@ class Model {
         // Getters
         std::vector<Vec3>& get_vertices() {
             return this->vertices;
+        }
+
+        std::vector<Vec3>& get_texture_coordinates() {
+            return this->texture_coordinates;
+        }
+
+        std::vector<Vec3>& get_normals() {
+            return this->normals;
+        }
+
+        std::vector<Face>& get_faces() {
+            return this->faces;
         }
 
     private:
@@ -51,12 +70,33 @@ Model::Model(const char* filename) {
 
             if (tokens.size() > 0) {
                 std::string type = tokens[0];
-                if (type == "v") {
+                if (type == "v" || type == "vt" || type == "vn") {
                     Vec3 vertex;
                     vertex.x = std::stof(tokens[1]);
                     vertex.y = std::stof(tokens[2]);
                     vertex.z = std::stof(tokens[3]);
-                    this->vertices.push_back(vertex);
+
+                    if(type == "v") this->vertices.push_back(vertex);
+                    else if (type == "vt") this->texture_coordinates.push_back(vertex);
+                    else if (type == "vn") this->normals.push_back(vertex);
+                } else if (type == "f") {
+                    Face face;
+                    for (unsigned int i=1; i<tokens.size(); i++) {
+                        std::string token = tokens[i];
+                        std::replace(token.begin(), token.end(), '/', ' ');
+                        std::string sub_token;
+                        std::vector<std::string> sub_tokens;
+                        std::stringstream ss(token);
+                        while(ss >> sub_token) {
+                            sub_tokens.push_back(sub_token);
+                        }
+                        VertexIndex vi;
+                        vi.vertex_index = std::stoi(sub_tokens[0]);
+                        vi.texture_coordinate_index = std::stoi(sub_tokens[1]);
+                        vi.normal_index = std::stoi(sub_tokens[2]);
+                        face.vertex_indices.push_back(vi);
+                    }
+                    this->faces.push_back(face);
                 }
             }
             

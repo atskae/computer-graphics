@@ -17,9 +17,14 @@ int main(int argc, char** argv) {
 	    line(Point(80, 40), Point(13, 20), image, red);
 	}
 	Model model("obj/african_head.obj");
-	std::vector<Vec3>& vertices = model.get_vertices();
-	for (auto& v: vertices) {
-		std::cout << v << std::endl;
+	std::vector<Face>& faces = model.get_faces();
+	std::cout << faces.size() << " faces found" << std::endl; 
+	for (auto& f: faces) {
+		std::cout << "Face" << std::endl;
+		for (auto vi: f.vertex_indices) {
+			std::cout << vi << std::endl;
+		}
+		std::cout << std::endl;
 	}
 
 	image.flip_vertically(); // i want to have the origin at the left bottom corner of the image
