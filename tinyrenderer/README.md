@@ -337,3 +337,8 @@ Acutally the time fluctuates a lot...
 
 [Wavefront Obj](https://en.wikipedia.org/wiki/Wavefront_.obj_file) is a file format that stores 3D geometry definitions (developed by a company called Wavefront Technologies), storing vertices, UV coordinates for textures, faces, and normal vectors.
 
+First attempt in a `500x700` sized image:
+
+![Wireframe attempt 1](images/wireframe_attempt_1.png)
+
+Time to debug!!

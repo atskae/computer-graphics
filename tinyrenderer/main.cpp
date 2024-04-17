@@ -1,30 +1,47 @@
 #include <vector>
 
 #include "tgaimage.h"
-#include "tinyrenderer.h"
 #include "model.h"
+#include "tinyrenderer.h"
 
 const TGAColor white = TGAColor(255, 255, 255, 255);
 const TGAColor red   = TGAColor(255, 0,   0,   255);
 
 int main(int argc, char** argv) {
-	TGAImage image(100, 100, TGAImage::RGB);
-
-	int num_iter = 1;
-	for (int i=0; i<num_iter; i++) {	
-	 	line(Point(13, 20), Point(80, 40), image, white);
-	    line(Point(20, 13), Point(40, 80), image, red);
-	    line(Point(80, 40), Point(13, 20), image, red);
-	}
+	int width = 500;
+	int height = 700;
+	TGAImage image(width, height, TGAImage::RGB);
+	
 	Model model("obj/african_head.obj");
 	std::vector<Face>& faces = model.get_faces();
+	std::vector<Vec3>& vertices = model.get_vertices();
 	std::cout << faces.size() << " faces found" << std::endl; 
-	for (auto& f: faces) {
-		std::cout << "Face" << std::endl;
-		for (auto vi: f.vertex_indices) {
-			std::cout << vi << std::endl;
+	for (auto& face: faces) {
+		unsigned int num_vertices = face.vertex_indices.size();
+		for (unsigned int i=0; i<num_vertices; i++) {
+			VertexIndex vi_0 = face.vertex_indices[i];
+			// Module has precedence over +
+			VertexIndex vi_1 = face.vertex_indices[(i+1) % num_vertices];
+			Vec3& v0 = vertices[vi_0.vertex_index];
+			Vec3& v1 = vertices[vi_1.vertex_index];
+
+			// Normalize the vectors so that they map into a canvas
+			// of size width x height
+			// The coordinates in the Obj file have a range of [-1, 1]
+			// We add +1 to the coordinate so that the range is positive
+			// which becomes: [0, 2]
+			// We then divide by 2 so that the range becomes: [0, 1]
+			// which is now normalized
+			// Then we multiply by width for x (height for y)
+			// so that the coordinate is a value between [0, width]
+			// ([0, height] for y)
+			int x0 = (v0.x + 1)/2 * width;
+			int y0 = (v0.y + 1)/2 * height;
+			int x1 = (v1.x + 1)/2 * width;
+			int y1 = (v1.y + 1)/2 * height;
+
+			line(Point(x0, y0), Point(x1, y1), image, white);
 		}
-		std::cout << std::endl;
 	}
 
 	image.flip_vertically(); // i want to have the origin at the left bottom corner of the image
