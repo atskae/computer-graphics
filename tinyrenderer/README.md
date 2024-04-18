@@ -342,3 +342,54 @@ First attempt in a `500x700` sized image:
 ![Wireframe attempt 1](images/wireframe_attempt_1.png)
 
 Time to debug!!
+
+Looks like my line implementation is also buggy, it does not align perfectly with tinyrenderer's (in red):
+
+![Compare wireframes](images/wireframe_attempt_1_compare.png)
+
+(Still looks incorrect thought, but *better*):
+
+![Tinyrenderer wireframe](images/wireframe_attempt_1_tinyrenderer.png)
+
+If we compare one face, for example, the Face at index `2000`:
+```
+0: Drawing a line from Vec3(-0.183941, -0.499632, 0.122144) to Vec3(-0.142059, 0.263388, 0.482491)
+Drawing a normalized line from Point(285, 250, 0) to Point(300, 631, 0) with color: white
+---
+1: Drawing a line from Vec3(-0.142059, 0.263388, 0.482491) to Vec3(-0.065825, -0.384532, 0.440825)
+Drawing a normalized line from Point(300, 631, 0) to Point(326, 307, 0) with color: red
+---
+2: Drawing a line from Vec3(-0.065825, -0.384532, 0.440825) to Vec3(-0.183941, -0.499632, 0.122144)
+Drawing a normalized line from Point(326, 307, 0) to Point(285, 250, 0) with color: green
+---
+
+```
+
+Our implementation does not close the face:
+
+![Not closed face](images/not_closed_face_0.png)
+![Not closed face comparison](images/not_closed_face_1.png)
+
+The implementation up until `line_with_swap()` was closest to tinyrenderer's (in red):
+![Wireframe line with swap](images/wireframe_line_with_swap_compare.png)
+
+(funky art)
+
+![Wireframe line with swap](images/wireframe_line_with_swap.png)
+
+The BUG! Was the off-by-one indexing when indexing into the vertices array:
+```cpp
+// Did not subtract by 1 here....
+Vec3& v0 = vertices[vi_0.vertex_index];
+Vec3& v1 = vertices[vi_1.vertex_index];
+```
+Wavefront Obj file indexing starts at 1...
+
+After the fix ✨:
+![Wireframe attempt 1 correct](images/wireframe_attempt_1_good.png)
+
+Now I gotta fix my line implementation (above used `line_with_swap()`...)
+
+There are also lines missing at the neck base. This is what it *should* look like  (using tinyrenderer's line):
+
+![Wireframe correct example](images/wireframe_attempt_1_example.png)

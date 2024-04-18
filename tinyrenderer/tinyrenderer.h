@@ -1,6 +1,8 @@
 #ifndef TINYRENDERER_H
 #define TINYRENDERER_H
 
+#include <iostream>
+
 #include "tgaimage.h"
 
 struct Point {
@@ -11,6 +13,11 @@ struct Point {
     Point(int x, int y): x(x), y(y) {}
 };
 
+inline std::ostream& operator << (std::ostream& o, const Point& p) {
+    o << "Point(" << p.x << ", " << p.y << ", " << p.z << ")";
+    return o;
+}
+    
 /* Draws a line segment from p0 to p1 */
 
 // Uses an arbitrary step value between 0 and 1
@@ -34,5 +41,8 @@ void line_no_floating_point(Point p0, Point p1, TGAImage& image, TGAColor color)
 
 // Current implementation used 
 void line(Point p0, Point p1, TGAImage &image, TGAColor color);
+
+// tinyrenderer's implementation
+void line_official(Point p0, Point p1, TGAImage &image, TGAColor color);
 
 #endif // Header guard
