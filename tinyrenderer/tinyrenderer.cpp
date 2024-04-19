@@ -35,7 +35,7 @@ void line_with_swap(Point p0, Point p1, TGAImage& image, TGAColor color) {
     if (abs(p0.y - p1.y) > abs(p0.x - p1.x)) {
         // The y-axis has a larger range
         // Ensure we are increasing
-        if (pp1.y < pp0.x) {
+        if (pp1.y < pp0.y) {
             pp0 = p1;
             pp1 = p0;
         }
@@ -67,6 +67,7 @@ void line_with_swap(Point p0, Point p1, TGAImage& image, TGAColor color) {
 
 // Avoids executing multiplication by keeping track of the error
 // between the ideal line and pixel
+// This implementation is buggy and incorrect!!
 void line_no_multiply(Point p0, Point p1, TGAImage& image, TGAColor color) {
     // Choose the axis with the larger range so that more points are sampled
     // Then make sure the that the range is increasing
@@ -130,15 +131,24 @@ void line_no_floating_point(Point p0, Point p1, TGAImage& image, TGAColor color)
         }
 
         int dy = p1.y - p0.y;
+        int dx = p1.x - p0.x;
+        
+        // The x values could be decreasing
+        // In this case, the step needs to decrease too
+        int xi = 1;
+        if (dx < 0) {
+            xi = -1;
+        }
+        
         int dy_2 = 2*dy;
-        int dx_2 = 2*(p1.x - p0.x);
+        int dx_2 = 2*abs(dx);
         int error = 0;
         int x = p0.x;
         for (int y=p0.y; y<=p1.y; y++) {
             image.set(x, y, color);
             error += dx_2;
             if (error > dy) {
-                x += 1;
+                x += xi;
                 error -= dy_2;
             }
         }         
@@ -150,16 +160,25 @@ void line_no_floating_point(Point p0, Point p1, TGAImage& image, TGAColor color)
             std::swap(p0, p1);
         }
 
+        int dy = p1.y - p0.y;
         int dx = p1.x - p0.x;
+
+        // The y-values could be decreasing as we increase x
+        // So the update step for y need to decrease
+        int yi = 1;
+        if (dy < 1) {
+            yi = -1;
+        }
+        
         int dx_2 = 2*dx;
-        int dy_2 = 2*(p1.y - p0.y);
+        int dy_2 = 2*abs(dy);
         int error = 0;
         int y = p0.y;
         for (int x=p0.x; x<=p1.x; x++) {
             image.set(x, y, color);
             error += dy_2;
             if (error > dx) {
-                y += 1;
+                y += yi;
                 error -= dx_2;
             }
         }

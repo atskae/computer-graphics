@@ -13,10 +13,7 @@ int main(int argc, char** argv) {
 	int width = 700;
 	int height = 1000;
 	TGAImage image(width, height, TGAImage::RGB);
-	//line(Point(300, 631), Point(326, 307), image, white);
-	//line_with_swap(Point(326, 307), Point(300, 631), image, red);
-	//line_official(Point(300, 631), Point(326, 307), image, blue);
-	
+
 	Model model("obj/african_head.obj");
 	std::vector<Face>& faces = model.get_faces();
 	std::vector<Vec3>& vertices = model.get_vertices();
@@ -70,9 +67,8 @@ int main(int argc, char** argv) {
 			
 			//std::cout << "Drawing a normalized line from " << p0 << " to " << p1 << " with color: " << color_name << std::endl;
 
-			//line_with_swap(p0, p1, image, line_color);
-			
-			line_official(p0, p1, image, blue);
+			line(p0, p1, image, line_color);
+			//line_official(p0, p1, image, blue);
 
 			//std::cout << "---" << std::endl;
 		}

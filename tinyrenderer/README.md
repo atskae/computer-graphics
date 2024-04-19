@@ -377,7 +377,7 @@ The implementation up until `line_with_swap()` was closest to tinyrenderer's (in
 
 ![Wireframe line with swap](images/wireframe_line_with_swap.png)
 
-The BUG! Was the off-by-one indexing when indexing into the vertices array:
+🪲 The BUG! Was the off-by-one indexing when indexing into the vertices array:
 ```cpp
 // Did not subtract by 1 here....
 Vec3& v0 = vertices[vi_0.vertex_index];
@@ -386,6 +386,7 @@ Vec3& v1 = vertices[vi_1.vertex_index];
 Wavefront Obj file indexing starts at 1...
 
 After the fix ✨:
+
 ![Wireframe attempt 1 correct](images/wireframe_attempt_1_good.png)
 
 Now I gotta fix my line implementation (above used `line_with_swap()`...)
@@ -393,3 +394,45 @@ Now I gotta fix my line implementation (above used `line_with_swap()`...)
 There are also lines missing at the neck base. This is what it *should* look like  (using tinyrenderer's line):
 
 ![Wireframe correct example](images/wireframe_attempt_1_example.png)
+
+🪲 The BUG! was not handling the case where the y coordinate decreased as x-coordinates increased, and as the y-coordinate increased and the x-coordinates decreased (in other words, negative slopes).
+
+![Negative slopes](images/negative_slope.png)
+
+In the case where y decreases as x-increases, that means dy is negative.
+```cpp
+error += dy_2;
+if (error > dx) {
+    y += 1;
+    error -= dx_2;
+}
+```
+This means that the error is always decreasing when we add `dy_2`, which is negative.
+Which is why `error > dx` will never be true, preventing the y-value from ever changing.
+
+This is why we'd only get straight lines drawn for negative slopes (for example, the straight red line above that did not close the triangle). Also, we have to decrease the the pixel's y-value when a update is needed (since y is decreasing  across the line).
+
+The solution was to check if `dy` is negative, then use a different update value `yi` (either 1 or -1):
+```cpp
+int yi = 1;
+if (dy < 1) {
+    yi = -1;
+}
+```
+
+We also use the absolute value of `dy_2`:
+```cpp
+int dx_2 = 2*dx;
+int dy_2 = 2*abs(dy);
+```
+
+So that the error accumulates:
+```cpp
+error += dy_2;
+```
+
+We apply similar logic to when the y-range is greater than the x-range.
+
+`line_with_floating_point()` is fixed!
+
+![Wireframe fixed](images/wireframe_attempt_1_fixed.png)
