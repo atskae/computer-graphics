@@ -2,6 +2,7 @@
 #define TINYRENDERER_H
 
 #include <iostream>
+#include <vector>
 
 #include "tgaimage.h"
 
@@ -37,12 +38,20 @@ void line_no_multiply(Point p0, Point p1, TGAImage& image, TGAColor color);
 // Same as line_With_swap_optmized() but removes floating point and division
 // Also passes by reference
 // Multiplies used are only by 2, so they are efficient (only require a left-shift)
-void line_no_floating_point(Point p0, Point p1, TGAImage& image, TGAColor color);
+std::vector<Point> line_no_floating_point(Point p0, Point p1, TGAImage& image, TGAColor color);
 
 // Current implementation used 
-void line(Point p0, Point p1, TGAImage &image, TGAColor color);
+std::vector<Point> line(Point p0, Point p1, TGAImage &image, TGAColor color);
 
 // tinyrenderer's implementation
 void line_official(Point p0, Point p1, TGAImage &image, TGAColor color);
+
+// Draws a triangle
+void triangle(std::vector<Point> t, TGAImage& image, TGAColor color);
+
+// Draws lines from a corner to all the points in the base of the triangle
+void triangle_first_attempt(std::vector<Point> t, TGAImage& image, TGAColor color);
+
+void triangle_filled(std::vector<Point> t, TGAImage& image, TGAColor color);
 
 #endif // Header guard

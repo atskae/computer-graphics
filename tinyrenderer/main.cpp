@@ -9,7 +9,7 @@ const TGAColor red   = TGAColor(255, 0,   0,   255);
 const TGAColor green   = TGAColor(0, 255,   0,   255);
 const TGAColor blue = TGAColor(0, 0,   255,   255);
 
-int main(int argc, char** argv) {
+void draw_face() {
 	int width = 700;
 	int height = 1000;
 	TGAImage image(width, height, TGAImage::RGB);
@@ -77,5 +77,41 @@ int main(int argc, char** argv) {
 
 	image.flip_vertically(); // i want to have the origin at the left bottom corner of the image
 	image.write_tga_file("output.tga");
+}
+
+void draw_triangle() {
+	int width = 250;
+	int height = 250;
+	TGAImage image(width, height, TGAImage::RGB);
+
+	std::vector<Point> t0 = {
+		Point(10, 70),
+		Point(50, 160),
+		Point(70, 80)
+	};
+	triangle_filled(t0, image, blue);
+
+	std::vector<Point> t1 = {
+		Point(180, 50),
+		Point(150, 1),
+		Point(70, 180)
+	};
+	triangle_filled(t1, image, white);
+
+	std::vector<Point> t2 = {
+		Point(180, 150),
+		Point(120, 160),
+		Point(130, 180)
+	};
+	triangle_filled(t2, image, green);
+
+	image.flip_vertically();
+	image.write_tga_file("output.tga");
+
+}
+
+int main(int argc, char** argv) {
+	// draw_face();	
+	draw_triangle();	
 	return 0;
 }

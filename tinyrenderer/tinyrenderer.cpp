@@ -1,5 +1,7 @@
 #include <iostream> // std::cout
 #include <cmath> // abs
+#include <vector>
+#include <algorithm>
 
 #include "tinyrenderer.h"
 
@@ -120,9 +122,13 @@ void line_no_multiply(Point p0, Point p1, TGAImage& image, TGAColor color) {
 }
 
 // Avoids floating point and division
-void line_no_floating_point(Point p0, Point p1, TGAImage& image, TGAColor color) {
+std::vector<Point> line_no_floating_point(Point p0, Point p1, TGAImage& image, TGAColor color) {
     // Choose the axis with the larger range so that more points are sampled
     // Then make sure the that the range is increasing
+    
+    // All the pixel points that are used to draw the line
+    std::vector<Point> points;
+
     if (abs(p0.y - p1.y) > abs(p0.x - p1.x)) {
         // The y-axis has a larger range
         // Ensure we are increasing
@@ -146,6 +152,7 @@ void line_no_floating_point(Point p0, Point p1, TGAImage& image, TGAColor color)
         int x = p0.x;
         for (int y=p0.y; y<=p1.y; y++) {
             image.set(x, y, color);
+            points.push_back(Point(x,y));
             error += dx_2;
             if (error > dy) {
                 x += xi;
@@ -176,6 +183,7 @@ void line_no_floating_point(Point p0, Point p1, TGAImage& image, TGAColor color)
         int y = p0.y;
         for (int x=p0.x; x<=p1.x; x++) {
             image.set(x, y, color);
+            points.push_back(Point(x,y));
             error += dy_2;
             if (error > dx) {
                 y += yi;
@@ -183,11 +191,12 @@ void line_no_floating_point(Point p0, Point p1, TGAImage& image, TGAColor color)
             }
         }
     }
+    return points;
 }
 
 
-void line(Point p0, Point p1, TGAImage &image, TGAColor color) { 
-    line_no_floating_point(p0, p1, image, color);
+std::vector<Point> line(Point p0, Point p1, TGAImage &image, TGAColor color) { 
+    return line_no_floating_point(p0, p1, image, color);
 }
 
 void line_official(Point p0, Point p1, TGAImage &image, TGAColor color) { 
@@ -224,3 +233,34 @@ void line_official(Point p0, Point p1, TGAImage &image, TGAColor color) {
         } 
     } 
 } 
+
+void triangle(std::vector<Point> t, TGAImage& image, TGAColor color) {
+    line(t[0], t[1], image, color);
+    line(t[1], t[2], image, color);
+    line(t[2], t[0], image, color);
+}
+
+// Takes logic from line_no_floating_point() to draw a triangle
+// while drawing lines
+void triangle_first_attempt(std::vector<Point> t, TGAImage& image, TGAColor color) {
+    // Sort the triangle's points by y-coordinate
+    std::sort(
+        t.begin(), t.end(),
+        [](Point p0, Point p1) {return p0.y < p1.y;}
+    );
+    Point corner = t[2];
+    Point p0 = t[0];
+    Point p1 = t[1];
+
+    // Get the points that form the base of the triangle
+    std::vector<Point> base = line(p0, p1, image, color);
+    // Draw a line from the top corner of the triangle
+    // to every point in the base
+    for (auto& p: base) {
+        line(corner, p, image, color);
+    }
+}
+
+void triangle_filled(std::vector<Point> t, TGAImage& image, TGAColor color) {
+    triangle_first_attempt(t, image, color);
+}
