@@ -17,10 +17,30 @@ void triangle(std::vector<Point> t, TGAImage& image, TGAColor color) {
 
 Einfach! Now how to draw a *filled* triangle? ...
 
-Attempt 1: Pick a corner of a triangle, and from that corner, draw a point to every point in the base of the triangle.
+**Attempt 1**
+
+Pick a corner of a triangle, and from that corner, draw a point to every point in the base of the triangle.
 
 I modified the line drawing algorithm to return all the points that were used to draw the line.
 
 There are still holes in the triangle... (looks funky-ly cool though)
 
 ![Filled triangle first attempt](images/filled_triangle_attempt_1.png)
+
+**Attempt 2**
+
+Choose the longest side, and draw a line from the other two sides
+
+Still full of holes...
+
+One side:
+
+![Half filled 1](images/filled_triangle_attempt_2_half1.png)
+
+The other side:
+
+![Half filled 2](images/filled_triangle_attempt_2_half2.png)
+
+Both halves:
+
+![Full filled](images/filled_triangle_attempt_2_full.png)

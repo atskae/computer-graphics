@@ -52,6 +52,9 @@ void triangle(std::vector<Point> t, TGAImage& image, TGAColor color);
 // Draws lines from a corner to all the points in the base of the triangle
 void triangle_first_attempt(std::vector<Point> t, TGAImage& image, TGAColor color);
 
+// Draws lines the longest side to the two other sides
+void triangle_second_attempt(std::vector<Point> t, TGAImage& image, TGAColor color);
+
 void triangle_filled(std::vector<Point> t, TGAImage& image, TGAColor color);
 
 #endif // Header guard

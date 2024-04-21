@@ -261,6 +261,32 @@ void triangle_first_attempt(std::vector<Point> t, TGAImage& image, TGAColor colo
     }
 }
 
+void triangle_second_attempt(std::vector<Point> t, TGAImage& image, TGAColor color) {
+    // Find the side that is the longest...
+    std::vector<std::vector<Point>> lines;
+    lines.push_back(line(t[0], t[1], image, color));
+    lines.push_back(line(t[1], t[2], image, color));
+    lines.push_back(line(t[2], t[0], image, color));
+    std::sort(
+        lines.begin(), lines.end(), 
+        [](std::vector<Point> a, std::vector<Point> b) { return a.size() < b.size(); }
+    );
+
+    // Longest side
+    std::vector<Point> base = lines[2];
+    
+    // Draw lines from the base to each side
+    for (int li=0; li<2; li++) {
+        std::vector<Point> line_points = lines[li];
+        for (unsigned int i=0; i<line_points.size(); i++) {
+            Point p0 = base[i];
+            Point p1 = line_points[i];
+            line(p0, p1, image, color);
+        }
+    }
+        
+}
+
 void triangle_filled(std::vector<Point> t, TGAImage& image, TGAColor color) {
-    triangle_first_attempt(t, image, color);
+    triangle_second_attempt(t, image, color);
 }
