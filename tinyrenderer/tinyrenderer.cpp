@@ -305,7 +305,22 @@ void triangle_filled_straight_lines(std::vector<Point> t, TGAImage& image, TGACo
 
         // Draw a straight line    
         line(Point(ax, y), Point(bx, y), image, color);
-    }  
+    }
+
+    // Now we fill the upper segment
+    segment_height = t[2].y - t[1].y;
+    for (int y=t[1].y; y<t[2].y; y++) {
+        float alpha = (float)(y - t[0].y) / total_height;
+        float beta = (float)(y - t[1].y) / segment_height;
+
+        // x-coordinate on A
+        int ax = t[0].x + (t[2].x  - t[0].x)*alpha;
+        // x-coordinate on upper B segment
+        int bx = t[1].x + (t[2].x - t[1].x)*beta;
+
+        // Draw a straight line    
+        line(Point(ax, y), Point(bx, y), image, color);
+    } 
 }
 
 void triangle_filled(std::vector<Point> t, TGAImage& image, TGAColor color) {

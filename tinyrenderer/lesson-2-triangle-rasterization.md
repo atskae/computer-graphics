@@ -94,3 +94,51 @@ for (int y=0; y<t[1].y; y++) { // <--- need to start at t[0].y, not 0
 Fixed! ✨
 
 ![Triangle line filling horizontal](images/triangle_line_filling_half_horizontal.png)
+
+**Filling the top half**
+
+Some bugs 🪲:
+
+Naively did the same thing as the bottom segment for the top segment (just adjusting which points to use):
+
+![Incorrect fill triangle](images/triangle_line_filling_bug2.png)
+
+Draws a horizontally flipped version of the intended triangle...
+
+Account for decreasing x-coordinate as y increases:
+```cpp
+// x-coordinate on upper B segment
+int b_dx = (t[2].x - t[1].x);
+int bx = 0;
+if (b_dx >= 0) {
+    bx = t[0].x + b_dx*beta;
+} else {
+    // The segment's x-coordinate decreases as the y-coordinate increases
+    bx = t[0].x + b_dx*(1-beta);
+}
+```
+
+Still a wierd mess:
+
+![Still incorrect](images/triangle_line_filling_bug3.png)
+
+`alpha` should still a percentage of the height of `A`:
+
+```cpp
+float alpha = (float)(y - t[0].y) / total_height;
+```
+
+![Still incorrect](images/triangle_line_filling_bug4.png)
+
+Started the segment's x-coordinate at `t0` instead of `t1`:
+```cpp
+int bx = t[0].x + (t[2].x - t[1].x)*beta; // <-- need to use t1. + ...
+```
+
+Also removed the negative slope handling.
+
+Fixed!! ✨
+
+![Both halves filled](images/triangle_line_filling_half_horizontal_top.png)
+
+Interestingly we do not have to check for a negative slope for the segments when computing the x-coordinate. When the line has a negative slope, the segments width is negative, which naturally decreases the x-coordinate as the y-coordinate increases.
