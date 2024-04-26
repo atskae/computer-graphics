@@ -142,3 +142,81 @@ Fixed!! ✨
 ![Both halves filled](images/triangle_line_filling_half_horizontal_top.png)
 
 Interestingly we do not have to check for a negative slope for the segments when computing the x-coordinate. When the line has a negative slope, the segments width is negative, which naturally decreases the x-coordinate as the y-coordinate increases.
+
+**Cleanup**
+
+Combined the two loops into one, and manually drew the line instead of using `line()` since we know that it is a straight line (no need to calculate error, etc);
+```cpp
+// Draw a straight line    
+if (ax > bx) std::swap(ax, bx); 
+for (int x=ax; x<=bx; x++) {
+    image.set(x, y, color); 
+}
+```
+
+### [Bounding box method](https://github.com/ssloy/tinyrenderer/wiki/Lesson-2:-Triangle-rasterization-and-back-face-culling#the-method-i-adopt-for-my-code)
+
+**Understanding Barycentric coordinates**
+
+[This document](https://users.csc.calpoly.edu/~zwood/teaching/csc471/2017F/barycentric.pdf) was a very good explanation of Barycentric coordinates. The following are notes from that document.
+
+*Barycentric coordinates* are coordinates defined to be relative to a set of chosen coordinates.
+
+zB If we have a triangle of three points, `a`, `b`, `c`, then a Point `p` would be defined in relation to `a`, `b`, `c`. We use constants to define this relation.
+
+We create a coordinate system with basis vector `a->c`, and `a->b`.
+
+We go in the `a->c` direction with some constant gamma `γ`, and the `a->b` direction with some constant beta `β`:
+
+![Points on a plane](images/barycentric-coordinates-plane.png)
+
+We can then use the constants `γ` and `β` to define where point `p` is on this plane.
+
+Let's try to get `p` in terms of the points `a`, `b`, and `c`.
+
+We can think of getting to point `p` from point `a`, using the basis vectors `a->b` and `a->c`:
+```
+p = a + β*(a->b) +  γ*(a->c)
+```
+
+We can also represent a vector as a subtraction of two points:
+
+```
+p = a + β*(b-a) +  γ*(c-a)
+```
+
+Distribute the constants:
+```
+p = a + β*b - β*a + γ*c - γ*a
+```
+
+Rearrange the terms:
+```
+p = a - β*a - γ*a + β*b + γ*c
+```
+
+Now we get point `p` in terms of points `a`, `b`, and `c`:
+```
+p = (1 - β - γ)*a + β*b + γ*c 
+```
+
+We rewrite the coefficient of `a` with alpha `α`:
+```
+α = 1 - β - γ 
+```
+
+Then we can rewrite the equation:
+```
+p = α*a + β*b + γ*c 
+```
+
+The coefficients `α`, `β` and `γ` have the constraint that they must add to 1:
+```
+α + β + γ = 1
+```
+
+We can plot various points on this plane to see how the coeffiicents change:
+
+![Barycentric coordinates coefficients](images/barycentric-coordinates-derivation_points.png)
+
+We can see how the coefficients tell us where a point is relative to the triangle created by points `a`, `b`, and `c`!

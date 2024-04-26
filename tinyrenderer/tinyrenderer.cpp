@@ -291,36 +291,30 @@ void triangle_filled_straight_lines(std::vector<Point> t, TGAImage& image, TGACo
         [](Point p0, Point p1) {return p0.y < p1.y;}
     );
 
-    // We first iterate across the y-axis of the lower segment's height
     int total_height = t[2].y - t[0].y;
-    int segment_height = t[1].y - t[0].y;
-    for (int y=t[0].y; y<t[1].y; y++) {
+    int lower_segment_height = t[1].y - t[0].y;
+    int upper_segment_height = t[2].y - t[1].y;
+    for (int y=t[0].y; y<=t[2].y; y++) {
+        bool is_lower_segment = (y < t[1].y);
         float alpha = (float)(y - t[0].y) / total_height;
-        float beta = (float)(y - t[0].y) / segment_height;
+        float beta = 0.0;
+        
+        if (is_lower_segment) beta = (float)(y - t[0].y) / lower_segment_height;
+        else beta = (float)(y - t[1].y) / upper_segment_height;
 
         // x-coordinate on A
         int ax = t[0].x + (t[2].x  - t[0].x)*alpha;
         // x-coordinate on lower B segment
-        int bx = t[0].x + (t[1].x - t[0].x)*beta;
+        int bx = 0;
+        if (is_lower_segment) bx = t[0].x + (t[1].x - t[0].x)*beta;
+        else bx = t[1].x + (t[2].x - t[1].x)*beta;
 
         // Draw a straight line    
-        line(Point(ax, y), Point(bx, y), image, color);
+        if (ax > bx) std::swap(ax, bx); 
+        for (int x=ax; x<=bx; x++) {
+            image.set(x, y, color); 
+        }
     }
-
-    // Now we fill the upper segment
-    segment_height = t[2].y - t[1].y;
-    for (int y=t[1].y; y<t[2].y; y++) {
-        float alpha = (float)(y - t[0].y) / total_height;
-        float beta = (float)(y - t[1].y) / segment_height;
-
-        // x-coordinate on A
-        int ax = t[0].x + (t[2].x  - t[0].x)*alpha;
-        // x-coordinate on upper B segment
-        int bx = t[1].x + (t[2].x - t[1].x)*beta;
-
-        // Draw a straight line    
-        line(Point(ax, y), Point(bx, y), image, color);
-    } 
 }
 
 void triangle_filled(std::vector<Point> t, TGAImage& image, TGAColor color) {
