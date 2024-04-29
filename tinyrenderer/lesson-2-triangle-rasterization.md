@@ -220,3 +220,36 @@ We can plot various points on this plane to see how the coeffiicents change:
 ![Barycentric coordinates coefficients](images/barycentric-coordinates-derivation_points.png)
 
 We can see how the coefficients tell us where a point is relative to the triangle created by points `a`, `b`, and `c`!
+
+#### Finding the coefficients
+We need to find the coeffients `β` and `γ` that represent point `p`.
+
+No matter what point `p` we choose, the following vectors add up to zero:
+```
+β*(a->b) + γ*(a->c) + (p->a) = 0
+```
+
+![Triangle vectors add up to zero](images/triangle-vectors-add-to-zero.png)
+
+We can set up that equation to find the x and y coordinate of `p` in terms of `β` and `γ`:
+
+```
+β*(a->b)_x + γ*(a->c)_x + (p->a)_x = 0
+β*(a->b)_y + γ*(a->c)_y + (p->a)_y = 0
+```
+
+`(a->b)_x` means the x-component of the vector `(a->b)`.
+
+(from now on we will use `u` for `β` and `v` for `γ` to follow the tinyrenderer docs).
+
+We can rewrite the above equations in matrix form:
+
+![Solve triangle in matrix form](images/solve-triangle-matrix.png)
+
+If we multiply the matrix out, we can see that it is equivalent to the equation we had above:
+
+![Mutliply matrix out](images/multiply-matrix-out.png)
+
+This particular matrix multiply is actually equivalent to the dot product. And we know that if the dot product is 0, then the two vectors are *orthogonal* to each other!
+
+In other words, the vector we are trying to find `[u, v, 1]` is perpendicular to `[(A->B), (A->C), (P->A)]`.
