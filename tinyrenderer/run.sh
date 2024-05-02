@@ -4,4 +4,4 @@ make;
 echo "Logged into log.txt";
 convert output.tga output.png;
 code output.png;
-gprof tinyrenderer gmon.out > profile.out
+# gprof tinyrenderer gmon.out > profile.out

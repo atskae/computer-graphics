@@ -12,13 +12,23 @@ struct Point {
     int z = 0;
 
     Point(int x, int y): x(x), y(y) {}
+    Point operator+(const Point p);
+    Point operator-(const Point p);
 };
 
 inline std::ostream& operator << (std::ostream& o, const Point& p) {
     o << "Point(" << p.x << ", " << p.y << ", " << p.z << ")";
     return o;
 }
-    
+
+inline Point Point::operator+(const Point p) {
+    return Point(this->x + p.x, this->y + p.y);
+}
+
+inline Point Point::operator-(const Point p) {
+    return Point(this->x - p.x, this->y - p.y);
+}
+
 /* Draws a line segment from p0 to p1 */
 
 // Uses an arbitrary step value between 0 and 1
@@ -57,6 +67,10 @@ void triangle(std::vector<Point> t, TGAImage& image, TGAColor color);
 
 // Fills a triangle by drawing horizontal straight lines
 void triangle_filled_straight_lines(std::vector<Point> t, TGAImage& image, TGAColor color);
+
+// Computes the barycentric coordinates of the triangle to determine whether to
+// color in the pixel
+void triangle_filled_barycentric_coordinates(std::vector<Point> t, TGAImage& image, TGAColor color);
 
 void triangle_filled(std::vector<Point> t, TGAImage& image, TGAColor color);
 

@@ -283,7 +283,6 @@ void triangle(std::vector<Point> t, TGAImage& image, TGAColor color) {
 //        
 //}
 
-
 void triangle_filled_straight_lines(std::vector<Point> t, TGAImage& image, TGAColor color) {
     // Sort the triangle's points by y-coordinate
     std::sort(
@@ -317,6 +316,103 @@ void triangle_filled_straight_lines(std::vector<Point> t, TGAImage& image, TGACo
     }
 }
 
+std::vector<float> compute_barycentric_coordinates(std::vector<Point>& t, Point p) {
+    // Rewrite as variables for readability....
+    Point a = t[0];
+    Point b = t[1];
+    Point c = t[2];
+
+    std::vector<int> v0 = {
+        (b-a).x,
+        (c-a).x,
+        // A -> B
+        // A -> C  
+        // P -> A 
+        (a-p).x
+    };
+
+    std::vector<int> v1 = {
+        // A -> B
+        (b-a).y,
+        (c-a).y,
+        // A -> C  
+        // P -> A 
+        (a-p).y
+    };
+
+    std::vector<int> cross_product = {
+        v0[1]*v1[2] - v0[2]*v1[1],
+        v0[2]*v1[0] - v0[0]*v1[2],
+        v1[0]*v1[1] - v0[1]*v1[0]
+    };
+
+    // Compute the coefficients
+    // We divide by the z-coordinate since we want the cross product vector to be [u, v, 1]
+    std::vector<float> coefficients;
+    coefficients.push_back((float)cross_product[0]/cross_product[2]);
+    coefficients.push_back((float)cross_product[1]/cross_product[2]);
+    coefficients.push_back(1.0 - (float)(cross_product[0] + cross_product[1])/cross_product[2]);
+
+    return coefficients;
+}
+
+void triangle_filled_barycentric_coordinates(std::vector<Point> t, TGAImage& image, TGAColor color) {
+    // Compute the bounding box of this triangle
+    
+    // Sort the triangle's points by x-coordinate
+    std::sort(
+        t.begin(), t.end(),
+        [](Point p0, Point p1) {return p0.x < p1.x;}
+    );
+    int lowest_x = t[0].x; 
+    int highest_x = t[2].x;
+    
+    // Sort the triangle's points by y-coordinate
+    std::sort(
+        t.begin(), t.end(),
+        [](Point p0, Point p1) {return p0.y < p1.y;}
+    ); 
+    int lowest_y = t[0].y; 
+    int highest_y = t[2].y;
+
+    // Clip against the canvas
+    // The bottom-left corner of the canvas is (0,0)
+    // The top-right corner is (width, height)
+    
+    if (0 > lowest_x) lowest_x = 0;
+    if (0 > lowest_y) lowest_y = 0;
+
+    int image_width = image.get_width();
+    int image_height = image.get_height();
+
+    if (image_width < highest_x) highest_x = image_width;
+    if (image_height < highest_y) highest_y = image_height;
+
+    // std::cout << "Bounding box: (" << lowest_x << "," << lowest_y << "); (" << highest_x << "," << highest_y << ")" << std::endl;
+
+    // Iterate through all the pixels in the bounding box
+    for (int x=lowest_x; x<=highest_x; x++) {
+        for (int y=lowest_y; y<=highest_y; y++) {
+            // Compute the barycentric coordinates of this point
+            std::vector<float> barycentric_coordinates = compute_barycentric_coordinates(t, Point(x, y));
+            bool is_inside_triangle = true;
+            for (float c: barycentric_coordinates) {
+                if (c < 0.0) {
+                    is_inside_triangle = false;
+                    break;
+                }
+            }
+            if (is_inside_triangle) {
+                image.set(x, y, color);
+            } else {
+                // Gray
+                image.set(x, y, TGAColor(45, 45, 45, 100));
+            }
+        }
+    } 
+
+}
+
 void triangle_filled(std::vector<Point> t, TGAImage& image, TGAColor color) {
-    triangle_filled_straight_lines(t, image, color);
+    triangle_filled_barycentric_coordinates(t, image, color);
 }

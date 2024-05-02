@@ -80,30 +80,39 @@ void draw_face() {
 }
 
 void draw_triangle() {
-	int width = 250;
-	int height = 250;
+	int width = 200;
+	int height = 200;
 	TGAImage image(width, height, TGAImage::RGB);
 
-	std::vector<Point> t0 = {
-		Point(10, 70),
-		Point(50, 160),
-		Point(70, 80)
-	};
-	triangle_filled(t0, image, blue);
+	//std::vector<Point> t0 = {
+	//	Point(10, 70),
+	//	Point(50, 160),
+	//	Point(70, 80)
+	//};
+	//triangle_filled(t0, image, blue);
 
-	std::vector<Point> t1 = {
-		Point(180, 50),
-		Point(150, 1),
-		Point(70, 180)
-	};
-	triangle_filled(t1, image, white);
+	//std::vector<Point> t1 = {
+	//	Point(180, 50),
+	//	Point(150, 1),
+	//	Point(70, 180)
+	//};
+	//triangle_filled(t1, image, white);
 
-	std::vector<Point> t2 = {
-		Point(180, 150),
-		Point(120, 160),
-		Point(130, 180)
-	};
-	triangle_filled(t2, image, green);
+	//std::vector<Point> t2 = {
+	//	Point(180, 150),
+	//	Point(120, 160),
+	//	Point(130, 180)
+	//};
+	//triangle_filled(t2, image, green);
+	
+	std::vector<Point> t3 = {
+		Point(10,10),
+		Point(100, 30),
+		Point(190, 160)
+	}; 
+	triangle_filled(t3, image, red);
+
+	triangle(t3, image, blue);
 
 	image.flip_vertically();
 	image.write_tga_file("output.tga");

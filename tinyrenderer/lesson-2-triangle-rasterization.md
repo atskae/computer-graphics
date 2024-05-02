@@ -248,8 +248,111 @@ We can rewrite the above equations in matrix form:
 
 If we multiply the matrix out, we can see that it is equivalent to the equation we had above:
 
-![Mutliply matrix out](images/multiply-matrix-out.png)
+![Multiply matrix out](images/multiply-matrix-out.png)
 
 This particular matrix multiply is actually equivalent to the dot product. And we know that if the dot product is 0, then the two vectors are *orthogonal* to each other!
 
 In other words, the vector we are trying to find `[u, v, 1]` is perpendicular to `[(A->B), (A->C), (P->A)]`.
+
+Specifically, we need these two equations to be true at the same time:
+
+![Equations to satisfy](images/equations-to-satisfy.png)
+
+We can take the cross-product of the two vectors, `[(A->B)_x, (A->C)_x, (P->A)_y]` and `[(A->B)_y, (A->C)_y, (P->A)_y]`, which would return a vector that is perpendicular to both vectors, in this case, `[u, v, 1]`.
+
+
+Once we have the coefficients `[u, v, 1]`, we can then determine whether point `p` is in the triangle or not.
+
+We restrict which pixels to look at by computing a bounding box. This can be computed by taking the lowest x and y coordinates as the bottom-left corner of the box, and the highest x and y coordinate as the top-right corner of the box:
+
+![Computing the bounding box](images/bounding-box-calc.png)
+
+We can also apply clipping to the bounding box for the case where part of the triangle is off the canvas.
+
+This is so that we don't unnecessarily iterate through triangle pixels off the canvas that we know we won't color in.
+
+![Computing the bounding box with clipping](images/bounding-box-calc-clipped.png)
+
+![Bounding box clipped another example](images/bounding-box-calc-clipped-2.png)
+
+Bugs 🪲:
+
+Did not actually compute the coefficients after computing the cross product.
+
+One of the coefficients is `1 - u - v`.
+
+![Barycentric coordinates bug 0](images/barycentric_bug_0.png)
+
+We also need to divide the cross product by the z-coordinate since we are looking for the vector `[u, v, 1]`.
+
+```cpp
+coefficients.push_back(cross_product[0]/cross_product[2]);
+coefficients.push_back(cross_product[1]/cross_product[2]);
+coefficients.push_back(1 - (cross_product[0] + cross_product[1])/cross_product[2]);
+```
+
+![Barycentric bug 1](images/barycentric_bug_1.png)
+
+Hmm.... still not right...
+
+Was casting the coefficients to integers instead of floats.
+
+![Barycentric bug 2](images/barycentric_bug_2.png)
+
+Ugh.
+
+Interestingly... the *order* of the points inside the vectors that we choose for v0 and v1 (whose cross product we find) effects the result we get.
+
+For a triangle whose points are:
+```cpp
+std::vector<Point> t3 = {
+	Point(10,10),
+	Point(100, 30),
+	Point(190, 160)
+}; 
+```
+
+```cpp
+// Rewrite as variables for readability....
+Point a = t[0];
+Point b = t[1];
+Point c = t[2];
+```
+
+
+```cpp
+std::vector<int> v0 = {
+    (c-a).x,
+    (b-a).x,
+    (a-p).x
+};
+
+std::vector<int> v1 = {
+    (c-a).y,
+    (b-a).y,
+    (a-p).y
+};
+```
+
+(Blue triangle is the correct triangle, so it is still a bit off. And the gray is the bounding box):
+
+![Barycentric bug 3a](images/barycentric_bug_3a.png)
+
+Then with vectors (we swapped the first two values):
+```cpp
+std::vector<int> v0 = {
+    (b-a).x,
+    (c-a).x,
+    (a-p).x
+};
+
+std::vector<int> v1 = {
+    (b-a).y,
+    (c-a).y,
+    (a-p).y
+};
+```
+
+It is not drawn at all:
+
+![Barycentric bug 3b](images/barycentric_bug_3b.png)
