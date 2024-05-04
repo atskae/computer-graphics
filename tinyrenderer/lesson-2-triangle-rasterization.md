@@ -356,3 +356,18 @@ std::vector<int> v1 = {
 It is not drawn at all:
 
 ![Barycentric bug 3b](images/barycentric_bug_3b.png)
+
+The BUG!  🪲 Was incorrectly computing the cross product OTL
+
+
+```cpp
+std::vector<int> cross_product = {
+    v0[1]*v1[2] - v0[2]*v1[1],
+    v0[2]*v1[0] - v0[0]*v1[2],
+    v1[0]*v1[1] - v0[1]*v1[0] // <--- Should be v0[0]*v1[1] - v0[1]*v1[0]
+};
+```
+
+✨
+
+![Fill triangle with barycentric coordinates](images/barycentric_coordinates_fill_triangle.png)

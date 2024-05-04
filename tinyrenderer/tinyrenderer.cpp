@@ -323,10 +323,10 @@ std::vector<float> compute_barycentric_coordinates(std::vector<Point>& t, Point 
     Point c = t[2];
 
     std::vector<int> v0 = {
-        (b-a).x,
-        (c-a).x,
         // A -> B
+        (b-a).x,
         // A -> C  
+        (c-a).x,
         // P -> A 
         (a-p).x
     };
@@ -334,8 +334,8 @@ std::vector<float> compute_barycentric_coordinates(std::vector<Point>& t, Point 
     std::vector<int> v1 = {
         // A -> B
         (b-a).y,
-        (c-a).y,
         // A -> C  
+        (c-a).y,
         // P -> A 
         (a-p).y
     };
@@ -343,7 +343,7 @@ std::vector<float> compute_barycentric_coordinates(std::vector<Point>& t, Point 
     std::vector<int> cross_product = {
         v0[1]*v1[2] - v0[2]*v1[1],
         v0[2]*v1[0] - v0[0]*v1[2],
-        v1[0]*v1[1] - v0[1]*v1[0]
+        v0[0]*v1[1] - v0[1]*v1[0]
     };
 
     // Compute the coefficients
@@ -404,10 +404,7 @@ void triangle_filled_barycentric_coordinates(std::vector<Point> t, TGAImage& ima
             }
             if (is_inside_triangle) {
                 image.set(x, y, color);
-            } else {
-                // Gray
-                image.set(x, y, TGAColor(45, 45, 45, 100));
-            }
+            } 
         }
     } 
 
