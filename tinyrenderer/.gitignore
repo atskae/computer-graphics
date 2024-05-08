@@ -1,5 +1,6 @@
 *.o
 tinyrenderer
 output.png
+output.tga
 *.out
 log.txt

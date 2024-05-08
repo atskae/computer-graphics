@@ -368,6 +368,48 @@ std::vector<int> cross_product = {
 };
 ```
 
+One way to find bugs is to do the same math with paper and pencil, by hand...
+
 ✨
 
 ![Fill triangle with barycentric coordinates](images/barycentric_coordinates_fill_triangle.png)
+
+## [Flat shading renderer](https://github.com/ssloy/tinyrenderer/wiki/Lesson-2:-Triangle-rasterization-and-back-face-culling#flat-shading-render)
+
+We can now use our filled_triangle function to color our model:
+
+![Triangle model 0](images/model_triangles0.png)
+
+Random face colors:
+
+![Triangle model 1](images/model_triangles1.png)
+
+Took about 10 seconds to render:
+```
+real    0m10.382s
+user    0m10.004s
+sys     0m0.330s
+```
+
+### Simple Lighting and Shading
+
+We need two vectors for each triangle: the light vector, and the normal vector of the triangle.
+
+To compute the light vector, we need to compute the triangle's center position, then we can create a vector from this center position to the light's position.
+
+The [center of a triangle (or *centroid*)](https://en.wikipedia.org/wiki/Centroid#Of_a_triangle) is the point of intersection when you draw a line from each vertex to the midpoint of the opposite side of the triangle:
+
+![Triangle centroid](images/triangle_centroid.png)
+
+The centroid can be computed by taking the mean of the x and y coordinates of the triangle:
+
+```cpp
+triangle_center = Point(
+    (v0.x + v1.x + v2.x)/3 // x-coordinate
+    (v0.y + v1.y + v2.y)/3 // y-coordinate
+)
+```
+
+Then we can create a vector from the triangle's centroid to the light position to get the light vector:
+
+![Triangle and normal vector](images/triangle_normal_light.png)
