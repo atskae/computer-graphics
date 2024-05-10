@@ -71,7 +71,7 @@ Model::Model(const char* filename) {
             if (tokens.size() > 0) {
                 std::string type = tokens[0];
                 if (type == "v" || type == "vt" || type == "vn") {
-                    Vec3 vertex;
+                    Vec3 vertex(0.0, 0.0, 0.0);
                     vertex.x = std::stof(tokens[1]);
                     vertex.y = std::stof(tokens[2]);
                     vertex.z = std::stof(tokens[3]);

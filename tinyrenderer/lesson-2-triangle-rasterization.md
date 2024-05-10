@@ -397,11 +397,11 @@ We need two vectors for each triangle: the light vector, and the normal vector o
 
 To compute the light vector, we need to compute the triangle's center position, then we can create a vector from this center position to the light's position.
 
-The [center of a triangle (or *centroid*)](https://en.wikipedia.org/wiki/Centroid#Of_a_triangle) is the point of intersection when you draw a line from each vertex to the midpoint of the opposite side of the triangle:
+The center of a triangle, specifically the [*centroid*](https://en.wikipedia.org/wiki/Centroid#Of_a_triangle) (apparently there are many types of [triangle centers](https://www.mathsisfun.com/geometry/triangle-centers.html)), is the point of intersection when you draw a line from each vertex to the midpoint of the opposite side of the triangle:
 
 ![Triangle centroid](images/triangle_centroid.png)
 
-The centroid can be computed by taking the mean of the x and y coordinates of the triangle:
+The centroid can also be computed by taking the mean of the x and y coordinates of the triangle:
 
 ```cpp
 triangle_center = Point(
@@ -409,7 +409,68 @@ triangle_center = Point(
     (v0.y + v1.y + v2.y)/3 // y-coordinate
 )
 ```
+Interestingly, in barycentric coordinates, the centroid is at `(1/3, 1/3, 1/3)`.
 
 Then we can create a vector from the triangle's centroid to the light position to get the light vector:
 
 ![Triangle and normal vector](images/triangle_normal_light.png)
+
+We can take the dot product the two vectors to get the cosine of the angle between the vectors,this value is used for the lighting intensity.
+
+If we turn the triangle and overlay the unit circle, we can easily how this works:
+
+The light is most intense when the light source is directly facing the triangle face:
+
+![Intensity = 0](images/light-intensity-0.png)
+
+We get some light at an angle between `0 < x < 90` degrees:
+
+![Intensity = 45 degrees](images/light-intensity-45.png)
+
+The light is most weak when it is at a 90-degree angle with the triangle face:
+
+![Intensity = 90](images/light-intensity-90.png)
+
+#### Implement Lighting
+
+First checking if centroid calculation is correct...
+To calculate the centroid, we compute the mean of the x-coordinates and y-coordinates of the triangle vertices.
+
+For the purposes of drawing the centroid only (we don't need to do this for lighting calculation), we then convert that to screen coordinates.
+
+```cpp
+// For each triangle vertex...
+for (int vi=0; vi<3; vi++) {
+    // ...
+    centroid.x += v.x;
+	centroid.y += v.y;
+    // ...
+}
+```
+
+```cpp
+// Compute the center
+centroid.x /= 3;
+centroid.y /= 3;
+// Convert to screen coordinates
+int cx = (centroid.x + 1)/2 * width;
+int cy = (centroid.y + 1)/2 * height;
+image.set(cx, cy, white);
+```
+
+I added a white dot to where the centroid is calculated as:
+
+![Triangle centroid](images/triangle_centroids.png)
+
+Bugs 🪲
+
+First attempt, arbitrarily choose the first vector's normal vector:
+
+![Lighting bug 0](images/lighting_bug_0.png)
+
+Interesting, the normal vector (assigned to each vertex of the triangle) that we choose affects the results.
+
+Choosing the second vertex's normal vector:
+
+![Lighting bug 0-0](images/lighting_bug_0-0.png)
+

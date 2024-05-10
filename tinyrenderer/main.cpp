@@ -10,6 +10,9 @@ const TGAColor red   = TGAColor(255, 0,   0,   255);
 const TGAColor green   = TGAColor(0, 255,   0,   255);
 const TGAColor blue = TGAColor(0, 0,   255,   255);
 
+// Position of light source, in normalized world coordinates
+Vec3 lightPos{0.5, -0.5, 0.75};
+
 void draw_face() {
 	int width = 600;
 	int height = 700;
@@ -18,6 +21,7 @@ void draw_face() {
 	Model model("obj/african_head.obj");
 	std::vector<Face>& faces = model.get_faces();
 	std::vector<Vec3>& vertices = model.get_vertices();
+	std::vector<Vec3>& normals = model.get_normals();
 	std::cout << faces.size() << " faces found" << std::endl; 
 	for (unsigned int fi=0; fi<faces.size(); fi++) {
 		
@@ -31,11 +35,18 @@ void draw_face() {
 
 		// Triangle coordinates as screen coordinates
 		std::vector<Point> t;
+		// The center of the triangle
+		Vec3 centroid(0.0, 0.0, 0.0);	
 		for (int vi=0; vi<3; vi++) {
 			VertexIndex vertex_index = face.vertex_indices[vi];
 			// Obj format index starts at 1
 			Vec3& v = vertices[vertex_index.vertex_index-1];
-			
+
+			// Accumulate the coordinate, then take the average later
+			// This computes the center coordinate of the triangle
+			centroid.x += v.x;
+			centroid.y += v.y;
+
 			// Convert world coordinates to screen coordinates
 			// Normalize the vectors so that they map into a canvas
 			// of size width x height
@@ -51,8 +62,25 @@ void draw_face() {
 			int y = (v.y + 1)/2 * height;
 			t.push_back(Point(x, y));
 		}
+		
+		// Compute the center
+		centroid.x /= 3;
+		centroid.y /= 3;
+		
+		Vec3 lightVector = lightPos - centroid;
+		// Arbitrarily choose the first vertex's normal vector...
+		// We subtract 1 because Wave Obj indexing starts at 1	
+		Vec3 normal = normals[face.vertex_indices[1].normal_index-1];
 
-		TGAColor face_color(rand()%255, rand()%255, rand()%255, 255);
+		// Compute the dot product
+		float light_intensity = lightVector.x*normal.x + lightVector.y*normal.y + lightVector.z*normal.z;
+
+		TGAColor face_color(
+			255*light_intensity,
+			255*light_intensity,
+			255*light_intensity,
+			255
+		);
 		triangle_filled(t, image, face_color);
 	}
 
