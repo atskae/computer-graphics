@@ -11,7 +11,7 @@ const TGAColor green   = TGAColor(0, 255,   0,   255);
 const TGAColor blue = TGAColor(0, 0,   255,   255);
 
 // Position of light source, in normalized world coordinates
-Vec3 lightPos{0.5, -0.5, 0.75};
+Vec3 lightPos(-0.5, 0.75, -1.0);
 
 void draw_face() {
 	int width = 600;
@@ -21,7 +21,6 @@ void draw_face() {
 	Model model("obj/african_head.obj");
 	std::vector<Face>& faces = model.get_faces();
 	std::vector<Vec3>& vertices = model.get_vertices();
-	std::vector<Vec3>& normals = model.get_normals();
 	std::cout << faces.size() << " faces found" << std::endl; 
 	for (unsigned int fi=0; fi<faces.size(); fi++) {
 		
@@ -35,12 +34,14 @@ void draw_face() {
 
 		// Triangle coordinates as screen coordinates
 		std::vector<Point> t;
+		std::vector<Vec3> worldCoordinates;
 		// The center of the triangle
 		Vec3 centroid(0.0, 0.0, 0.0);	
 		for (int vi=0; vi<3; vi++) {
 			VertexIndex vertex_index = face.vertex_indices[vi];
 			// Obj format index starts at 1
-			Vec3& v = vertices[vertex_index.vertex_index-1];
+			Vec3 v = vertices[vertex_index.vertex_index-1];
+			worldCoordinates.push_back(v);	
 
 			// Accumulate the coordinate, then take the average later
 			// This computes the center coordinate of the triangle
@@ -68,20 +69,34 @@ void draw_face() {
 		centroid.y /= 3;
 		
 		Vec3 lightVector = lightPos - centroid;
-		// Arbitrarily choose the first vertex's normal vector...
-		// We subtract 1 because Wave Obj indexing starts at 1	
-		Vec3 normal = normals[face.vertex_indices[1].normal_index-1];
+		lightVector.normalize();
+		
+		//// Arbitrarily choose the first vertex's normal vector...
+		//// We subtract 1 because Wave Obj indexing starts at 1	
+		//Vec3 normal = normals[face.vertex_indices[1].normal_index-1];
+		//normal.normalize();
+
+		// Manually compute the normal vector
+		// Compute the cross product of any two edges of the triangle
+		Vec3 normal = (worldCoordinates[0] - worldCoordinates[1]) ^ (worldCoordinates[2] - worldCoordinates[1]);
+		normal.normalize();
 
 		// Compute the dot product
-		float light_intensity = lightVector.x*normal.x + lightVector.y*normal.y + lightVector.z*normal.z;
+		float light_intensity = lightVector*normal;
+		//float light_intensity = Vec3(-1,0,0)*normal;
+		// The dot product is negative if the normal vector is facing opposite
+		// The dot product is negative if the normal vector is facing opposite
+		// of the light vector
 
-		TGAColor face_color(
-			255*light_intensity,
-			255*light_intensity,
-			255*light_intensity,
-			255
-		);
-		triangle_filled(t, image, face_color);
+		if (light_intensity > 0) {
+			TGAColor face_color(
+				255*light_intensity,
+				255*light_intensity,
+				255*light_intensity,
+				255
+			);
+			triangle_filled(t, image, face_color);
+		}	
 	}
 
 

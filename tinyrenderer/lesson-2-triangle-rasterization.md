@@ -474,3 +474,40 @@ Choosing the second vertex's normal vector:
 
 ![Lighting bug 0-0](images/lighting_bug_0-0.png)
 
+Apparently we are not supposed to use the normal vectors that are provided per vertex, we have to compute the normal vector ourselves.
+
+And the centroid calculation generates a [point light](https://learnopengl.com/Lighting/Light-casters), when a constant directional light is sufficient.
+
+Point light (so a light vector is calculated per triangle) (some errors in here...):
+
+![Point light](images/computed_light_vector.png)
+
+Directional light (constant light vector of `(0,0,-1)`):
+
+![Directional light](images/constant_light_vector.png)
+
+
+Constant directional light position at `(-1, 0, 0)`:
+
+![Negative x light source](images/negative_x_light_source_pos.png)
+
+I actually expected this to be brighter on the left side.
+
+The light gets dimmer if we make the z-value closer to zero, so I guess the front-most part of the face is at -1.0...?
+
+Constant directional light source at `(0,0,-0.5)`:
+
+![Light source at z=-0.5](images/light_source_z_negative_0.5.png)
+
+Point lights:
+
+`lightPos(-0.5, 0.75, -1.0)`:
+
+![Negative x point light](images/point_light_negative_x.png)
+
+
+`lightPos(0.5, 0.75, -1.0)`:
+
+![Positive x point light](images/point_light_positive_x.png)
+
+Will figure out the point light bug später... Directional light in a particular direction looks ight...
