@@ -348,19 +348,27 @@ std::vector<float> compute_barycentric_coordinates(std::vector<Point>& t, Point 
         v0[0]*v1[1] - v0[1]*v1[0]
     };
 
+    //// Compute the coefficients
+    //// We divide by the z-coordinate since we want the cross product vector to be [u, v, 1]
+    //std::vector<float> coefficients;
+    //coefficients.push_back((float)cross_product[0]/cross_product[2]);
+    //coefficients.push_back((float)cross_product[1]/cross_product[2]);
+    //coefficients.push_back(1.0 - (float)(cross_product[0] + cross_product[1])/cross_product[2]);
+
     // Get the cross product in terms of [u, v, 1]
     // To normalize the z-coordinate, we divide each value by the z-coordinate
+    std::vector<float> cross_product_float;
     for (int i=0; i<3; i++) {
-        cross_product[i] = (float) cross_product[i] / cross_product[2];
+        cross_product_float.push_back((float) cross_product[i] / (float)cross_product[2]);
     }
 
-    // Now cross_product is of form: [u, v, 1];
+    // Now cross_product_float is of form: [u, v, 1];
     // We can use the cross product vector to then compute
     // the Barycentric coordinates: (1 - u - v, u, v)
     std::vector<float> coefficients;
-    coefficients.push_back(1.0 - cross_product[0] - cross_product[1]);
-    coefficients.push_back(cross_product[0]);
-    coefficients.push_back(cross_product[1]);
+    coefficients.push_back(1.0 - (float)cross_product_float[0] - (float)cross_product_float[1]);
+    coefficients.push_back(cross_product_float[0]);
+    coefficients.push_back(cross_product_float[1]);
 
     return coefficients;
 }

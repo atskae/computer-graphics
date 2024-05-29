@@ -67,3 +67,15 @@ So to find the z-coordinate, we can apply the same technique, by multiplying the
 We computed the y-coordinate by adding some percentage `1-t` of `p0.y` with some percentage `t` with `p1.y`.
 
 We compute the z-coordinate by adding some percentage `1 - u - v` of `p0.z` with some percentage `u` of `p1.z` with some percentage `v` of `p2.z`.
+
+First bug:
+
+I did update the logic to compute the barycentric coordinates... looks like they don't even render triangles anymore...
+
+![zbuffer bug 0](images/zbuffer_bug0.png)
+
+The bug was holding the `cross_product` in an `int` when computing `[u, v, 1]` (which is a float), but storing `[u, v, 1]` in the cross_product vector.
+
+Fixed but still not looking right:
+
+![zbuffer bug 1](images/zbuffer_bug1.png)
