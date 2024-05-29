@@ -6,28 +6,7 @@
 
 #include "tgaimage.h"
 
-struct Point {
-    int x = 0;
-    int y = 0;
-    int z = 0;
-
-    Point(int x, int y): x(x), y(y) {}
-    Point operator+(const Point p);
-    Point operator-(const Point p);
-};
-
-inline std::ostream& operator << (std::ostream& o, const Point& p) {
-    o << "Point(" << p.x << ", " << p.y << ", " << p.z << ")";
-    return o;
-}
-
-inline Point Point::operator+(const Point p) {
-    return Point(this->x + p.x, this->y + p.y);
-}
-
-inline Point Point::operator-(const Point p) {
-    return Point(this->x - p.x, this->y - p.y);
-}
+#include "geometry.h"
 
 /* Draws a line segment from p0 to p1 */
 
@@ -72,6 +51,11 @@ void triangle_filled_straight_lines(std::vector<Point> t, TGAImage& image, TGACo
 // color in the pixel
 void triangle_filled_barycentric_coordinates(std::vector<Point> t, TGAImage& image, TGAColor color);
 
-void triangle_filled(std::vector<Point> t, TGAImage& image, TGAColor color);
+void triangle_filled(std::vector<Point> t, std::vector<Vec3> t_world, TGAImage& image, TGAColor color);
+
+// Draws a line given a ybuffer, containing the largest y-values that were already seen
+// The y-buffer is used to know which pixels are above other pixels in terms of of height,
+// so we know which pixels to render
+void rasterize(Point p0, Point p1, TGAImage& image, TGAColor color, std::vector<int>& ybuffer);
 
 #endif // Header guard

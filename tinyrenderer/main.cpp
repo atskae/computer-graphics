@@ -1,5 +1,6 @@
 #include <vector>
 #include <cstdlib> // rand()
+#include <limits>
 
 #include "tgaimage.h"
 #include "model.h"
@@ -95,7 +96,7 @@ void draw_face() {
 				255*light_intensity,
 				255
 			);
-			triangle_filled(t, image, face_color);
+			triangle_filled(t, worldCoordinates, image, face_color);
 		}	
 	}
 
@@ -114,29 +115,47 @@ void draw_triangle() {
 		Point(50, 160),
 		Point(70, 80)
 	};
-	triangle_filled(t0, image, blue);
+	std::vector<Vec3> t_world; // unused - just to fit the API
+	for (int i=0; i<3; i++) {
+		t_world.push_back(Vec3(0,0,0));
+	}
+	triangle_filled(t0, t_world, image, blue);
 
 	std::vector<Point> t1 = {
 		Point(180, 50),
 		Point(150, 1),
 		Point(70, 180)
 	};
-	triangle_filled(t1, image, white);
+	triangle_filled(t1, t_world, image, white);
 
 	std::vector<Point> t2 = {
 		Point(130, 180),
 		Point(180, 150),
 		Point(120, 160),
 	};
-	triangle_filled(t2, image, green);
+	triangle_filled(t2, t_world, image, green);
 
 	image.flip_vertically();
 	image.write_tga_file("output.tga");
 
 }
 
+void draw_using_rasterize() {
+	int width = 800;	
+	TGAImage render(width, 1, TGAImage::RGB);
+	std::vector<int> ybuffer(width, std::numeric_limits<int>::min());
+
+	rasterize(Point(20, 34),   Point(744, 400), render, red,   ybuffer);
+    rasterize(Point(120, 434), Point(444, 400), render, green, ybuffer);
+    rasterize(Point(330, 463), Point(594, 200), render, blue,  ybuffer);
+
+	render.flip_vertically();
+	render.write_tga_file("output.tga");
+}
+
 int main(int argc, char** argv) {
 	draw_face();	
 	//draw_triangle();	
+	//draw_using_rasterize();	
 	return 0;
 }

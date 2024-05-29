@@ -258,7 +258,7 @@ Specifically, we need these two equations to be true at the same time:
 
 ![Equations to satisfy](images/equations-to-satisfy.png)
 
-We can take the cross-product of the two vectors, `[(A->B)_x, (A->C)_x, (P->A)_y]` and `[(A->B)_y, (A->C)_y, (P->A)_y]`, which would return a vector that is perpendicular to both vectors, in this case, `[u, v, 1]`.
+We can take the cross-product of the two vectors, `[(A->B)_x, (A->C)_x, (P->A)_x]` and `[(A->B)_y, (A->C)_y, (P->A)_y]`, which would return a vector that is perpendicular to both vectors, in this case, `[u, v, 1]`.
 
 
 Once we have the coefficients `[u, v, 1]`, we can then determine whether point `p` is in the triangle or not.
@@ -491,7 +491,7 @@ Constant directional light position at `(-1, 0, 0)`:
 
 ![Negative x light source](images/negative_x_light_source_pos.png)
 
-I actually expected this to be brighter on the left side.
+I actually expected this to be brighter on the left side. I also verified that tinyrenderer's implementation also produces the same image.
 
 The light gets dimmer if we make the z-value closer to zero, so I guess the front-most part of the face is at -1.0...?
 

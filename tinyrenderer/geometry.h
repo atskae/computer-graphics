@@ -22,7 +22,7 @@ struct Vec3 {
     void normalize();
 };
 
-std::ostream& operator << (std::ostream& o, const Vec3& vec) {
+inline std::ostream& operator << (std::ostream& o, const Vec3& vec) {
     o << "Vec3(" << vec.x << ", " << vec.y << ", " << vec.z << ")";
     return o;
 }
@@ -54,6 +54,29 @@ inline Vec3 Vec3::operator^(const Vec3 v) {
         this->z*v.x - this->x*v.z,
         this->x*v.y - this->y*v.x
     );
+}
+
+struct Point {
+    int x = 0;
+    int y = 0;
+    int z = 0;
+
+    Point(int x, int y): x(x), y(y) {}
+    Point operator+(const Point p);
+    Point operator-(const Point p);
+};
+
+inline std::ostream& operator << (std::ostream& o, const Point& p) {
+    o << "Point(" << p.x << ", " << p.y << ", " << p.z << ")";
+    return o;
+}
+
+inline Point Point::operator+(const Point p) {
+    return Point(this->x + p.x, this->y + p.y);
+}
+
+inline Point Point::operator-(const Point p) {
+    return Point(this->x - p.x, this->y - p.y);
 }
 
 #endif // Header guard

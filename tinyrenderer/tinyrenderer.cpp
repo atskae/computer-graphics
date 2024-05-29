@@ -2,7 +2,9 @@
 #include <cmath> // abs
 #include <vector>
 #include <algorithm>
+#include <limits>
 
+#include "geometry.h"
 #include "tinyrenderer.h"
 
 void line_with_step(Point p0, Point p1, TGAImage& image, TGAColor color) {
@@ -346,17 +348,24 @@ std::vector<float> compute_barycentric_coordinates(std::vector<Point>& t, Point 
         v0[0]*v1[1] - v0[1]*v1[0]
     };
 
-    // Compute the coefficients
-    // We divide by the z-coordinate since we want the cross product vector to be [u, v, 1]
+    // Get the cross product in terms of [u, v, 1]
+    // To normalize the z-coordinate, we divide each value by the z-coordinate
+    for (int i=0; i<3; i++) {
+        cross_product[i] = (float) cross_product[i] / cross_product[2];
+    }
+
+    // Now cross_product is of form: [u, v, 1];
+    // We can use the cross product vector to then compute
+    // the Barycentric coordinates: (1 - u - v, u, v)
     std::vector<float> coefficients;
-    coefficients.push_back((float)cross_product[0]/cross_product[2]);
-    coefficients.push_back((float)cross_product[1]/cross_product[2]);
-    coefficients.push_back(1.0 - (float)(cross_product[0] + cross_product[1])/cross_product[2]);
+    coefficients.push_back(1.0 - cross_product[0] - cross_product[1]);
+    coefficients.push_back(cross_product[0]);
+    coefficients.push_back(cross_product[1]);
 
     return coefficients;
 }
 
-void triangle_filled_barycentric_coordinates(std::vector<Point> t, TGAImage& image, TGAColor color) {
+void triangle_filled_barycentric_coordinates(std::vector<Point> t, std::vector<Vec3> t_world, TGAImage& image, TGAColor color) {
     // Compute the bounding box of this triangle
     
     // Sort the triangle's points by x-coordinate
@@ -391,6 +400,13 @@ void triangle_filled_barycentric_coordinates(std::vector<Point> t, TGAImage& ima
     // std::cout << "Bounding box: (" << lowest_x << "," << lowest_y << "); (" << highest_x << "," << highest_y << ")" << std::endl;
 
     // Iterate through all the pixels in the bounding box
+    
+    // Holds the largest z-coordinate seen
+    // If we encounter a z-coordinate that is lower, we do not have to draw it
+    std::vector<std::vector<float>> zbuffer(
+        image_width,
+        std::vector<float>(image_height, std::numeric_limits<float>::min())
+    );
     for (int x=lowest_x; x<=highest_x; x++) {
         for (int y=lowest_y; y<=highest_y; y++) {
             // Compute the barycentric coordinates of this point
@@ -403,13 +419,47 @@ void triangle_filled_barycentric_coordinates(std::vector<Point> t, TGAImage& ima
                 }
             }
             if (is_inside_triangle) {
-                image.set(x, y, color);
+                float z = 0.0;
+                for (int i=0; i<3; i++) {
+                    z += (t_world[i].z*barycentric_coordinates[i]);
+                }
+                // Only color the pixel if its depth is closer to the camera (positive z)
+                if (z > zbuffer[x][y]) {
+                    zbuffer[x][y] = z; 
+                    image.set(x, y, color);
+                }
             } 
         }
     } 
 
 }
 
-void triangle_filled(std::vector<Point> t, TGAImage& image, TGAColor color) {
-    triangle_filled_barycentric_coordinates(t, image, color);
+void triangle_filled(std::vector<Point> t, std::vector<Vec3> t_world, TGAImage& image, TGAColor color) {
+    triangle_filled_barycentric_coordinates(t, t_world, image, color);
+}
+
+void rasterize(Point p0, Point p1, TGAImage& image, TGAColor color, std::vector<int>& ybuffer) {
+    // Basic linear interpolation (used in line_with_calculated_step())
+    
+    // Ensure x is increasing
+    if (p1.x < p0.x) {
+        std::swap(p0, p1);
+    }
+    
+    for (int x=p0.x; x<=p1.x; x++) {
+        // Linear interpolation!
+        // The ratio of x and the length of the total line segment
+        float t = (x-p0.x)/(float)(p1.x-p0.x);
+        // (1-t) + t = 1.0
+        // Here we take a percentage of y0 and a percentage of y1
+        // As we move across the line toward y1, the percentage of y1 increases
+        // while the percentage of y0 decreases
+        int y = p0.y*(1.0 - t) + p1.y*t;
+        
+        // If this y value is larger than previously seen, we color the pixel;
+        if (x < ybuffer.size() && y > ybuffer[x]) {
+            image.set(x, 0, color);
+            ybuffer[x] = y;
+        }
+    }
 }
