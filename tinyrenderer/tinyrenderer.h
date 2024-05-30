@@ -49,9 +49,9 @@ void triangle_filled_straight_lines(std::vector<Point> t, TGAImage& image, TGACo
 
 // Computes the barycentric coordinates of the triangle to determine whether to
 // color in the pixel
-void triangle_filled_barycentric_coordinates(std::vector<Point> t, TGAImage& image, TGAColor color);
+void triangle_filled_barycentric_coordinates(std::vector<Point> t, TGAImage& image, TGAColor color, std::vector<std::vector<float>>& zbuffer);
 
-void triangle_filled(std::vector<Point> t, std::vector<Vec3> t_world, TGAImage& image, TGAColor color);
+void triangle_filled(std::vector<Point> t, std::vector<Vec3> t_world, TGAImage& image, TGAColor color, std::vector<std::vector<float>>& zbuffer);
 
 // Draws a line given a ybuffer, containing the largest y-values that were already seen
 // The y-buffer is used to know which pixels are above other pixels in terms of of height,

@@ -68,6 +68,8 @@ We computed the y-coordinate by adding some percentage `1-t` of `p0.y` with some
 
 We compute the z-coordinate by adding some percentage `1 - u - v` of `p0.z` with some percentage `u` of `p1.z` with some percentage `v` of `p2.z`.
 
+[This video](https://www.youtube.com/watch?v=p3tYG9im0aE) is a *great* explanation of the relationship between Barycentric coordinates, linear interpolation, and z-buffering! 
+
 First bug:
 
 I did update the logic to compute the barycentric coordinates... looks like they don't even render triangles anymore...
@@ -79,3 +81,8 @@ The bug was holding the `cross_product` in an `int` when computing `[u, v, 1]` (
 Fixed but still not looking right:
 
 ![zbuffer bug 1](images/zbuffer_bug1.png)
+
+Better!! I was creating a new zbuffer per *triangle*, which is obviously useless 🤦.
+Though it is still not rendered perfectly:
+
+![zbuffer bug 2](images/zbuffer_bug2.png)

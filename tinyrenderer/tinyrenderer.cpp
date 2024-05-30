@@ -373,7 +373,13 @@ std::vector<float> compute_barycentric_coordinates(std::vector<Point>& t, Point 
     return coefficients;
 }
 
-void triangle_filled_barycentric_coordinates(std::vector<Point> t, std::vector<Vec3> t_world, TGAImage& image, TGAColor color) {
+void triangle_filled_barycentric_coordinates(
+    std::vector<Point> t,
+    std::vector<Vec3> t_world,
+    TGAImage& image,
+    TGAColor color,
+    std::vector<std::vector<float>>& zbuffer
+) {
     // Compute the bounding box of this triangle
     
     // Sort the triangle's points by x-coordinate
@@ -408,13 +414,6 @@ void triangle_filled_barycentric_coordinates(std::vector<Point> t, std::vector<V
     // std::cout << "Bounding box: (" << lowest_x << "," << lowest_y << "); (" << highest_x << "," << highest_y << ")" << std::endl;
 
     // Iterate through all the pixels in the bounding box
-    
-    // Holds the largest z-coordinate seen
-    // If we encounter a z-coordinate that is lower, we do not have to draw it
-    std::vector<std::vector<float>> zbuffer(
-        image_width,
-        std::vector<float>(image_height, std::numeric_limits<float>::min())
-    );
     for (int x=lowest_x; x<=highest_x; x++) {
         for (int y=lowest_y; y<=highest_y; y++) {
             // Compute the barycentric coordinates of this point
@@ -427,23 +426,24 @@ void triangle_filled_barycentric_coordinates(std::vector<Point> t, std::vector<V
                 }
             }
             if (is_inside_triangle) {
-                float z = 0.0;
-                for (int i=0; i<3; i++) {
-                    z += (t_world[i].z*barycentric_coordinates[i]);
-                }
-                // Only color the pixel if its depth is closer to the camera (positive z)
-                if (z > zbuffer[x][y]) {
-                    zbuffer[x][y] = z; 
-                    image.set(x, y, color);
-                }
+                image.set(x, y, color);
+                //float z = 0.0;
+                //for (int i=0; i<3; i++) {
+                //    z += (t_world[i].z*barycentric_coordinates[i]);
+                //}
+                //// Only color the pixel if its depth is closer to the camera (positive z)
+                //if (z > zbuffer[x][y]) {
+                //    zbuffer[x][y] = z; 
+                //    image.set(x, y, color);
+                //}
             } 
         }
     } 
 
 }
 
-void triangle_filled(std::vector<Point> t, std::vector<Vec3> t_world, TGAImage& image, TGAColor color) {
-    triangle_filled_barycentric_coordinates(t, t_world, image, color);
+void triangle_filled(std::vector<Point> t, std::vector<Vec3> t_world, TGAImage& image, TGAColor color, std::vector<std::vector<float>>& zbuffer) {
+    triangle_filled_barycentric_coordinates(t, t_world, image, color, zbuffer);
 }
 
 void rasterize(Point p0, Point p1, TGAImage& image, TGAColor color, std::vector<int>& ybuffer) {

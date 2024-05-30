@@ -12,7 +12,7 @@ const TGAColor green   = TGAColor(0, 255,   0,   255);
 const TGAColor blue = TGAColor(0, 0,   255,   255);
 
 // Position of light source, in normalized world coordinates
-Vec3 lightPos(-0.5, 0.75, -1.0);
+Vec3 lightPos(0, 0, -0.5);
 
 void draw_face() {
 	int width = 600;
@@ -23,6 +23,13 @@ void draw_face() {
 	std::vector<Face>& faces = model.get_faces();
 	std::vector<Vec3>& vertices = model.get_vertices();
 	std::cout << faces.size() << " faces found" << std::endl; 
+	
+	// Holds the largest z-coordinate seen
+    // If we encounter a z-coordinate that is lower, we do not have to draw it
+	std::vector<std::vector<float>> zbuffer(
+        width,
+        std::vector<float>(height, std::numeric_limits<float>::min())
+    );
 	for (unsigned int fi=0; fi<faces.size(); fi++) {
 		
 		Face& face = faces[fi];
@@ -36,18 +43,18 @@ void draw_face() {
 		// Triangle coordinates as screen coordinates
 		std::vector<Point> t;
 		std::vector<Vec3> worldCoordinates;
-		// The center of the triangle
-		Vec3 centroid(0.0, 0.0, 0.0);	
+		//// The center of the triangle
+		//Vec3 centroid(0.0, 0.0, 0.0);	
 		for (int vi=0; vi<3; vi++) {
 			VertexIndex vertex_index = face.vertex_indices[vi];
 			// Obj format index starts at 1
 			Vec3 v = vertices[vertex_index.vertex_index-1];
 			worldCoordinates.push_back(v);	
 
-			// Accumulate the coordinate, then take the average later
-			// This computes the center coordinate of the triangle
-			centroid.x += v.x;
-			centroid.y += v.y;
+			//// Accumulate the coordinate, then take the average later
+			//// This computes the center coordinate of the triangle
+			//centroid.x += v.x;
+			//centroid.y += v.y;
 
 			// Convert world coordinates to screen coordinates
 			// Normalize the vectors so that they map into a canvas
@@ -65,12 +72,12 @@ void draw_face() {
 			t.push_back(Point(x, y));
 		}
 		
-		// Compute the center
-		centroid.x /= 3;
-		centroid.y /= 3;
+		//// Compute the center
+		//centroid.x /= 3;
+		//centroid.y /= 3;
 		
-		Vec3 lightVector = lightPos - centroid;
-		lightVector.normalize();
+		//Vec3 lightVector = lightPos - centroid;
+		//lightVector.normalize();
 		
 		//// Arbitrarily choose the first vertex's normal vector...
 		//// We subtract 1 because Wave Obj indexing starts at 1	
@@ -83,9 +90,10 @@ void draw_face() {
 		normal.normalize();
 
 		// Compute the dot product
-		float light_intensity = lightVector*normal;
+		//float light_intensity = lightVector*normal;
+		Vec3 LightDir(0.0, 0.0, -1.0);
+		float light_intensity = LightDir*normal;
 		//float light_intensity = Vec3(-1,0,0)*normal;
-		// The dot product is negative if the normal vector is facing opposite
 		// The dot product is negative if the normal vector is facing opposite
 		// of the light vector
 
@@ -96,7 +104,7 @@ void draw_face() {
 				255*light_intensity,
 				255
 			);
-			triangle_filled(t, worldCoordinates, image, face_color);
+			triangle_filled(t, worldCoordinates, image, face_color, zbuffer);
 		}	
 	}
 
@@ -119,21 +127,22 @@ void draw_triangle() {
 	for (int i=0; i<3; i++) {
 		t_world.push_back(Vec3(0,0,0));
 	}
-	triangle_filled(t0, t_world, image, blue);
+	std::vector<std::vector<float>> zbuffer; // unused
+	triangle_filled(t0, t_world, image, blue, zbuffer);
 
 	std::vector<Point> t1 = {
 		Point(180, 50),
 		Point(150, 1),
 		Point(70, 180)
 	};
-	triangle_filled(t1, t_world, image, white);
+	triangle_filled(t1, t_world, image, white, zbuffer);
 
 	std::vector<Point> t2 = {
 		Point(130, 180),
 		Point(180, 150),
 		Point(120, 160),
 	};
-	triangle_filled(t2, t_world, image, green);
+	triangle_filled(t2, t_world, image, green, zbuffer);
 
 	image.flip_vertically();
 	image.write_tga_file("output.tga");
