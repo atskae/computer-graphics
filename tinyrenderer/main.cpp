@@ -28,7 +28,7 @@ void draw_face() {
     // If we encounter a z-coordinate that is lower, we do not have to draw it
 	std::vector<std::vector<float>> zbuffer(
         width,
-        std::vector<float>(height, std::numeric_limits<float>::min())
+        std::vector<float>(height, std::numeric_limits<float>::lowest())
     );
 	for (unsigned int fi=0; fi<faces.size(); fi++) {
 		

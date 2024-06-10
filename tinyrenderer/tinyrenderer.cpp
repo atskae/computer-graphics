@@ -359,19 +359,67 @@ std::vector<float> compute_barycentric_coordinates(std::vector<Point>& t, Point 
     // To normalize the z-coordinate, we divide each value by the z-coordinate
     std::vector<float> cross_product_float;
     for (int i=0; i<3; i++) {
-        cross_product_float.push_back((float) cross_product[i] / (float)cross_product[2]);
+        cross_product_float.push_back((float) cross_product[i] / cross_product[2]);
     }
 
     // Now cross_product_float is of form: [u, v, 1];
     // We can use the cross product vector to then compute
     // the Barycentric coordinates: (1 - u - v, u, v)
     std::vector<float> coefficients;
-    coefficients.push_back(1.0 - (float)cross_product_float[0] - (float)cross_product_float[1]);
+    coefficients.push_back(1.0 - (cross_product_float[0] + cross_product_float[1]));
     coefficients.push_back(cross_product_float[0]);
     coefficients.push_back(cross_product_float[1]);
+    
+    return coefficients;
+}
+
+std::vector<int> cross(std::vector<int>& v0, std::vector<int>& v1) {
+    std::vector<int> cross_product = {
+        v0[1]*v1[2] - v0[2]*v1[1],
+        v0[2]*v1[0] - v0[0]*v1[2],
+        v0[0]*v1[1] - v0[1]*v1[0]
+    };
+
+    return cross_product;
+}
+
+float vector_magnitude(std::vector<int>& v) {
+    int s = 0;
+    for (int vi: v) {
+        s += vi*vi;
+    }
+    return sqrt((float)s);
+}
+
+std::vector<float> compute_barycentric_coordinates_area(std::vector<Point>& t, Point p) {
+    std::vector<float> coefficients;
+    float total_area = 0.0;
+    for (int i=0; i<3; i++) {
+        Point& t1 = t[(i+1)%3];
+        Point& t2 = t[(i+2)%3];
+        std::vector<int> v0 = {
+            p.x - t1.x,
+            p.y - t1.y,
+            p.z - t1.z
+        };
+        std::vector<int> v1 {
+            t2.x - t1.x,
+            t2.y - t1.y,
+            t2.z - t1.z
+        };
+
+        auto cross_product = cross(v0, v1);
+        float area = vector_magnitude(cross_product);
+        total_area += area;
+        coefficients.push_back(area);
+    }
+    for (int i=0; i<3; i++) {
+        coefficients[i] /= total_area;
+    }
 
     return coefficients;
 }
+
 
 void triangle_filled_barycentric_coordinates(
     std::vector<Point> t,
@@ -426,16 +474,16 @@ void triangle_filled_barycentric_coordinates(
                 }
             }
             if (is_inside_triangle) {
-                image.set(x, y, color);
-                //float z = 0.0;
-                //for (int i=0; i<3; i++) {
-                //    z += (t_world[i].z*barycentric_coordinates[i]);
-                //}
-                //// Only color the pixel if its depth is closer to the camera (positive z)
-                //if (z > zbuffer[x][y]) {
-                //    zbuffer[x][y] = z; 
-                //    image.set(x, y, color);
-                //}
+                float z = 0.0;
+                for (int i=0; i<3; i++) {
+                    z += (t_world[i].z*barycentric_coordinates[i]);
+                }
+                // Only color the pixel if its depth is closer to the camera (positive z)
+                if (z > zbuffer[x][y]) {
+                    zbuffer[x][y] = z; 
+                    image.set(x, y, color);
+                } 
+                //image.set(180, 100, TGAColor(255,0,0,255));
             } 
         }
     } 

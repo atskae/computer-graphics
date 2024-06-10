@@ -86,3 +86,139 @@ Better!! I was creating a new zbuffer per *triangle*, which is obviously useless
 Though it is still not rendered perfectly:
 
 ![zbuffer bug 2](images/zbuffer_bug2.png)
+
+Weird floating point bug...
+
+Removed the zbuffer and tested the following.
+
+For some reason these lines of code (removes all strange black dots):
+```cpp
+coefficients.push_back(1.0 - (float)(cross_product_float[0] + cross_product_float[1]));
+```
+
+```cpp
+coefficients.push_back(1.0 - (cross_product_float[0] + cross_product_float[1]));
+```
+
+![Barycentric coordinates fixed](images/zbuffer_bug4.png)
+
+gives a different result than (some black dots):
+```cpp
+coefficients.push_back(1.0 - cross_product_float[0] - cross_product_float[1]);
+```
+
+![Barycentric coordinates bug](images/zbuffer_bug3.png)
+
+Added back the zbuffer calculation.
+
+So this order definitely matters:
+```cpp
+// Now cross_product_float is of form: [u, v, 1];
+// We can use the cross product vector to then compute
+// the Barycentric coordinates: (1 - u - v, u, v)
+std::vector<float> coefficients;
+coefficients.push_back(1.0 - (cross_product_float[0] + cross_product_float[1]));
+coefficients.push_back(cross_product_float[0]);
+coefficients.push_back(cross_product_float[1]);
+```
+since it determines which barycentric coordinate value is multiplied to which axis (x, y, or z) of a triangle's world coordinate.
+
+This order:
+```cpp
+coefficients.push_back(1.0 - (cross_product_float[0] + cross_product_float[1]));
+coefficients.push_back(cross_product_float[0]);
+coefficients.push_back(cross_product_float[1]);
+```
+
+creates:
+
+![Barycentric coefficients order](images/zbuffer_bug5.png)
+
+And this order:
+```cpp
+coefficients.push_back(cross_product_float[0]);
+    coefficients.push_back(cross_product_float[1]);
+    coefficients.push_back(1.0 - (cross_product_float[0] + cross_product_float[1]));
+```
+
+creates:
+
+![Barycentric coefficients order](images/zbuffer_bug6.png)
+
+I tried to do a different way to compute the Barycentric coordinates, computing the cross product as the sub-triangle's area (following [this video](https://www.youtube.com/watch?v=p3tYG9im0aE)).
+
+~~Looks like another floating point bug...~~ Nope! See below.
+
+![zbuffer bug again](images/zbuffer_bug7.png)
+
+Though the neck is still cut off on the sides like the previous attempts...
+
+So... the triangle areas method won't ever be negative... so we can't use it to check whether the point is inside the triangle or not.
+```
+// First method (using [u, v, 1])
+(gdb) p barycentric_coordinates
+$1 = std::vector of length 3, capacity 4 = {0.333333373, -0.333333343, 1}
+```
+```
+// Triangle areas method
+(gdb) p bc
+$2 = std::vector of length 3, capacity 4 = {0.200000003, 0.600000024, 0.200000003}
+```
+```
+// The triangle screen coordinates
+(gdb) p t
+$3 = std::vector of length 3, capacity 3 = {{x = 346, y = 302, z = 0}, {x = 347, y = 304, z = 0}, {x = 349, 
+    y = 305, z = 0}}    
+```
+
+Only when the point is in the triangle, both computation results are the same:
+```
+
+(gdb) p barycentric_coordinates
+$4 = std::vector of length 3, capacity 4 = {0.448275864, 0.534482777, 0.0172413792}
+(gdb) p bc
+$5 = std::vector of length 3, capacity 4 = {0.448275864, 0.534482777, 0.0172413792}
+(gdb) p t
+$6 = std::vector of length 3, capacity 3 = {{x = 366, y = 232, z = 0}, {x = 382, y = 244, z = 0}, {x = 392, 
+    y = 266, z = 0}}
+(gdb)     
+```
+
+So turns out that it is *not* a floating point bug, but since the triangle area method always returns positive barycentric coordinates, it simply fills the entire bounding box for each triangle...
+
+It looks like some pixels that are supposed to be drawn, are too low when compared to its zbuffer entry.
+
+Here I colored the pixel red if it didn't pass the zbuffer comparison:
+
+![Color red for failed zbuffer test](images/lower_than_zbuffer.png)
+
+So inside the mouth is correct... The ears and neck sides though, should be drawn.
+
+Oh, interesting, in the case the pixel fails the zbuffer comparison, the calculated z-value and the value in the zbuffer are exactly the same:
+```
+(gdb) p z
+$3 = 0.249689996
+(gdb) p zbuffer[x][y]
+$4 = 0.249689996
+```
+
+Changing the comparison to `>=` did nothing.
+
+Let's observe what happens at pixel `(x=180, y=100)` (found coordinate through trial and error...):
+
+![Red dot on neck](images/red_dot_on_neck.png)
+
+A triangle should be drawn where the red dot is, but it isn't.
+
+🪲 The bug!!!! Was initializing the zbuffer values:
+```cpp
+std::vector<std::vector<float>> zbuffer(
+    width,
+    std::vector<float>(height, std::numeric_limits<float>::min())
+);
+```
+Turns out that [`numeric_limits<float>::min()`](https://en.cppreference.com/w/cpp/types/numeric_limits) is the lowest *positive* float... (the macro [`FLT_MIN`](https://en.cppreference.com/w/cpp/types/climits)). The calculated z-coordinate could be negative, but it was never greater than the default z-buffer value.
+
+Fixed! ✨
+
+![Fixed zbuffer](images/zbuffer_fixed.png)
