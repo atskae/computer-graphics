@@ -31,6 +31,7 @@ void draw_face() {
 	if(!texture_image.read_tga_file(texture_file_name)) {
 		std::cout << "Failed to read texture file: " << texture_file_name << std::endl;
 	}	
+	texture_image.flip_vertically();
 	std::cout << "Read in texture image of size (" << 
 		texture_image.get_width() << ","
 		<< texture_image.get_height() << ")" << std::endl;

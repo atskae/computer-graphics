@@ -237,3 +237,21 @@ The steps I took:
 5. Used the same barycentric coordinates to compute how much of each color contributes to the inner color of a pixel in the triangle
 
 Looks like there's still a bug... Will investigate later.
+
+I turned off applying light intensity just to make sure it was supposed to be applied, it totally is.
+Scary result without:
+
+![Apply texture 1 without light intensity](images/apply_textures_1_without_light_intensity.png)
+
+It kinda looks like the texture is flipped upside down.
+
+I added this line after loading the texture image:
+```cpp
+texture_image.flip_vertically();
+```
+
+And it looks better:
+
+![Applying textures 2](images/apply_textures_2.png)
+
+Though it looks mosaic-y still, especially the top of the head should be more blended together... So it must be an issue with barycentric coordinates / lerping between triangles.
