@@ -222,3 +222,18 @@ Turns out that [`numeric_limits<float>::min()`](https://en.cppreference.com/w/cp
 Fixed! ✨
 
 ![Fixed zbuffer](images/zbuffer_fixed.png)
+
+## [Texture](https://github.com/ssloy/tinyrenderer/wiki/Lesson-3:-Hidden-faces-removal-(z-buffer)#okay-we-just-interpolated-the-z-values-what-else-can-we-do)
+
+First (incorrect) attempt at applying textures:
+
+![Apply textures 1](images/apply_textures_1.png)
+
+The steps I took:
+1. Got the texture coordinate *index* for each vertex in the triangle
+2. Used that index to index into the Model's array of texture coordinates to get the actual texture coordinates
+3. Multiplied texture image width and height with the texture coordinates (because the texture coordinates are normalized between [0, 1]), then used these computed values to index into the texture image to obtain the color.
+4. Get a color for each vertex of the triangle (get 3 colors total per triangle)
+5. Used the same barycentric coordinates to compute how much of each color contributes to the inner color of a pixel in the triangle
+
+Looks like there's still a bug... Will investigate later.

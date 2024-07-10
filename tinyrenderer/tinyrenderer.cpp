@@ -425,7 +425,8 @@ void triangle_filled_barycentric_coordinates(
     std::vector<Point> t,
     std::vector<Vec3> t_world,
     TGAImage& image,
-    TGAColor color,
+    std::vector<TGAColor> colors,
+    float light_intensity,
     std::vector<std::vector<float>>& zbuffer
 ) {
     // Compute the bounding box of this triangle
@@ -481,6 +482,20 @@ void triangle_filled_barycentric_coordinates(
                 // Only color the pixel if its depth is closer to the camera (positive z)
                 if (z > zbuffer[x][y]) {
                     zbuffer[x][y] = z; 
+                    
+                    unsigned char rgb[3] = {0};
+                    for (int i=0; i<3; i++) { // for each triangle vertex
+                        rgb[0] += colors[i].r * barycentric_coordinates[i];
+                        rgb[1] += colors[i].g * barycentric_coordinates[i];
+                        rgb[2] += colors[i].b * barycentric_coordinates[i];
+                    }
+
+                    TGAColor color(
+                        rgb[0] * light_intensity,
+                        rgb[1] * light_intensity,
+                        rgb[2] * light_intensity,
+                        255 // opacity
+                    );
                     image.set(x, y, color);
                 } 
                 //image.set(180, 100, TGAColor(255,0,0,255));
@@ -490,8 +505,14 @@ void triangle_filled_barycentric_coordinates(
 
 }
 
-void triangle_filled(std::vector<Point> t, std::vector<Vec3> t_world, TGAImage& image, TGAColor color, std::vector<std::vector<float>>& zbuffer) {
-    triangle_filled_barycentric_coordinates(t, t_world, image, color, zbuffer);
+void triangle_filled(
+    std::vector<Point> t,
+    std::vector<Vec3> t_world,
+    TGAImage& image,
+    std::vector<TGAColor> colors,
+    float light_intensity,
+    std::vector<std::vector<float>>& zbuffer) {
+    triangle_filled_barycentric_coordinates(t, t_world, image, colors, light_intensity, zbuffer);
 }
 
 void rasterize(Point p0, Point p1, TGAImage& image, TGAColor color, std::vector<int>& ybuffer) {

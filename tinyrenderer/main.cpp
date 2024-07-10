@@ -19,10 +19,21 @@ void draw_face() {
 	int height = 700;
 	TGAImage image(width, height, TGAImage::RGB);
 
-	Model model("obj/african_head.obj");
+	Model model("assets/african_head.obj");
 	std::vector<Face>& faces = model.get_faces();
 	std::vector<Vec3>& vertices = model.get_vertices();
+	std::vector<Vec3>& texture_coordinates = model.get_texture_coordinates();
 	std::cout << faces.size() << " faces found" << std::endl; 
+
+	// Compute the color using texture coordinates
+	const char* texture_file_name = "assets/african_head_diffuse.tga";
+	TGAImage texture_image;
+	if(!texture_image.read_tga_file(texture_file_name)) {
+		std::cout << "Failed to read texture file: " << texture_file_name << std::endl;
+	}	
+	std::cout << "Read in texture image of size (" << 
+		texture_image.get_width() << ","
+		<< texture_image.get_height() << ")" << std::endl;
 	
 	// Holds the largest z-coordinate seen
     // If we encounter a z-coordinate that is lower, we do not have to draw it
@@ -43,6 +54,11 @@ void draw_face() {
 		// Triangle coordinates as screen coordinates
 		std::vector<Point> t;
 		std::vector<Vec3> worldCoordinates;
+		
+		// Colors obtained from the texture image
+		// Each color is associated to its respective vertex in the triangle
+		std::vector<TGAColor> colors;
+		
 		//// The center of the triangle
 		//Vec3 centroid(0.0, 0.0, 0.0);	
 		for (int vi=0; vi<3; vi++) {
@@ -50,6 +66,13 @@ void draw_face() {
 			// Obj format index starts at 1
 			Vec3 v = vertices[vertex_index.vertex_index-1];
 			worldCoordinates.push_back(v);	
+
+			// Obj format index starts at 1
+			Vec3 texture_coordinate = texture_coordinates[vertex_index.texture_coordinate_index-1];
+			int image_x = texture_coordinate.x * texture_image.get_width();
+			int image_y = texture_coordinate.y * texture_image.get_height();
+			//std::cout << "image coordinates (" << image_x << "," << image_y << ")" << std::endl;
+			colors.push_back(texture_image.get(image_x, image_y));
 
 			//// Accumulate the coordinate, then take the average later
 			//// This computes the center coordinate of the triangle
@@ -96,15 +119,15 @@ void draw_face() {
 		//float light_intensity = Vec3(-1,0,0)*normal;
 		// The dot product is negative if the normal vector is facing opposite
 		// of the light vector
-
+		TGAColor color = white;
 		if (light_intensity > 0) {
 			TGAColor face_color(
-				255*light_intensity,
-				255*light_intensity,
-				255*light_intensity,
+				color.r*light_intensity,
+				color.g*light_intensity,
+				color.b*light_intensity,
 				255
 			);
-			triangle_filled(t, worldCoordinates, image, face_color, zbuffer);
+			triangle_filled(t, worldCoordinates, image, colors, light_intensity, zbuffer);
 		}	
 	}
 
@@ -128,21 +151,21 @@ void draw_triangle() {
 		t_world.push_back(Vec3(0,0,0));
 	}
 	std::vector<std::vector<float>> zbuffer; // unused
-	triangle_filled(t0, t_world, image, blue, zbuffer);
+	//triangle_filled(t0, t_world, image, blue, 1.0, zbuffer);
 
 	std::vector<Point> t1 = {
 		Point(180, 50),
 		Point(150, 1),
 		Point(70, 180)
 	};
-	triangle_filled(t1, t_world, image, white, zbuffer);
+	//triangle_filled(t1, t_world, image, white, zbuffer);
 
 	std::vector<Point> t2 = {
 		Point(130, 180),
 		Point(180, 150),
 		Point(120, 160),
 	};
-	triangle_filled(t2, t_world, image, green, zbuffer);
+	//triangle_filled(t2, t_world, image, green, zbuffer);
 
 	image.flip_vertically();
 	image.write_tga_file("output.tga");

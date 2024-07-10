@@ -11,7 +11,7 @@
 #include "geometry.h"
 
 struct VertexIndex {
-    unsigned int vertex_index = 0; // index into the verticies array
+    unsigned int vertex_index = 0; // index into the vertices array
     unsigned int texture_coordinate_index = 0; // index into the texture coordinates array
     unsigned int normal_index = 0; // index into the normal vectors array
 };
@@ -77,7 +77,9 @@ Model::Model(const char* filename) {
                     vertex.z = std::stof(tokens[3]);
 
                     if(type == "v") this->vertices.push_back(vertex);
-                    else if (type == "vt") this->texture_coordinates.push_back(vertex);
+                    else if (type == "vt") {
+                        this->texture_coordinates.push_back(vertex);
+                    }
                     else if (type == "vn") this->normals.push_back(vertex);
                 } else if (type == "f") {
                     Face face;
