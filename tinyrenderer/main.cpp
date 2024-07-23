@@ -70,11 +70,19 @@ void draw_face() {
 
 			// Obj format index starts at 1
 			Vec3 texture_coordinate = texture_coordinates[vertex_index.texture_coordinate_index-1];
-			int image_x = texture_coordinate.x * texture_image.get_width();
-			int image_y = texture_coordinate.y * texture_image.get_height();
+			int image_x = floor(texture_coordinate.x * texture_image.get_width());
+			int image_y = floor(texture_coordinate.y * texture_image.get_height());
 			//std::cout << "image coordinates (" << image_x << "," << image_y << ")" << std::endl;
 			colors.push_back(texture_image.get(image_x, image_y));
+			
+			// UV mapping for debugging
+			//colors.push_back(TGAColor(texture_coordinate.x*255, texture_coordinate.y*255, 0, 255));
 
+			//if (vi == 0) colors.push_back(TGAColor(255, 0, 0, 255));
+			//else if (vi == 1) colors.push_back(TGAColor(0, 255, 0, 255));
+			//else if (vi == 2) colors.push_back(TGAColor(0, 0, 255, 255));
+			//else colors.push_back(TGAColor(0, 0, 0, 255));
+			
 			//// Accumulate the coordinate, then take the average later
 			//// This computes the center coordinate of the triangle
 			//centroid.x += v.x;

@@ -491,9 +491,9 @@ void triangle_filled_barycentric_coordinates(
                     }
 
                     TGAColor color(
-                        rgb[0] * light_intensity,
-                        rgb[1] * light_intensity,
-                        rgb[2] * light_intensity,
+                        rgb[0],// * light_intensity,
+                        rgb[1],// * light_intensity,
+                        rgb[2],// * light_intensity,
                         255 // opacity
                     );
                     image.set(x, y, color);

@@ -255,3 +255,26 @@ And it looks better:
 ![Applying textures 2](images/apply_textures_2.png)
 
 Though it looks mosaic-y still, especially the top of the head should be more blended together... So it must be an issue with barycentric coordinates / lerping between triangles.
+
+Here I mapped the UV coordinates as colors:
+```cpp
+TGAColor(texture_coordinate.x*255, texture_coordinate.y.255, 0, 255);
+```
+
+![UV coordinates as colors](images/uv_as_colors.png)
+
+First, even solid colors are not interpolated correctly? There are discontinuities between triangles, like the gradients seem flipped between triangles so you can see the edges of each triangle.
+
+The mapping looks correct since bottom-right should be most red, top right should be yellow, top-left should be green.
+
+The following experiment makes more sense. I assigned each vertex a solid color (red, green, blue) and interpolated the triangles:
+
+![Assign solid color to each vertex](images/assign_solid_color_each_vertex.png)
+
+One observation is that the coordinates can be *either* counter-clockwise or clockwise (the direction determined by the order red -> green -> blue are in the triangle).
+
+Maybe the colors are not mapped to the correct vertex because it should be up to the model's definition to align colors between triangles to be similar?
+
+Interpolated texture without lighting:
+
+![Interpolated texture without lighting](images/interpolate_without_lighting.png)
