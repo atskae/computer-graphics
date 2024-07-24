@@ -427,7 +427,9 @@ void triangle_filled_barycentric_coordinates(
     TGAImage& image,
     std::vector<TGAColor> colors,
     float light_intensity,
-    std::vector<std::vector<float>>& zbuffer
+    std::vector<std::vector<float>>& zbuffer,
+    TGAImage& texture_image, 
+    std::vector<Vec3> uv_coordinates
 ) {
     // Compute the bounding box of this triangle
     
@@ -476,28 +478,34 @@ void triangle_filled_barycentric_coordinates(
             }
             if (is_inside_triangle) {
                 float z = 0.0;
-                for (int i=0; i<3; i++) {
+                // The texture coordinate (u,v) of this *pixel*
+                float u = 0.0;
+                float v = 0.0;
+                
+                for (int i=0; i<3; i++) { // for each vertex
                     z += (t_world[i].z*barycentric_coordinates[i]);
+                    u += (uv_coordinates[i].x * barycentric_coordinates[i]);
+                    v += (uv_coordinates[i].y * barycentric_coordinates[i]);
+                    std::cout << "texture coordinate vertex " << i << ": " << uv_coordinates[i] << std::endl;
                 }
+                std::cout << "uv=(" << u << "," << v << ")" << std::endl;
                 // Only color the pixel if its depth is closer to the camera (positive z)
                 if (z > zbuffer[x][y]) {
                     zbuffer[x][y] = z; 
-                    
-                    unsigned char rgb[3] = {0};
-                    for (int i=0; i<3; i++) { // for each triangle vertex
-                        rgb[0] += colors[i].r * barycentric_coordinates[i];
-                        rgb[1] += colors[i].g * barycentric_coordinates[i];
-                        rgb[2] += colors[i].b * barycentric_coordinates[i];
-                    }
 
+                    int texture_image_x = u * texture_image.get_width();
+                    int texture_image_y = v * texture_image.get_height(); 
+                    std::cout << "uv (int)=(" << texture_image_x<< "," << texture_image_y<< ")" << std::endl;
+                    TGAColor base_color = texture_image.get(texture_image_x, texture_image_y);
                     TGAColor color(
-                        rgb[0],// * light_intensity,
-                        rgb[1],// * light_intensity,
-                        rgb[2],// * light_intensity,
+                        base_color.r * light_intensity,
+                        base_color.g * light_intensity,
+                        base_color.b * light_intensity,
                         255 // opacity
                     );
                     image.set(x, y, color);
                 } 
+                std::cout << "-----" << std::endl;
                 //image.set(180, 100, TGAColor(255,0,0,255));
             } 
         }
@@ -511,8 +519,12 @@ void triangle_filled(
     TGAImage& image,
     std::vector<TGAColor> colors,
     float light_intensity,
-    std::vector<std::vector<float>>& zbuffer) {
-    triangle_filled_barycentric_coordinates(t, t_world, image, colors, light_intensity, zbuffer);
+    std::vector<std::vector<float>>& zbuffer,
+    TGAImage& texture_image,
+    std::vector<Vec3> uv_coordinates) {
+    triangle_filled_barycentric_coordinates(t, t_world, image, colors,
+        light_intensity, zbuffer, texture_image, uv_coordinates
+    );
 }
 
 void rasterize(Point p0, Point p1, TGAImage& image, TGAColor color, std::vector<int>& ybuffer) {

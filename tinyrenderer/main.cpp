@@ -59,7 +59,10 @@ void draw_face() {
 		// Colors obtained from the texture image
 		// Each color is associated to its respective vertex in the triangle
 		std::vector<TGAColor> colors;
-		
+
+		// UV/texture coordinates for each vertex
+		std::vector<Vec3> uv_coordinates;
+
 		//// The center of the triangle
 		//Vec3 centroid(0.0, 0.0, 0.0);	
 		for (int vi=0; vi<3; vi++) {
@@ -70,10 +73,11 @@ void draw_face() {
 
 			// Obj format index starts at 1
 			Vec3 texture_coordinate = texture_coordinates[vertex_index.texture_coordinate_index-1];
-			int image_x = floor(texture_coordinate.x * texture_image.get_width());
-			int image_y = floor(texture_coordinate.y * texture_image.get_height());
-			//std::cout << "image coordinates (" << image_x << "," << image_y << ")" << std::endl;
-			colors.push_back(texture_image.get(image_x, image_y));
+			int image_x = texture_coordinate.x * texture_image.get_width();
+			int image_y = texture_coordinate.y * texture_image.get_height();
+			//std::cout << "texture image coordinates (" << image_x << "," << image_y << ")" << std::endl;
+			//colors.push_back(texture_image.get(image_x, image_y));
+			uv_coordinates.push_back(texture_coordinate);	
 			
 			// UV mapping for debugging
 			//colors.push_back(TGAColor(texture_coordinate.x*255, texture_coordinate.y*255, 0, 255));
@@ -103,7 +107,6 @@ void draw_face() {
 			int y = (v.y + 1)/2 * height;
 			t.push_back(Point(x, y));
 		}
-		
 		//// Compute the center
 		//centroid.x /= 3;
 		//centroid.y /= 3;
@@ -128,15 +131,13 @@ void draw_face() {
 		//float light_intensity = Vec3(-1,0,0)*normal;
 		// The dot product is negative if the normal vector is facing opposite
 		// of the light vector
-		TGAColor color = white;
 		if (light_intensity > 0) {
-			TGAColor face_color(
-				color.r*light_intensity,
-				color.g*light_intensity,
-				color.b*light_intensity,
-				255
+			triangle_filled(
+				t,
+				worldCoordinates,
+				image, colors, light_intensity, zbuffer,
+				texture_image, uv_coordinates
 			);
-			triangle_filled(t, worldCoordinates, image, colors, light_intensity, zbuffer);
 		}	
 	}
 

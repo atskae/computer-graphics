@@ -278,3 +278,71 @@ Maybe the colors are not mapped to the correct vertex because it should be up to
 Interpolated texture without lighting:
 
 ![Interpolated texture without lighting](images/interpolate_without_lighting.png)
+
+I cheated a bit and searched the web... Apparently people interpolate the UV coordinates, *not* the colors!! That never crossed my mind...
+
+This is how the UV coordinates are now calculated for the pixel:
+```cpp
+float u = 0.0;
+float v = 0.0;
+for (int i=0; i<3; i++) { // for each vertex
+    z += (t_world[i].z*barycentric_coordinates[i]);
+    if (i == 0) u += (uv_coordinates[i].x * barycentric_coordinates[i]);
+    else if (i == 1) v += (uv_coordinates[i].y * barycentric_coordinates[i]);
+}
+```
+
+Then I compute the color by obtaining the base color from the texture image, then applying the light intensity:
+```cpp
+TGAColor base_color = texture_image.get((int)floor(u), (int)floor(v));
+TGAColor color(
+    base_color.r * light_intensity,
+    base_color.g * light_intensity,
+    base_color.b * light_intensity,
+    255 // opacity
+);
+image.set(x, y, color);
+```
+
+Welp, still lookin' weird:
+
+![Interpolate UV attempt 1](images/interpolate_uv_attempt1.png)
+
+Actually this logic here is a bug, it should not check for `i`, it should just add them all:
+```cpp
+for (int i=0; i<3; i++) { // for each vertex
+    z += (t_world[i].z*barycentric_coordinates[i]);
+    if (i == 0) u += (uv_coordinates[i].x * barycentric_coordinates[i]);
+    else if (i == 1) v += (uv_coordinates[i].y * barycentric_coordinates[i]);
+}
+```
+
+Fixed that to:
+```cpp
+for (int i=0; i<3; i++) { // for each vertex
+    z += (t_world[i].z*barycentric_coordinates[i]);
+    u += (uv_coordinates[i].x * barycentric_coordinates[i]);
+    v += (uv_coordinates[i].y * barycentric_coordinates[i]);
+    std::cout << "texture coordinate vertex " << i << ": " << uv_coordinates[i] << std::endl;
+}
+```
+
+And also passed in the *normalized* uv_coordinates here (so the value taken directly from the wave object file), instead of the image coordinates of the texture image.
+I then calculate the image coordinates later after multiplying the normalized texture coordinates by the barycentric coordinates.
+
+```cpp
+int texture_image_x = u * texture_image.get_width();
+int texture_image_y = v * texture_image.get_height(); 
+std::cout << "uv (int)=(" << texture_image_x<< "," << texture_image_y<< ")" << std::endl;
+TGAColor base_color = texture_image.get(texture_image_x, texture_image_y);
+TGAColor color(
+    base_color.r * light_intensity,
+    base_color.g * light_intensity,
+    base_color.b * light_intensity,
+    255 // opacity
+);
+```
+
+Definitely better, the rough hair and skin shows more, but still not quite there... Still looks blocky. It still feels like some triangle's texture colors are flipped:
+
+![Interpolate UV attempt 2](images/interpolate_uv_attempt2.png)
