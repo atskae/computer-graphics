@@ -425,7 +425,6 @@ void triangle_filled_barycentric_coordinates(
     std::vector<Point> t,
     std::vector<Vec3> t_world,
     TGAImage& image,
-    std::vector<TGAColor> colors,
     float light_intensity,
     std::vector<std::vector<float>>& zbuffer,
     TGAImage& texture_image, 
@@ -481,11 +480,12 @@ void triangle_filled_barycentric_coordinates(
                 // The texture coordinate (u,v) of this *pixel*
                 float u = 0.0;
                 float v = 0.0;
-                
+
+                std::vector<int> indices = {0, 1, 2};
                 for (int i=0; i<3; i++) { // for each vertex
-                    z += (t_world[i].z*barycentric_coordinates[i]);
-                    u += (uv_coordinates[i].x * barycentric_coordinates[i]);
-                    v += (uv_coordinates[i].y * barycentric_coordinates[i]);
+                    z += (t_world[i].z*barycentric_coordinates[indices[i]]);
+                    u += (uv_coordinates[i].x * barycentric_coordinates[indices[i]]);
+                    v += (uv_coordinates[i].y * barycentric_coordinates[indices[i]]);
                     std::cout << "texture coordinate vertex " << i << ": " << uv_coordinates[i] << std::endl;
                 }
                 std::cout << "uv=(" << u << "," << v << ")" << std::endl;
@@ -498,9 +498,9 @@ void triangle_filled_barycentric_coordinates(
                     std::cout << "uv (int)=(" << texture_image_x<< "," << texture_image_y<< ")" << std::endl;
                     TGAColor base_color = texture_image.get(texture_image_x, texture_image_y);
                     TGAColor color(
-                        base_color.r * light_intensity,
-                        base_color.g * light_intensity,
-                        base_color.b * light_intensity,
+                        base_color.r, // * light_intensity,
+                        base_color.g, // * light_intensity,
+                        base_color.b, // * light_intensity,
                         255 // opacity
                     );
                     image.set(x, y, color);
@@ -517,12 +517,11 @@ void triangle_filled(
     std::vector<Point> t,
     std::vector<Vec3> t_world,
     TGAImage& image,
-    std::vector<TGAColor> colors,
     float light_intensity,
     std::vector<std::vector<float>>& zbuffer,
     TGAImage& texture_image,
     std::vector<Vec3> uv_coordinates) {
-    triangle_filled_barycentric_coordinates(t, t_world, image, colors,
+    triangle_filled_barycentric_coordinates(t, t_world, image,
         light_intensity, zbuffer, texture_image, uv_coordinates
     );
 }

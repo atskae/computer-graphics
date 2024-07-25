@@ -15,7 +15,7 @@ const TGAColor blue = TGAColor(0, 0,   255,   255);
 Vec3 lightPos(0, 0, -0.5);
 
 void draw_face() {
-	int width = 600;
+	int width = 650;
 	int height = 700;
 	TGAImage image(width, height, TGAImage::RGB);
 
@@ -55,10 +55,6 @@ void draw_face() {
 		// Triangle coordinates as screen coordinates
 		std::vector<Point> t;
 		std::vector<Vec3> worldCoordinates;
-		
-		// Colors obtained from the texture image
-		// Each color is associated to its respective vertex in the triangle
-		std::vector<TGAColor> colors;
 
 		// UV/texture coordinates for each vertex
 		std::vector<Vec3> uv_coordinates;
@@ -73,10 +69,6 @@ void draw_face() {
 
 			// Obj format index starts at 1
 			Vec3 texture_coordinate = texture_coordinates[vertex_index.texture_coordinate_index-1];
-			int image_x = texture_coordinate.x * texture_image.get_width();
-			int image_y = texture_coordinate.y * texture_image.get_height();
-			//std::cout << "texture image coordinates (" << image_x << "," << image_y << ")" << std::endl;
-			//colors.push_back(texture_image.get(image_x, image_y));
 			uv_coordinates.push_back(texture_coordinate);	
 			
 			// UV mapping for debugging
@@ -135,7 +127,7 @@ void draw_face() {
 			triangle_filled(
 				t,
 				worldCoordinates,
-				image, colors, light_intensity, zbuffer,
+				image, light_intensity, zbuffer,
 				texture_image, uv_coordinates
 			);
 		}	

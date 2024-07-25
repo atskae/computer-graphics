@@ -346,3 +346,57 @@ TGAColor color(
 Definitely better, the rough hair and skin shows more, but still not quite there... Still looks blocky. It still feels like some triangle's texture colors are flipped:
 
 ![Interpolate UV attempt 2](images/interpolate_uv_attempt2.png)
+
+I am running to the exact same problem as [this user](https://github.com/ssloy/tinyrenderer/issues/105), which is also in a Visual Troubleshooting page: https://github.com/ssloy/tinyrenderer/wiki/Visual-troubleshooting#texturing
+
+So apparently the order of Barycentric coordinates is incorrect. It isn't the obvious mapping of:
+```
+v0 -> barycentric_coordinates[0]
+v1 -> barycentric_coordinates[1]
+v2 -> barycentric_coordinates[2]
+```
+
+This is using the reverse order, which looks better,  but not correct:
+```
+v0 -> barycentric_coordinates[2]
+v1 -> barycentric_coordinates[1]
+v2 -> barycentric_coordinates[0]
+```
+
+```cpp
+std::vector<int> indices = {2, 1, 0};
+for (int i=0; i<3; i++) { // for each vertex
+    z += (t_world[i].z*barycentric_coordinates[indices[i]]);
+    u += (uv_coordinates[i].x * barycentric_coordinates[indices[i]]);
+    v += (uv_coordinates[i].y * barycentric_coordinates[indices[i]]);
+}
+```
+
+(no lighting):
+
+![Interpolate UV attempt 3](images/interpolate_uv_attempt3.png)
+
+I compared my RGB interpolation attempt with [this user's RGB interpolation](https://github.com/ssloy/tinyrenderer/issues/105#issuecomment-1165139104) and I noticed that our RGB colors are in reverse order.
+
+The following order:
+```
+v0 -> barycentric_coordinates[2]
+v1 -> barycentric_coordinates[0]
+v2 -> barycentric_coordinates[1]
+```
+
+gives me:
+
+![Interpolation UV attempt 4](images/interpolate_uv_attempt4.png)
+
+This is what my interpretation of what [this comment](https://github.com/ssloy/tinyrenderer/issues/105#issuecomment-1165139508) is trying to say:
+
+```
+v0 -> barycentric_coordinates[0]
+v1 -> barycentric_coordinates[2]
+v2 -> barycentric_coordinates[1]
+```
+
+Though still not correct...
+
+![Interpolate UV attempt 5](images/interpolate_uv_attempt5.png)
