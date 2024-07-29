@@ -376,6 +376,10 @@ for (int i=0; i<3; i++) { // for each vertex
 
 ![Interpolate UV attempt 3](images/interpolate_uv_attempt3.png)
 
+
+(with lighting)
+![Interpolate UV attempt 3 with lighting](images/interpolate_uv_attempt3_with_lighting.png)
+
 I compared my RGB interpolation attempt with [this user's RGB interpolation](https://github.com/ssloy/tinyrenderer/issues/105#issuecomment-1165139104) and I noticed that our RGB colors are in reverse order.
 
 The following order:

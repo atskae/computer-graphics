@@ -481,7 +481,7 @@ void triangle_filled_barycentric_coordinates(
                 float u = 0.0;
                 float v = 0.0;
 
-                std::vector<int> indices = {0, 1, 2};
+                std::vector<int> indices = {2, 1, 0};
                 for (int i=0; i<3; i++) { // for each vertex
                     z += (t_world[i].z*barycentric_coordinates[indices[i]]);
                     u += (uv_coordinates[i].x * barycentric_coordinates[indices[i]]);
@@ -497,12 +497,22 @@ void triangle_filled_barycentric_coordinates(
                     int texture_image_y = v * texture_image.get_height(); 
                     std::cout << "uv (int)=(" << texture_image_x<< "," << texture_image_y<< ")" << std::endl;
                     TGAColor base_color = texture_image.get(texture_image_x, texture_image_y);
+                    bool with_light = true;
                     TGAColor color(
                         base_color.r, // * light_intensity,
                         base_color.g, // * light_intensity,
                         base_color.b, // * light_intensity,
                         255 // opacity
                     );
+                    
+                    if (with_light) {
+                        color = TGAColor(
+                            base_color.r * light_intensity,
+                            base_color.g * light_intensity,
+                            base_color.b * light_intensity,
+                            255 // opacity
+                        );
+                    }
                     image.set(x, y, color);
                 } 
                 std::cout << "-----" << std::endl;
