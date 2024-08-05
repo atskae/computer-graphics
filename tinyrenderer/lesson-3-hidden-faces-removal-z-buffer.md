@@ -378,6 +378,7 @@ for (int i=0; i<3; i++) { // for each vertex
 
 
 (with lighting)
+
 ![Interpolate UV attempt 3 with lighting](images/interpolate_uv_attempt3_with_lighting.png)
 
 I compared my RGB interpolation attempt with [this user's RGB interpolation](https://github.com/ssloy/tinyrenderer/issues/105#issuecomment-1165139104) and I noticed that our RGB colors are in reverse order.
@@ -404,3 +405,5 @@ v2 -> barycentric_coordinates[1]
 Though still not correct...
 
 ![Interpolate UV attempt 5](images/interpolate_uv_attempt5.png)
+
+The [seemingly correct](https://github.com/ssloy/tinyrenderer/issues/105#issuecomment-1165139104) RGB mapping is consistently counter-clockwise order when assigning colors to RGB. But in my case, some triangles are counter-clockwise and some are clockwise... I thought that meant my file was different but I did a `diff` on my copy of `african_head.obj` and the the tinyrenderer repo's most recent copy and they are the same...
