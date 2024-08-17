@@ -407,3 +407,37 @@ Though still not correct...
 ![Interpolate UV attempt 5](images/interpolate_uv_attempt5.png)
 
 The [seemingly correct](https://github.com/ssloy/tinyrenderer/issues/105#issuecomment-1165139104) RGB mapping is consistently counter-clockwise order when assigning colors to RGB. But in my case, some triangles are counter-clockwise and some are clockwise... I thought that meant my file was different but I did a `diff` on my copy of `african_head.obj` and the the tinyrenderer repo's most recent copy and they are the same...
+
+After days of debugging... using [barycentric coordinate calculator](https://www.geogebra.org/m/ZuvmPjmy), `gdb`, `std::cout` everywhere... I finally found the issue.
+
+To calculate the bounding box of the triangle, I was reordering the triangle screen coordinates:
+```cpp
+std::sort(
+    t.begin(), t.end(),
+    [](Point p0, Point p1) {return p0.x < p1.x;}
+);
+int lowest_x = t[0].x; 
+int highest_x = t[2].x;
+
+// Sort the triangle's points by y-coordinate
+std::sort(
+    t.begin(), t.end(),
+    [](Point p0, Point p1) {return p0.y < p1.y;}
+); 
+int lowest_y = t[0].y; 
+int highest_y = t[2].y;
+```
+
+which then affects how the barycentric coordinates are computed and how the texture coordinates are mapped because now the triangle coordinates are the wrong order of what the model file specified OTL
+
+If I had written this in Rust, the Rust compiler would have totally caught this bug by keeping the screen coordinates `t` not mutable OTL (+1 🦀)
+
+The correct RGB mapping:
+
+![Correct RGB mapping](images/correct_rgb_bc.png)
+
+The correct texture mapping!!
+
+![Correct texture mapping](images/correct_texture_mapping.png)
+
+Amazing 😭!!

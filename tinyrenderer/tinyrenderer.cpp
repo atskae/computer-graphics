@@ -433,20 +433,24 @@ void triangle_filled_barycentric_coordinates(
     // Compute the bounding box of this triangle
     
     // Sort the triangle's points by x-coordinate
+    std::vector<int> x_coordinates = {
+        t[0].x, t[1].x, t[2].x
+    };
     std::sort(
-        t.begin(), t.end(),
-        [](Point p0, Point p1) {return p0.x < p1.x;}
+        x_coordinates.begin(), x_coordinates.end()
     );
-    int lowest_x = t[0].x; 
-    int highest_x = t[2].x;
+    int lowest_x = x_coordinates[0]; 
+    int highest_x = x_coordinates[2];
     
     // Sort the triangle's points by y-coordinate
+    std::vector<int> y_coordinates = {
+        t[0].y, t[1].y, t[2].y
+    };
     std::sort(
-        t.begin(), t.end(),
-        [](Point p0, Point p1) {return p0.y < p1.y;}
+        y_coordinates.begin(), y_coordinates.end()
     ); 
-    int lowest_y = t[0].y; 
-    int highest_y = t[2].y;
+    int lowest_y = y_coordinates[0]; 
+    int highest_y = y_coordinates[2];
 
     // Clip against the canvas
     // The bottom-left corner of the canvas is (0,0)
@@ -486,30 +490,28 @@ void triangle_filled_barycentric_coordinates(
                     z += (t_world[i].z*barycentric_coordinates[indices[i]]);
                     u += (uv_coordinates[i].x * barycentric_coordinates[indices[i]]);
                     v += (uv_coordinates[i].y * barycentric_coordinates[indices[i]]);
-                    std::cout << "texture coordinate vertex " << i << ": " << uv_coordinates[i] << std::endl;
                 }
-                std::cout << "uv=(" << u << "," << v << ")" << std::endl;
+                
                 // Only color the pixel if its depth is closer to the camera (positive z)
                 if (z > zbuffer[x][y]) {
                     zbuffer[x][y] = z; 
 
                     int texture_image_x = u * texture_image.get_width();
                     int texture_image_y = v * texture_image.get_height(); 
-                    std::cout << "uv (int)=(" << texture_image_x<< "," << texture_image_y<< ")" << std::endl;
                     TGAColor base_color = texture_image.get(texture_image_x, texture_image_y);
-                    bool with_light = false;
-                    //TGAColor color(
-                    //    base_color.r, // * light_intensity,
-                    //    base_color.g, // * light_intensity,
-                    //    base_color.b, // * light_intensity,
-                    //    255 // opacity
-                    //);
+                    bool with_light = true;
                     TGAColor color(
-                        255 * barycentric_coordinates[indices[0]],
-                        255 * barycentric_coordinates[indices[1]],
-                        255 * barycentric_coordinates[indices[2]],
+                        base_color.r, // * light_intensity,
+                        base_color.g, // * light_intensity,
+                        base_color.b, // * light_intensity,
                         255 // opacity
                     );
+                    // TGAColor color(
+                    //     255 * barycentric_coordinates[indices[0]],
+                    //     255 * barycentric_coordinates[indices[1]],
+                    //     255 * barycentric_coordinates[indices[2]],
+                    //     255 // opacity
+                    // );
 
                     if (with_light) {
                         color = TGAColor(
@@ -521,7 +523,6 @@ void triangle_filled_barycentric_coordinates(
                     }
                     image.set(x, y, color);
                 } 
-                std::cout << "-----" << std::endl;
                 //image.set(180, 100, TGAColor(255,0,0,255));
             } 
         }
