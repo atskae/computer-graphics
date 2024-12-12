@@ -38,7 +38,7 @@ A shear is also a linear operation:
 
 ![Shear is linear part 2](images/shear-linear-2.png)
 
-Any rotation can be represented as three shears.
+Any rotation can be represented as three shears. Rotation is also a linear operation.
 
 Paper on this algorithm: [A fast algorithm for general raster rotation](http://graphicsinterface.org/wp-content/uploads/gi1986-15.pdf)
 
@@ -69,3 +69,44 @@ Actually the point of the shear exercise was to show that any linear transformat
 With only scale and shear, the origin would not move. We can apply translation.
 
 Though the translation operation is *not* linear.
+
+![Translation is not linear](images/translation-not-linear.png)
+
+Translation is an *affine transformation*, which is a type of transformation that preserves lines and parallelism, but not guaranteed to preserve angles and length of lines.
+
+Affine transformations are a more general class of transformations, and linear transformations are a type of affine transformation:
+
+![Affine vs. linear](images/affine-vs-linear-transformations.png)
+
+Therefore, every linear transformation is affine, but not every affine transformation is linear. For example, pure linear transformations preserve the origin, but an affine transformation may not (ex. translation).
+
+Every affine transformation can be represented as a combination of linear transformations (scale, shear, and rotation) and a translation:
+```
+p' = A*p + t
+```
+
+where `A` is a linear transformation matrix, point `p`, and translation `t`.
+
+To compose multiple affine transformations together, we can do something like this:
+
+![Compose affine transformations](images/composition-of-affine-transformations.png)
+
+which can become very clunky if we had to compose even more operations.
+
+## [Homogeneous coordinates](https://github.com/ssloy/tinyrenderer/wiki/Lesson-4:-Perspective-projection#homogeneous-coordinates)
+
+If we extend our linear transformation from a 2x2 matrix to a 3x3 matrix and include the translation into the matrix, we now have one matrix to represent the full affine transformation:
+
+![Homogenous coordinates](images/homogenous-coordinates.png)
+
+We also extend our input point `(x,y)` from 2D to 3D by appending a 1 to the z-coordinate; the point now becomes a *homogeneous coordinate*.
+
+Essentially we are mapping the 2D transformation into 3D space: the transformation happens in 3D space but on a 2D plane, where z=1.
+
+To convert the 3D point `(x,y,z)` back to a 2D point `(x',y')`, we simply divide each component by the z-coordinate:
+```
+x' = x/z
+y' = y/z
+```
+
+(old notes on [the z-divide](https://github.com/atskae/computer-graphics/tree/master/scratch-a-pixel/notes/01-introduction)).
