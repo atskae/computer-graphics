@@ -110,3 +110,7 @@ y' = y/z
 ```
 
 (old notes on [the z-divide](https://github.com/atskae/computer-graphics/tree/master/scratch-a-pixel/notes/01-introduction)).
+
+([why x/z works, illustration](https://www.cse.unr.edu/~bebis/CS791E/Notes/PerspectiveProjection.pdf))
+
+![Similar triangles, x-coordinate](images/similar-triangles-x-coordinate.png)
