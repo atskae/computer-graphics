@@ -56,6 +56,13 @@ With two parameters, we get a *parametric surface*.
 
 ![Unit circle](images/unit-circle.png)
 
+### Bézier Curves
+
+[Great interactive resource](https://pomax.github.io/bezierinfo/) on learning about Bézier Curves!
+
+(I was amused to find that someone else out there had the [exact same confusion about "times one"](https://github.com/Pomax/BezierInfo-2/issues/37) as I had 😆)
+
+
 ### Parametric Surfaces
 * Sphere
 * Bézier surface
