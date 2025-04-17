@@ -6,6 +6,19 @@ Learning how to use [libigl](https://libigl.github.io/).
 
 ### Building and Running Tutorials
 
+(*edit*) Ok... the best solution was to just stick with Linux Ubuntu 😆;;;
+
+To compile all tutorials (Linux):
+```
+cd libigl/
+mkdir build
+cd build
+cmake ../
+make
+```
+
+(I'll just keep the nonsense below for record purposes...)
+
 (on MacOS)
 
 First I had a CMake version that was too old, so I ran:
