@@ -8,14 +8,32 @@ Learning how to use [libigl](https://libigl.github.io/).
 
 (*edit*) Ok... the best solution was to just stick with Linux Ubuntu 😆;;;
 
-To compile all tutorials (Linux):
+Configure CMake (on Linux):
 ```
 cd libigl/
 mkdir build
 cd build
 cmake ../
-make
 ```
+
+To see all the tutorials (from libigl/build):
+```
+cd tutorial
+cmake --build . --target help
+```
+
+To build one tutorial (for example, 101_FileIO), in libigl/build/tutorial, run:
+```
+cmake --build . --target 101_FileIO
+```
+This will take a while, like > 10 minutes, the first time you compile anything. Afterwards it is fairly quick.
+
+Then to run the tutorial:
+```
+../bin/101_FileIO
+```
+
+---
 
 (I'll just keep the nonsense below for record purposes...)
 
