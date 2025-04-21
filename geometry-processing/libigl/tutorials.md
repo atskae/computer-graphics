@@ -71,3 +71,17 @@ For each vertex, each dimension (x, y, z) is normalized according to the minimum
 ![Screwdriver](images/104_Colors.png)
 
 ? Why do we use the minimum and maximum values within a dimension to normalize instead of taking the minium and maximum values across all dimensions?
+
+# 105_Overlays
+
+![Bounding box bunny](images/105_Overlays.png)
+
+The vertices of the bunny model is read in and it finds the minimum and maximum vertex value in each dimension (x, y, z):
+
+![Bunny vertices](images/105_Overlay-bunny-vertices.png)
+
+It uses these min/max values as the corners of the bounding box:
+
+![Vertices matrix](images/105_Overlay-bounding-box.png)
+
+(it was Easter yesterday 笑)
