@@ -85,3 +85,63 @@ It uses these min/max values as the corners of the bounding box:
 ![Vertices matrix](images/105_Overlay-bounding-box.png)
 
 (it was Easter yesterday 笑)
+
+The points and edges are plotted into the viewer:
+```cpp
+  viewer.data().add_points(V_box,Eigen::RowVector3d(1,0,0));
+```
+
+The second argument in the `add_points()` call is the color of the point/edge: `Vector[R, G, B]`;
+
+It labels two corners of the box:
+```cpp
+std::stringstream l1;
+l1 << m(0) << ", " << m(1) << ", " << m(2);
+viewer.data().add_label(m+Eigen::Vector3d(-0.007, 0, 0),l1.str());
+```
+
+with a little space between the actual point and the label `Eigen::Vector3d(-0.007, 0, 0)`.
+
+Then we need to enable label rendering:
+```cpp
+viewer.data().show_custom_labels = true;
+```
+
+ImGui handles rendering labels, so we need to enable the ImGui plugin:
+```cpp
+igl::opengl::glfw::imgui::ImGuiPlugin plugin;
+viewer.plugins.push_back(&plugin);
+igl::opengl::glfw::imgui::ImGuiMenu menu;
+plugin.widgets.push_back(&menu);
+// An empty lambda expression [capture-clause](arguments){function body}
+menu.callback_draw_viewer_window = [](){};
+```
+
+## 106_ViewerMenu
+This renders the default menu and custom menu options with the ImGui plugin.
+
+Viewer menu options are added in the callback:
+```cpp
+  menu.callback_draw_viewer_menu = [&]()
+  {
+    // Add menu options (buttons, drop-downs, etc.)
+  }
+```
+
+Default menu options are displayed with:
+```cpp
+menu.draw_viewer_menu();
+```
+
+![Menu](images/106_ViewerMenu.png)
+
+New windows can be created by defining the options in a separate callback:
+```cpp
+  menu.callback_draw_custom_window = [&]()
+  {
+    // "New Window" window in the example
+  }
+```
+
+## 107_MultipleMeshes
+
