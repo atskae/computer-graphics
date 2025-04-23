@@ -145,3 +145,7 @@ New windows can be created by defining the options in a separate callback:
 
 ## 107_MultipleMeshes
 
+At the beginning, multiple meshes are loaded and random colors are assigned to each mesh.
+When the `backspace` key is pressed, it will delete the last mesh that was loaded. And the next mesh that will get deleted on `backspace` is colored red.
+
+<img src="images/107_MultipleMeshes.gif" width="200"/>
