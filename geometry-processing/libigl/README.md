@@ -2,6 +2,8 @@
 
 Learning how to use [libigl](https://libigl.github.io/).
 
+Coding is broken up into exercises into respective directories (`e1`, `e2`, etc.).
+
 ## Troubleshooting
 
 ### Building and Running Tutorials
