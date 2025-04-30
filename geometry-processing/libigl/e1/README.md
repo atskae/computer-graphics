@@ -119,3 +119,25 @@ Vertex #25 adjacent vertices: 433, 478, 479, 480, 1176, 1371,
 ```
 
 Looks good ✅
+
+## Shading
+
+### Per-face
+
+Also called flat-shading. Here we use the normal vector of the face to compute lighting/shading.
+
+Cube:
+Default shading:
+![Default shading](images/default-shading.png)
+
+Flat shading:
+![Flat shading](images/flat-shading.png)
+
+Bunny:
+
+Default shading:
+![Default shading bunny](images/bunny-default-shading.png)
+
+Flat shading:
+![Flat shading bunny](images/bunny-flat-shading.png)
+

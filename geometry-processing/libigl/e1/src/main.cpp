@@ -7,6 +7,7 @@
 
 #include <igl/vertex_triangle_adjacency.h>
 #include <igl/adjacency_list.h>
+#include <igl/per_face_normals.h>
 
 using namespace std;
 
@@ -62,6 +63,7 @@ bool callback_key_down(ViewerProxy &viewer, unsigned char key, int modifiers) {
   if (key == '2') {
     viewer.data().clear();
     viewer.data().set_mesh(V, F);
+    // Given a vertex, finds all adjacent vertices
     igl::adjacency_list(F, VV);
     for (int vertex_index=0; vertex_index<VV.size(); vertex_index++) {
       auto adjacent_vertices = VV.at(vertex_index);
@@ -77,8 +79,11 @@ bool callback_key_down(ViewerProxy &viewer, unsigned char key, int modifiers) {
     viewer.data().clear();
     viewer.data().set_mesh(V, F);
     FN.setZero(F.rows(), 3);
-    // Add your code for computing per-face normals here: store in FN.
-
+    std::cout << "Flat-shading" << std::endl;
+    // Flat-shading (use normals of the triangle)
+    // FN is a matrix where, there are # Faces rows
+    // Each row i contains the normal vector of the Face i
+    igl::per_face_normals(V, F, FN);
     // Set the viewer normals.
     viewer.data().set_normals(FN);
   }
