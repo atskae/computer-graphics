@@ -96,3 +96,26 @@ Vertex #1514 adjacent vertices: 156, 280, 568, 636, 1122, 1124,
 Vertex #1515 adjacent vertices: 18, 378, 432, 444, 1123, 1124,
 ...
 ```
+
+### Verify Results
+
+To verify, we can look at the mesh viewer and enable labels of vertices and faces (this is `cube.off`):
+
+![Vertex and face labels](images/adjacent.png)
+
+```
+Vertex #25
+Face 22: 1176  479   25
+Face 1036:   25  433 1371
+Face 1481: 480  25 478
+Face 1558:  480 1176   25
+Face 2572:  478   25 1371
+Face 3045:  25 479 433
+Index of incidence: 2, 0, 1, 2, 1, 0, 
+```
+
+```
+Vertex #25 adjacent vertices: 433, 478, 479, 480, 1176, 1371,
+```
+
+Looks good ✅
