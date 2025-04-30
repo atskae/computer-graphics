@@ -19,7 +19,9 @@ This will build an executable `e1`:
 ./e1
 ```
 
-## Adjacent Faces
+## Adjacent
+
+### Adjacent Faces
 
 We can find all the adjacent faces to a vertex with:
 ```cpp
@@ -74,3 +76,23 @@ Index of incidence: 0, 1, 2, 1, 2, 0
 For the first face (Face 357), Vertex #1511 is at index 0 of the face's vertices.
 For the second face (Face 1455), Vertex #1511 is at index 1 of the face's vertices.
 For the fifth face (Face 2992), Vertex #1511 is at index 2 of the face's vertices.
+
+### Adjacent Vertices
+
+To find all the vertices adjacent to a given vertex, we can create an adjacency list `A`:
+```cpp
+adjacency_list(F, A)
+```
+
+where the ith row of `A` is a list of adjacent vertices to vertex `i`.
+```
+...
+Vertex #1509 adjacent vertices: 40, 376, 563, 592, 1115, 1116, 
+Vertex #1510 adjacent vertices: 104, 112, 392, 400, 1115, 1117, 
+Vertex #1511 adjacent vertices: 108, 110, 396, 398, 1118, 1120, 
+Vertex #1512 adjacent vertices: 36, 377, 568, 588, 1119, 1120, 
+Vertex #1513 adjacent vertices: 278, 280, 758, 760, 1119, 1121, 
+Vertex #1514 adjacent vertices: 156, 280, 568, 636, 1122, 1124, 
+Vertex #1515 adjacent vertices: 18, 378, 432, 444, 1123, 1124,
+...
+```

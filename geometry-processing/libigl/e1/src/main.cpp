@@ -6,6 +6,7 @@
 #include <viewer_proxy.h>
 
 #include <igl/vertex_triangle_adjacency.h>
+#include <igl/adjacency_list.h>
 
 using namespace std;
 
@@ -61,8 +62,15 @@ bool callback_key_down(ViewerProxy &viewer, unsigned char key, int modifiers) {
   if (key == '2') {
     viewer.data().clear();
     viewer.data().set_mesh(V, F);
-    // Add your code for computing vertex to vertex relations here:
-    // store in VV.
+    igl::adjacency_list(F, VV);
+    for (int vertex_index=0; vertex_index<VV.size(); vertex_index++) {
+      auto adjacent_vertices = VV.at(vertex_index);
+      std::cout << "Vertex #" << vertex_index << " adjacent vertices: ";
+      for (auto vi: adjacent_vertices) {
+        std::cout << vi << ", ";
+      }
+      std::cout << std::endl;
+    }
   }
 
   if (key == '3') {
