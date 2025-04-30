@@ -8,6 +8,7 @@
 #include <igl/vertex_triangle_adjacency.h>
 #include <igl/adjacency_list.h>
 #include <igl/per_face_normals.h>
+#include <igl/per_vertex_normals.h>
 
 using namespace std;
 
@@ -91,9 +92,13 @@ bool callback_key_down(ViewerProxy &viewer, unsigned char key, int modifiers) {
   if (key == '4') {
     viewer.data().clear();
     viewer.data().set_mesh(V, F);
-    // Add your code for computing per-vertex normals here: store in VN.
-
+    std::cout << "Per-vertex shading" << std::endl;
+    // Per-vertex shading
+    // The average normal vector (from a vertex's neighboring vertices) is computed
+    // which is then used for lighting calculations
+    igl::per_vertex_normals(V, F, VN);
     // Set the viewer normals.
+    viewer.data().set_normals(VN);
   }
 
   if (key == '5') {

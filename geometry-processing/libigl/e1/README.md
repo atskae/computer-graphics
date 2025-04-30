@@ -126,6 +126,11 @@ Looks good ✅
 
 Also called flat-shading. Here we use the normal vector of the face to compute lighting/shading.
 
+```cpp
+igl::per_face_normals(V, F, N)
+```
+where `N` is a matrix with # Faces amount of rows, where row `i` is the normal vector computed for Face `i`.
+
 Cube:
 Default shading:
 ![Default shading](images/default-shading.png)
@@ -141,3 +146,23 @@ Default shading:
 Flat shading:
 ![Flat shading bunny](images/bunny-flat-shading.png)
 
+Sphere
+Default shading:
+![Default shading sphere](images/sphere-default-shading.png)
+
+Flat shading
+(looks like a golf ball)
+![Flat shading sphere](images/sphere-flat-shading.png)
+
+### Per-vertex
+
+In per-vertex shading, given a face, we compute the *average* normal vectors of the surrounding faces, and use the average for lighting calculations.
+
+We can call[`per_vertex_normals`](https://github.com/libigl/libigl/blob/main/include/igl/per_vertex_normals.h):
+```cpp
+igl::per_vertex_normals(V, F, N)
+```
+
+`N` is a matrix of # Vertices amount of rows. Row `i` contains the average normal vector for Vector `i`.
+
+Looks like the default shading *is* per-vertex shading!
