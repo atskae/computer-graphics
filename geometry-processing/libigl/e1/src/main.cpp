@@ -9,6 +9,7 @@
 #include <igl/adjacency_list.h>
 #include <igl/per_face_normals.h>
 #include <igl/per_vertex_normals.h>
+#include <igl/per_corner_normals.h>
 
 using namespace std;
 
@@ -28,6 +29,10 @@ std::vector<std::vector<int>> VF, VFi, VV;
 Eigen::VectorXi cid;
 // Per-face color array, #F x3
 Eigen::MatrixXd component_colors_per_face;
+
+/* Imgui Custom menu options */
+// Angle threshold for per-corner shading, in degrees
+int per_corner_shading_threshold = 90;
 
 void subdivide_sqrt3(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
                      Eigen::MatrixXd &Vout, Eigen::MatrixXi &Fout) {}
@@ -80,7 +85,7 @@ bool callback_key_down(ViewerProxy &viewer, unsigned char key, int modifiers) {
     viewer.data().clear();
     viewer.data().set_mesh(V, F);
     FN.setZero(F.rows(), 3);
-    std::cout << "Flat-shading" << std::endl;
+    std::cout << "Per-face (flat-shading)" << std::endl;
     // Flat-shading (use normals of the triangle)
     // FN is a matrix where, there are # Faces rows
     // Each row i contains the normal vector of the Face i
@@ -104,9 +109,9 @@ bool callback_key_down(ViewerProxy &viewer, unsigned char key, int modifiers) {
   if (key == '5') {
     viewer.data().clear();
     viewer.data().set_mesh(V, F);
-    // Add your code for computing per-corner normals here: store in CN.
-
-    // Set the viewer normals
+    std::cout << "Per-corner shading with threshold: " << per_corner_shading_threshold << std::endl;
+    igl::per_corner_normals(V, F, per_corner_shading_threshold, CN);
+    viewer.data().set_normals(CN);
   }
 
   if (key == '6') {
@@ -192,6 +197,12 @@ int main(int argc, char *argv[]) {
     if (ImGui::Button("I'm a button")) {
       std::cout << "and I was just clicked" << std::endl;
     }
+
+    ImGui::SliderInt(
+      "Per-corner shading threshold (degrees)",
+      &per_corner_shading_threshold,
+      0, 180
+    );
   };
 
   viewer.launch();

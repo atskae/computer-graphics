@@ -166,3 +166,10 @@ igl::per_vertex_normals(V, F, N)
 `N` is a matrix of # Vertices amount of rows. Row `i` contains the average normal vector for Vector `i`.
 
 Looks like the default shading *is* per-vertex shading!
+
+### Per-Corner
+To preserve sharp edges, we define a threshold in angle degrees. When comparing two faces, if the angle between the normal vectors of the faces are greater than the threshold, we use per-face shading (simply use the face's normal vector as is for shading). If the angle is less than the threshold, we use per-vertex shading (taking the average of the normal vectors of the surrounding faces).
+
+![Per corner shading threshold 35](images/per-corner-threshold-35.png)
+
+![Per corner shading threshold 145](images/per-corner-threshold-145.png)
