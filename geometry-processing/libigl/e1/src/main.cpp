@@ -10,6 +10,8 @@
 #include <igl/per_face_normals.h>
 #include <igl/per_vertex_normals.h>
 #include <igl/per_corner_normals.h>
+#include <igl/facet_components.h>
+#include <igl/jet.h>
 
 using namespace std;
 
@@ -118,13 +120,22 @@ bool callback_key_down(ViewerProxy &viewer, unsigned char key, int modifiers) {
     viewer.data().clear();
     viewer.data().set_mesh(V, F);
     component_colors_per_face.setZero(F.rows(), 3);
-    // Add your code for computing per-face connected components here:
-    // store the component labels in cid.
-
+    std::cout << "Connected components called for " << F.rows() << " faces" << std::endl;
+    
+    // Assigns an integer ID to each face
+    // The ID indicates the connected component group that the face belongs to
+    // cid.size() == number of faces
+    auto num_components = igl::facet_components(F, cid);
+    std::cout << num_components << " connected components were found" << std::endl;
     // Compute colors for the faces based on components, storing them in
     // component_colors_per_face.
 
     // Set the viewer colors
+    for (int row_idx=0; row_idx<F.rows(); row_idx++) {
+      auto row = component_colors_per_face.row(row_idx);
+      row[0] = static_cast<double>(35.0*cid[row_idx]);
+      //igl::jet(static_cast<double>(cid[row_idx]), component_colors_per_face[row_idx]);
+    }
     viewer.data().set_colors(component_colors_per_face);
   }
 

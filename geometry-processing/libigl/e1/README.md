@@ -173,3 +173,11 @@ To preserve sharp edges, we define a threshold in angle degrees. When comparing 
 ![Per corner shading threshold 35](images/per-corner-threshold-35.png)
 
 ![Per corner shading threshold 145](images/per-corner-threshold-145.png)
+
+## Connected Components
+
+Quick fiddling around to get two colors working:
+
+![Connected components 2](images/connected_components_2.png)
+
+Will add explanation later.
