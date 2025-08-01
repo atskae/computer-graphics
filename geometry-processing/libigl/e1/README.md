@@ -180,4 +180,17 @@ Quick fiddling around to get two colors working:
 
 ![Connected components 2](images/connected_components_2.png)
 
-Will add explanation later.
+```cpp
+igl::facet_components(F, cid);
+```
+
+This function takes in a list of Faces `F` and assigns an integer ID to each face (stores in `cid`, size is number of faces), the ID indicating which connected component it is a part of.
+
+
+This function computes a color per connected component using the [MatLab Jet color map](https://www.mathworks.com/help/matlab/ref/jet.html) to assign a color to each connected component.
+
+Here we pass in `true` so that the function normalizes the component IDs to a value between [0, 1] before computing the color:
+
+```cpp
+igl::jet(cid, true, component_colors_per_face);
+```

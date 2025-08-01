@@ -130,12 +130,13 @@ bool callback_key_down(ViewerProxy &viewer, unsigned char key, int modifiers) {
     // Compute colors for the faces based on components, storing them in
     // component_colors_per_face.
 
-    // Set the viewer colors
-    for (int row_idx=0; row_idx<F.rows(); row_idx++) {
-      auto row = component_colors_per_face.row(row_idx);
-      row[0] = static_cast<double>(35.0*cid[row_idx]);
-      //igl::jet(static_cast<double>(cid[row_idx]), component_colors_per_face[row_idx]);
-    }
+    //// Set the viewer colors
+    //auto min_id = cid.minCoeff();
+    //auto max_id = cid.maxCoeff();
+    //igl::jet(cid, min_id, max_id, component_colors_per_face);
+    
+    igl::jet(cid, true, component_colors_per_face);
+    
     viewer.data().set_colors(component_colors_per_face);
   }
 
