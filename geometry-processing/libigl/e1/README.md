@@ -194,3 +194,18 @@ Here we pass in `true` so that the function normalizes the component IDs to a va
 ```cpp
 igl::jet(cid, true, component_colors_per_face);
 ```
+
+## Subdivision
+
+Implement root-3 subdivision as described in this paper from the year 2000: https://www.graphics.rwth-aachen.de/media/papers/sqrt31.pdf
+* **dyadic**: relating to two parts
+* **smooth** mathematically means infinitely differentiable
+    * C^0: continuous but not continuously differentiable
+    * C^1: surface has continuous tangent plane (no sharp corners)
+    * C^2: continuous curvature (no sudden changes to how it bends)
+    * ...
+    * C^infinity: "smooth"
+* **Topological refinement**: connectivity rule - splitting edges/faces to add new vertices and faces
+* **Geometric refinement**: smoothing rule - repositioning vertices (old and new) using weighed averages of their neighbors
+* **Convergence analysis**: The study of whether repeated subdivision still produces a well-defined smooth surface
+
