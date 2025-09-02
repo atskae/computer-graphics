@@ -209,3 +209,14 @@ Implement root-3 subdivision as described in this paper from the year 2000: http
 * **Geometric refinement**: smoothing rule - repositioning vertices (old and new) using weighed averages of their neighbors
 * **Convergence analysis**: The study of whether repeated subdivision still produces a well-defined smooth surface
 
+Suggested IGL functions:
+* [`adjacency_list()`](https://github.com/libigl/libigl/blob/main/include/igl/adjacency_list.h): for each vertex `i`, gives all the vertices adjacent to it
+* [`triangle_triangle_adjacency()`](https://github.com/libigl/libigl/blob/main/include/igl/triangle_triangle_adjacency.h), returns two representations:
+    * For each triangle's edge, indicates the triangle that is adjacent to that edge
+    * For each triangle, indicates the edges that are adjacent to the triangle
+* [`edge_topology()`](https://github.com/libigl/libigl/blob/main/include/igl/edge_topology.h): returns information about the topological structure of the faces `F`, first by returning the list of unique edges `E`, then using that list to represent:
+    * Represent each triangle as a list of edges (indices from `E`)
+    * For each edge, gives a list of triangles that it is a part of (indices from `F`)
+        * An edge can be adjacent to at most two triangles, so a list of two integers are returned per edge
+        * -1 represents no triangle
+* [`barycenter()`](https://github.com/libigl/libigl/blob/main/include/igl/barycenter.h): Returns the center of each face as a point
