@@ -220,3 +220,11 @@ Suggested IGL functions:
         * An edge can be adjacent to at most two triangles, so a list of two integers are returned per edge
         * -1 represents no triangle
 * [`barycenter()`](https://github.com/libigl/libigl/blob/main/include/igl/barycenter.h): Returns the center of each face as a point
+
+Code-help:
+* [Append two matrices](https://liuzhiguang.wordpress.com/2017/08/25/eigen-concatenate-matrix-along-a-specific-dimension/)
+
+Rough outline:
+* Compute the midpoints of each face: `midpoints`
+* Create a new matrix: `newVertices = V + midpoints`
+* Create a new set of faces, whose vertex indices refer to the vertices in the new matrix `newVertices`

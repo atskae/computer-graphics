@@ -12,6 +12,7 @@
 #include <igl/per_corner_normals.h>
 #include <igl/facet_components.h>
 #include <igl/jet.h>
+#include <igl/barycenter.h>
 
 using namespace std;
 
@@ -36,8 +37,40 @@ Eigen::MatrixXd component_colors_per_face;
 // Angle threshold for per-corner shading, in degrees
 int per_corner_shading_threshold = 90;
 
-void subdivide_sqrt3(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
-                     Eigen::MatrixXd &Vout, Eigen::MatrixXi &Fout) {}
+void subdivide_sqrt3(
+  const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
+  Eigen::MatrixXd &Vout, Eigen::MatrixXi &Fout) {
+    // For each triangle face (with vertices v0, v1, v2)
+    // calculate the midpoint/center of the triangle mf
+    Eigen::MatrixXd midpoints;
+    igl::barycenter(V, F, midpoints);
+
+    // Create a new set of vertices
+    // Original vertices V + midpoints
+    // The newly created faces will refer to indices in this matrix
+    Eigen::MatrixXd newVertices(V.rows() + midpoints.rows(), 3);
+    newVertices << V, midpoints;
+    // The index into newVertices where the midpoints begin
+    // midpoint + i = the midpoint of the ith face in the original faces `F`
+    auto midpoint_idx = V.rows();
+
+    // Each original face will create 3 faces
+    // Each face has 3 vertices
+    Eigen::MatrixXi newFaces(F.rows() * 3, 3);
+    for (int face_idx=0; face_idx<F.rows(); face_idx++) {
+      auto face = F.row(face_idx);
+      // Iterate through each vertex
+      // A new face is created: midpoint, vertex, vertex+1
+      for (int i=0; i<3; i++) {
+        Eigen::Vector3i newFace(
+          midpoint_idx + face_idx,
+          face[i],
+          face[i+1 % 3]
+        );
+        newFaces << newFace;
+      } 
+    }
+}
 
 bool callback_key_down(ViewerProxy &viewer, unsigned char key, int modifiers) {
   if (key == '1') {
